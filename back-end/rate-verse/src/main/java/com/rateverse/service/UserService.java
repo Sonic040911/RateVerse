@@ -21,7 +21,7 @@ public interface UserService {
     Result registerUser(User user);
 
     // 登录用户
-    Result login(String usernameOrEmail, String password);
+    Result checkUserInfo(String usernameOrEmail, String password);
 
     // 持久化JSESSIONID
     void rememberSessionId(HttpServletResponse response, String sessionId);

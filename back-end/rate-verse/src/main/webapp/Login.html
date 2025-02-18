@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="static/css/Login.css">
+</head>
+<body>
+<header>RateVerse</header>
+<main>
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+                <form id="loginForm">
+                    <img class="logo" src="static/assets/logo.svg" alt="Logo">
+                    <h2>WELCOME BACK!</h2>
+                    <p class="application">Please enter your details.</p>
+                    <div class="inputbox">
+                        <input type="email" id="email" required placeholder="Email">
+                    </div>
+                    <div class="inputbox">
+                        <input type="password" id="password" required placeholder="Password">
+                    </div>
+
+                    <!-- Error message -->
+                    <div id="error-message" style="color: red; display: none;"></div>
+
+                    <div class="forget">
+                        <a href="#">Forgot password?</a>
+                    </div>
+                    <button class="login" type="submit">Log in</button>
+                    <p class="or">or</p>
+                    <div class="button-google">
+                        <button class="btn_google">
+                            <img class="google" src="static/assets/google 1.svg" alt="Continue with Google">
+                            Continue with Google
+                        </button>
+                    </div>
+                    <p class="create">Don't have an account? <a href="Registration.html">Sign up here</a></p>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            // 1. Call login API
+            const loginResponse = await fetch('/user/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, passwordHash: password })
+            });
+
+            // 2. Parse login response
+            const loginResult = await loginResponse.json();
+            if (loginResult.code === 200) {
+                window.location.href = '/Home.html'; // Redirect on successful login
+            } else if (loginResult.code === 505) {
+                showError("Incorrect email or password"); // Show error message for code 505
+            } else {
+                showError('Unknown error, please try again');
+            }
+
+        } catch (error) {
+            console.error('Login process error:', error);
+            showError('Login service error, please try again later');
+        }
+    });
+
+    // Function to display error messages
+    function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        } else {
+            alert(message); // Fallback
+        }
+    }
+</script>
+</body>
+</html>

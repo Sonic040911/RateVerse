@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <link rel="stylesheet" href="static/css/Registration.css">
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .input-box.has-error input {
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<header>RateVerse</header>
+<main>
+    <section>
+        <div class="form-box">
+            <div class="form-value">
+                <form id="registerForm">
+                    <img class="logo" src="static/assets/logo.svg" alt="Logo">
+                    <h2>Sign Up</h2>
+                    <p class="application">Enter your details below to create your account and get started.</p>
+                    <div class="user-details">
+                        <!-- Username Field -->
+                        <div class="input-box">
+                            <span class="details">Username</span>
+                            <input type="text" id="username" placeholder="Enter username" required>
+                            <div class="error-message" id="usernameError"></div>
+                        </div>
+
+                        <!-- Phone Number (Dummy Field) -->
+                        <div class="input-box">
+                            <span class="details">Phone Number</span>
+                            <input type="text" id="phone" placeholder="Optional phone number">
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="input-box">
+                            <span class="details">Email</span>
+                            <input type="email" id="email" placeholder="example@gmail.com" required>
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="input-box">
+                            <span class="details">Password</span>
+                            <input type="password" id="password" placeholder="Create password" required>
+                            <div class="error-message" id="passwordError"></div>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button class="cancel" type="button">Cancel</button>
+                        <button class="confirm" type="submit">Create Account</button>
+                    </div>
+                    <p class="login">Already have an account? <a href="#">Log in</a></p>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Clear previous error messages
+        clearErrors();
+
+        // Get form data
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        // Simple front-end validation
+        if (!username || !email || !password) {
+            showError('All required fields must be filled out');
+            return;
+        }
+
+        try {
+            // Step 1: Check if username is available
+            const usernameCheck = await checkUsernameAvailability(username);
+            if (usernameCheck.code === 502) {
+                showFieldError('username', 'Username is already taken');
+                return;
+            }
+
+            // Step 2: Check if email is available
+            const emailCheck = await checkEmailAvailability(email);
+            if (emailCheck.code === 503) {
+                showFieldError('email', 'Email is already registered');
+                return;
+            }
+
+            // Step 3: Submit registration
+            const registerResult = await registerUser({
+                username: username,
+                email: email,
+                passwordHash: password
+            });
+
+            if (registerResult.code === 200) {
+                window.location.href = '/Login.html'; // Registration successful, redirect to login page
+            } else {
+                showError('Registration failed, please try again later');
+            }
+
+        } catch (error) {
+            console.error('Registration process error:', error);
+            showError('Service is temporarily unavailable, please try again later');
+        }
+    });
+
+    // Check username availability
+    async function checkUsernameAvailability(username) {
+        const response = await fetch(`/user/checkUserNameUsed/${encodeURIComponent(username)}`);
+        return response.json();
+    }
+
+    // Check email availability
+    async function checkEmailAvailability(email) {
+        const response = await fetch(`/user/checkUserEmailUsed/${encodeURIComponent(email)}`);
+        return response.json();
+    }
+
+    // Submit registration
+    async function registerUser(userData) {
+        const response = await fetch('/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+        return response.json();
+    }
+
+    // Show field-level error
+    function showFieldError(field, message) {
+        const fieldElement = document.getElementById(field);
+        const errorElement = document.getElementById(`${field}Error`);
+
+        fieldElement.parentElement.classList.add('has-error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    // Show global error
+    function showError(message) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'error-message';
+        errorElement.textContent = message;
+        document.querySelector('.application').after(errorElement);
+    }
+
+    // Clear all error messages
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
+        });
+        document.querySelectorAll('.input-box').forEach(el => {
+            el.classList.remove('has-error');
+        });
+    }
+</script>
+</body>
+</html>

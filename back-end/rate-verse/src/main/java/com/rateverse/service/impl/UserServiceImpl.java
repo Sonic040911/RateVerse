@@ -26,22 +26,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    /**
-     * 检测用户名是否规范
-     *      1. 检测用户名是否符合规范 (正则表达式)
-     *      2. 检测用户名是否已占用
-     * @param username
-     * @return
-     */
+    // 检测用户名是否已占用
     @Override
     public Result checkUserName(String username) {
-        // 是否符合规范
-        if (!RegexUtil.isUsernameValid(username)) {
-            return Result.fail(username, ResultCodeEnum.USERNAME_FORMAT_ERROR);
-        }
-
         // 是否被占用 如果没有返回0 有返回1
         boolean isExists = userMapper.existsByUsername(username);
+
         if (isExists) {
             return Result.fail(username, ResultCodeEnum.USERNAME_USED);
         }
@@ -49,23 +39,11 @@ public class UserServiceImpl implements UserService {
         return Result.ok(username, ResultCodeEnum.SUCCESS);
     }
 
-    /**
-     * 检测用户名是否规范
-     *      1. 检测邮箱是否符合规范 (正则表达式)
-     *      2. 检测邮箱是否已占用
-     * @param email
-     * @return 结果集
-     */
+    // 检测邮箱是否符合规范
     @Override
     public Result checkUserEmail(String email) {
-        // 是否符合规范
-        if (!RegexUtil.isEmailValid(email)) {
-            return Result.fail(email, ResultCodeEnum.EMAIL_FORMAT_ERROR);
-        }
-
         // 是否被占用 如果没有返回0 有返回1
         boolean isExists = userMapper.existsByEmail(email);
-        System.out.println(isExists);
         if (isExists) {
             return Result.fail(email, ResultCodeEnum.EMAIL_USED);
         }
@@ -75,6 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result registerUser(User user) {
+        System.out.println(user.getPasswordHash());
         // 加密
         String encodedPwd = passwordEncoder.encode(user.getPasswordHash());
         user.setPasswordHash(encodedPwd);
@@ -93,17 +72,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result login(String userNameOrEmail, String password) {
+    public Result checkUserInfo(String userNameOrEmail, String password) {
         // 1. 先查询看一下，这个用户是否存在
         User user = userMapper.selectUserByUsernameOrEmail(userNameOrEmail);
 
         // 2. 如果不存在，返回错误信息
         if (user == null) {
+            System.out.println("用户不存在");
             return Result.fail(null, ResultCodeEnum.NOT_LOGIN);
         }
 
         // 3. 校验密码
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            System.out.println("密码错误");
             return Result.fail(null, ResultCodeEnum.NOT_LOGIN);
         }
 
