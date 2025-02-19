@@ -37,6 +37,7 @@ CREATE TABLE item (
     FOREIGN KEY (topic_id) REFERENCES topic(id)
 );
 
+ALTER TABLE item ADD COLUMN image_url VARCHAR(255) DEFAULT NULL;
 
 CREATE TABLE rating (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -79,6 +80,26 @@ CREATE TABLE topic_tag (
     FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
 
+
+CREATE TABLE draft_topic (
+    draft_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL COMMENT '创建者ID',
+    title VARCHAR(200) COMMENT '草稿标题',
+    description TEXT COMMENT '草稿描述',
+    created_at DATETIME DEFAULT NOW() COMMENT '创建时间',
+    FOREIGN KEY (user_id) REFERENCES USER(id)
+);
+
+
+CREATE TABLE draft_item (
+    draft_item_id INT PRIMARY KEY AUTO_INCREMENT,
+    draft_topic_id INT NOT NULL COMMENT '关联的草稿主题ID',
+    NAME VARCHAR(200) NOT NULL COMMENT '评分项名称',
+    description TEXT COMMENT '评分项描述',
+    image_url VARCHAR(255) COMMENT '图片URL',
+    created_at DATETIME DEFAULT NOW() COMMENT '创建时间',
+    FOREIGN KEY (draft_topic_id) REFERENCES draft_topic(draft_id)
+);
 
 
 

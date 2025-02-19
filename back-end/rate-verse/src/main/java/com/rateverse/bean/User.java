@@ -21,6 +21,6 @@ public class User {
     private String avatarUrl;
 
     // 前端不用发送这些
-    private Date create_at;
-    private Date update_at;
+    private Date createAt;
+    private Date updateAt;
 }

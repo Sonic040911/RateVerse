@@ -1,0 +1,42 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.rateverse.mapper.TopicMapper">
+    <!--  CRUD  -->
+    <insert id="insertTopic">
+        INSERT INTO topic (title, description, user_id, created_at, updated_at)
+        VALUES (#{title}, #{description}, #{userId}, NOW(), NOW())
+    </insert>
+
+    <update id="updateTopic">
+        update topic set
+            title = #{title},
+            description = #{description},
+            updated_at = NOW()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTopicById">
+        DELETE FROM topic WHERE id = #{id}
+    </delete>
+
+
+    <!-- 查询 -->
+    <select id="selectTopicById" resultType="com.rateverse.bean.Topic">
+        select * from topic where id = #{id}
+    </select>
+
+    <select id="selectTopicByUserId" resultType="com.rateverse.bean.Topic">
+        select * from topic where user_id = #{userId} order by created_at DESC
+    </select>
+
+    <select id="countTopicsByUserId" resultType="int">
+        select count(*) from topic where user_id = #{userId}
+    </select>
+    
+    <select id="searchTopicsByTitle" resultType="com.rateverse.bean.Topic">
+        select * from topic where title like concat('%', #{keyword}, '%')
+    </select>
+</mapper>

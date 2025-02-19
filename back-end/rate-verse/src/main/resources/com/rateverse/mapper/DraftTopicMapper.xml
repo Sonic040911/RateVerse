@@ -1,0 +1,27 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.rateverse.mapper.DraftTopicMapper">
+    <insert id="insertDraftTopic">
+        INSERT INTO draft_topic (user_id, title, description)
+            VALUES (#{userId}, #{title}, #{description})
+    </insert>
+
+    <update id="updateDraftTopic">
+        UPDATE draft_topic SET
+            title = #{title},
+            description = #{description}
+                WHERE draft_id = #{draftId}
+    </update>
+
+    <delete id="deleteDraftTopic">
+        DELETE FROM draft_topic WHERE draft_id = #{draftId}
+    </delete>
+
+    <select id="selectDraftTopicById" resultType="com.rateverse.bean.DraftTopic">
+        SELECT draft_id, user_id, title, description, created_at
+            FROM draft_topic WHERE draft_id = #{draftId}
+    </select>
+</mapper>
