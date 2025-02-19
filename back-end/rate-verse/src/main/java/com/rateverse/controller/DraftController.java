@@ -37,7 +37,7 @@ public class DraftController {
     }
 
     // 根据userid创建一个临时的DraftTopic，并给前端DraftId
-    @PostMapping
+    @PostMapping()
     public Result createDraft(HttpSession session) {
         // 获取当前用户
         User user = getCurrentUser(session);
@@ -50,8 +50,6 @@ public class DraftController {
 
         return result;
     }
-
-    // 如果后面前端需要用到Draft_id在这里创建一个handler给它返回这个Draft
 
 
     // 根据用户的填写内容，实时更新DraftTopic中的内容
@@ -86,6 +84,18 @@ public class DraftController {
 
         System.out.println("===========log.info============");
         log.info("被删除的评分项为: {}", result);
+
+        return result;
+    }
+
+    @GetMapping("/item/{draftId}/{pageSize}/{currentPage}")
+    public Result getDraftItemsByPage(@PathVariable int draftId,
+                                      @PathVariable int pageSize,
+                                      @PathVariable int currentPage) {
+        Result result = draftItemService.page(draftId, pageSize, currentPage);
+
+        System.out.println("===========log.info============");
+        log.info("查询到该页的评分项为: {}", result);
 
         return result;
     }

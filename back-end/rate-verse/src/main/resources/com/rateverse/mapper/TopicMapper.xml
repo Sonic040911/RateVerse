@@ -5,7 +5,7 @@
 
 <mapper namespace="com.rateverse.mapper.TopicMapper">
     <!--  CRUD  -->
-    <insert id="insertTopic">
+    <insert id="insertTopic" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO topic (title, description, user_id, created_at, updated_at)
         VALUES (#{title}, #{description}, #{userId}, NOW(), NOW())
     </insert>

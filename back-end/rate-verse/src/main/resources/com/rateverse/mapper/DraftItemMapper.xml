@@ -5,7 +5,7 @@
 
 <mapper namespace="com.rateverse.mapper.DraftItemMapper">
 
-    <insert id="insertDraftItem">
+    <insert id="insertDraftItem" useGeneratedKeys="true" keyColumn="draft_item_id" keyProperty="draftItemId">
         INSERT INTO draft_item (draft_topic_id, name, description, image_url)
             VALUES (#{draftTopicId}, #{name}, #{description}, #{imageUrl})
     </insert>

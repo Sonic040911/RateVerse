@@ -42,6 +42,12 @@ public class DraftTopicServiceImpl implements DraftTopicService {
     // 根据user_id临时创建一个DraftTopic在数据库
     @Override
     public Result createDraft(Integer userId) {
+        // 如果该用户已经有一个draft，就不能再创建一个了，返回这个draft (疑问, 未来解决)
+        DraftTopic oldDraftTopic = draftTopicMapper.selectDraftTopicIdByUserId(userId);
+        if (oldDraftTopic != null) {
+            return Result.ok(oldDraftTopic, ResultCodeEnum.SUCCESS);
+        }
+
         // 创建对象并设置它的userId，userId很重要，对Topic有唯一性
         DraftTopic draftTopic = new DraftTopic();
         draftTopic.setUserId(userId);
@@ -53,6 +59,9 @@ public class DraftTopicServiceImpl implements DraftTopicService {
             return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
         }
 
+        // 得到新创建的草稿的id，很重要！
+        draftTopic = draftTopicMapper.selectDraftTopicIdByUserId(userId);
+
         return Result.ok(draftTopic, ResultCodeEnum.SUCCESS);
     }
 
@@ -62,6 +71,12 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         DraftTopic oldDraftTopic = draftTopicMapper.selectDraftTopicById(draftId);
         oldDraftTopic.setTitle(title);
         oldDraftTopic.setDescription(description);
+
+        // 进行update
+        int row = draftTopicMapper.updateDraftTopic(oldDraftTopic);
+        if (row == 0) {
+            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+        }
 
         return Result.ok(oldDraftTopic, ResultCodeEnum.SUCCESS);
     }
@@ -102,16 +117,18 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         // 数据转换 List<DraftItem> -> Items
         for (DraftItem draftItem : draftItemList) {
             Item item = new Item();
+            // 这里添加的时候很重要，要添加新添加的topicid
+            item.setTopicId(topic.getId());
+
             item.setName(draftItem.getName());
             item.setDescription(draftItem.getDescription());
             item.setImageUrl(draftItem.getImageUrl());
-            item.setTopicId(draftItem.getDraftTopicId());
             itemMapper.insertItem(item);
         }
 
-        // 清楚草稿数据
-        draftTopicMapper.deleteDraftTopic(draftId);
+        // 清楚草稿数据 搞好顺序！ 先删除DraftItem再删除DraftTopic
         draftItemMapper.deleteDraftItemsByTopicId(draftId);
+        draftTopicMapper.deleteDraftTopic(draftId);
 
         return Result.ok(topic, ResultCodeEnum.SUCCESS);
     }

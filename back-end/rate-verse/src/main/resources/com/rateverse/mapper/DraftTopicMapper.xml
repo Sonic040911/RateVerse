@@ -24,4 +24,8 @@
         SELECT draft_id, user_id, title, description, created_at
             FROM draft_topic WHERE draft_id = #{draftId}
     </select>
+
+    <select id="selectDraftTopicIdByUserId" resultType="com.rateverse.bean.DraftTopic">
+        select * from draft_topic where user_id = #{userId}
+    </select>
 </mapper>

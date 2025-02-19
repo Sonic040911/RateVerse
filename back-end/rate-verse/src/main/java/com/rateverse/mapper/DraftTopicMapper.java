@@ -20,4 +20,7 @@ public interface DraftTopicMapper {
 
     // 删除草稿主题
     int deleteDraftTopic(Integer draftId);
+
+    // 根据user_id得到DraftTopic
+    DraftTopic selectDraftTopicIdByUserId(Integer userId);
 }
