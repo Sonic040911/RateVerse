@@ -118,5 +118,36 @@
             © 2025 RateVerse – The Best Ratings in One Place!
         </div>
     </footer>
+    <div class="modal" id="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 class="modal-title">Add Object</h2>
+
+            <label for="object-name">Enter the object name</label>
+            <input type="text" id="object-name" placeholder="Enter name...">
+
+            <div class="object-cover">
+                <p>Add object cover</p>
+                <div class="cover-options">
+                    <div class="cover-option">
+                        <img src="icon1.png" alt="Help you find pictures">
+                        <p>Help you find pictures</p>
+                    </div>
+                    <div class="cover-option">
+                        <img src="icon2.png" alt="Upload from device">
+                        <p>Upload from device</p>
+                    </div>
+                </div>
+            </div>
+
+            <label for="description">Description (optional)</label>
+            <input type="text" id="description" placeholder="Enter description...">
+
+            <div class="modal-actions">
+                <button class="cancel-btn" id="closeModal">Cancel</button>
+                <button class="save">Save</button>
+            </div>
+        </div>
+    </div>
+    <script src="Create.js"></script>
 </body>
 </html>
