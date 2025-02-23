@@ -23,7 +23,7 @@ img {
 header { 
     width: 100%;
     height: 140px;
-    background-color: #3C64AD;
+    background-color: #3D3A74;
     color: #FFFFFF;
     font-weight: 800;
     font-size: 36px;
@@ -44,7 +44,7 @@ section {
 .form-box {
     position: relative;
     background: #E8EAF6;
-    border: 1px solid #1A237E;
+    border: 1px solid #3D3A74;
     width: 730px;
     height: 650px;
     display: flex;
@@ -130,8 +130,8 @@ h2 {
     width: 300px;
     height: 50px;
     border-radius: 8px;
-    border: 1px solid #3C64AD;
-    background-color: #3C64AD;
+    border: 1px solid #3D3A74;
+    background-color: #3D3A74;
     color: #FFFFFF;
 }
 
