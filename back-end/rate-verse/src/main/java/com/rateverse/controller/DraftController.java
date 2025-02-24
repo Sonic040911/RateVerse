@@ -27,20 +27,11 @@ public class DraftController {
     @Autowired
     private DraftItemService draftItemService;
 
-    // 前端每次请求都会携带Cookie，根据JSESSOINID找到对应的Session，从而获取用户信息，这样就能得到user_id了
-    private User getCurrentUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            throw new RuntimeException("请先登录");
-        }
-        return user;
-    }
-
     // 根据userid创建一个临时的DraftTopic，并给前端DraftId
     @PostMapping()
     public Result createDraft(HttpSession session) {
         // 获取当前用户
-        User user = getCurrentUser(session);
+        User user = (User) session.getAttribute("user");
 
         // 根据userid创建一个DraftTopic
         Result result = draftTopicService.createDraft(user.getId());
@@ -100,11 +91,11 @@ public class DraftController {
         return result;
     }
 
-
     // 用户点击发布后，发布草稿
     @PostMapping("/publish/{draftId}")
     public Result publishDraft(@PathVariable Integer draftId, HttpSession session) {
-        User user = getCurrentUser(session);
+        // 获取userid
+        User user = (User) session.getAttribute("user");
 
         Result result = draftTopicService.publishDraft(draftId, user.getId());
 

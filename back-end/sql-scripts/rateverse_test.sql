@@ -93,14 +93,21 @@ CREATE TABLE draft_topic (
 
 CREATE TABLE draft_item (
     draft_item_id INT PRIMARY KEY AUTO_INCREMENT,
-    draft_topic_id INT NOT NULL COMMENT '关联的草稿主题ID',
-    NAME VARCHAR(200) NOT NULL COMMENT '评分项名称',
-    description TEXT COMMENT '评分项描述',
-    image_url VARCHAR(255) COMMENT '图片URL',
-    created_at DATETIME DEFAULT NOW() COMMENT '创建时间',
+    draft_topic_id INT NOT NULL,
+    NAME VARCHAR(200) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    created_at DATETIME DEFAULT NOW(),
     FOREIGN KEY (draft_topic_id) REFERENCES draft_topic(draft_id)
 );
 
+
+SELECT * FROM `user`;
+SELECT * FROM draft_topic;
+SELECT * FROM draft_item;
+SELECT * FROM topic;
+SELECT * FROM item;
+SELECT draft_id FROM draft_topic WHERE user_id = 13
 
 
 

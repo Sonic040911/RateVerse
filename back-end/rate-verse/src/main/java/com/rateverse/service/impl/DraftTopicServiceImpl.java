@@ -60,7 +60,7 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         }
 
         // 得到新创建的草稿的id，很重要！
-        draftTopic = draftTopicMapper.selectDraftTopicIdByUserId(userId);
+        draftTopic.setDraftId(draftTopic.getDraftId());
 
         return Result.ok(draftTopic, ResultCodeEnum.SUCCESS);
     }
