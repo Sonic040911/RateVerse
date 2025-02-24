@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create new list</title>
-    <link rel="stylesheet" href="Create.css">
+    <link rel="stylesheet" href="/CSS/Create.css">
 </head>
 <body>
 
@@ -50,9 +50,9 @@
             </div>
             <button class="submit-btn">Submit</button>
         </section>
-
+        
         <aside class="sidebar">
-            <h2>Your objects</h2>
+            <h3>Your objects</h3>
             <div class="ratings">
                 <div class="rating-card">
                     <div class="rating-info">
@@ -118,29 +118,34 @@
             © 2025 RateVerse – The Best Ratings in One Place!
         </div>
     </footer>
+
+    <!--Start Modal page-->
     <div class="modal" id="modal" style="display: none;">
         <div class="modal-content">
             <h2 class="modal-title">Add Object</h2>
-
-            <label for="object-name">Enter the object name</label>
-            <input type="text" id="object-name" placeholder="Enter name...">
-
+            <div class="objact-name">
+                <label for="object-name">Enter the object name</label>
+                <input type="text" id="object-name" placeholder="Enter name...">
+            </div>
+            
             <div class="object-cover">
-                <p>Add object cover</p>
+                <p class="add-object">Add object cover</p>
                 <div class="cover-options">
                     <div class="cover-option">
-                        <img src="icon1.png" alt="Help you find pictures">
+                        <img src="/assets/computer_image.svg" alt="Help you find pictures">
                         <p>Help you find pictures</p>
                     </div>
                     <div class="cover-option">
-                        <img src="icon2.png" alt="Upload from device">
+                        <img src="/assets/upload_image.svg" alt="Upload from device">
                         <p>Upload from device</p>
                     </div>
                 </div>
             </div>
 
-            <label for="description">Description (optional)</label>
-            <input type="text" id="description" placeholder="Enter description...">
+            <div class="descriptions">
+                <label for="description">Description (optional)</label>
+                <input type="text" id="description" placeholder="Enter description...">
+            </div>
 
             <div class="modal-actions">
                 <button class="cancel-btn" id="closeModal">Cancel</button>
@@ -148,6 +153,6 @@
             </div>
         </div>
     </div>
-    <script src="Create.js"></script>
+    <script src="/JavaScript/Create.js"></script> 
 </body>
 </html>
