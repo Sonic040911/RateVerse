@@ -15,6 +15,9 @@ public enum ResultCodeEnum {
     EMAIL_FORMAT_ERROR(504, "email format is invalid"),
     PASSWORD_ERROR(504, "password error"),
     NOT_LOGIN(505, "not login"),
+    NULL_DRAFT(601, "Draft does not exist"),
+    DRAFT_PERMISSION_ERROR(602, "no permission to publish others' drafts"),
+    NO_ANY_ITEM(603, "at least one rating item is required"),
     DATABASE_ERROR(1001, "database change failed");
 
     private final Integer code;
