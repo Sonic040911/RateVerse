@@ -57,7 +57,7 @@ public class DraftItemServiceImpl implements DraftItemService {
         // 分页
         PageHelper.startPage(currentPage, pageSize);
 
-        // 查询
+        // 查询 (如果没有对应的draftId没有Items，会返回空列表)
         List<DraftItem> draftItems = draftItemMapper.selectDraftItemsByTopicId(draftId);
 
         // 分页查询数据

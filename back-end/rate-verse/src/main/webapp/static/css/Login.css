@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@300;400;500;600;800&display=swap');
 
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
 body {
-    font-family: "Saira Condensed", serif;
+    font-family: "Saira Condensed", sans-serif;
     font-weight: 300;
     padding: 10px;
 }
@@ -20,10 +20,10 @@ img {
     max-width: 100%;
 }
 
-header { 
+header {
     width: 100%;
     height: 140px;
-    background-color: #3C64AD;
+    background-color: #3D3A74;
     color: #FFFFFF;
     font-weight: 800;
     font-size: 36px;
@@ -43,7 +43,7 @@ section {
 .form-box {
     position: relative;
     background: #E8EAF6;
-    border: 1px solid #1A237E;
+    border: 1px solid #3D3A74;
     width: 430px;
     height: 570px;
     display: flex;
@@ -78,11 +78,11 @@ p.application {
     padding-left: 20px;
     color: #8F8F8F;
     border: 1px solid #000000;
-}   
+}
 
 .inputbox input:focus {
     color: #000000;
-}   
+}
 
 .forget a{
     color: #8F8F8F;
@@ -100,11 +100,11 @@ button.login {
     width: 100%;
     height: 50px;
     border-radius: 18px;
-    background-color: #3C64AD;
-    border:  1px solid #3C64AD;
+    background-color: #3D3A74;
+    border:  1px solid #3D3A74;
     margin: 20px 0;
     color: #FFFFFF;
-    font-family: "Saira Condensed", serif;
+    font-family: "Saira Condensed", sans-serif;
     font-weight: 500;
     font-size: 17px;
 }
@@ -149,9 +149,3 @@ button.login {
 .create a {
     font-weight: 600;
 }
-
-
-
-
-
-

@@ -45,7 +45,7 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         // 如果该用户已经有一个draft，就不能再创建一个了，返回这个draft (疑问, 未来解决)
         DraftTopic oldDraftTopic = draftTopicMapper.selectDraftTopicIdByUserId(userId);
         if (oldDraftTopic != null) {
-            return Result.ok(oldDraftTopic, ResultCodeEnum.SUCCESS);
+            return Result.ok(oldDraftTopic, ResultCodeEnum.HAD_DRAFT);
         }
 
         // 创建对象并设置它的userId，userId很重要，对Topic有唯一性
@@ -65,6 +65,19 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         return Result.ok(draftTopic, ResultCodeEnum.SUCCESS);
     }
 
+    // 显示用户之前创建的草稿信息
+    @Override
+    public Result getDraftWithCheck(Integer draftId, Integer userId) {
+        DraftTopic draft = draftTopicMapper.selectDraftTopicById(draftId);
+
+        if (draft == null || !draft.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        return Result.ok(draft, ResultCodeEnum.SUCCESS);
+    }
+
+
     // 实时更新该draftId的信息
     @Override
     public Result updateDraftInfo(Integer draftId, String title, String description) {
@@ -80,6 +93,31 @@ public class DraftTopicServiceImpl implements DraftTopicService {
 
         return Result.ok(oldDraftTopic, ResultCodeEnum.SUCCESS);
     }
+
+
+    @Override
+    public Result deleteAllDrafts(Integer draftId, Integer userId) {
+        // 获取该草稿
+        DraftTopic draft = draftTopicMapper.selectDraftTopicById(draftId);
+
+        // 校验草稿的存在与否
+        if (draft == null){
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
+        // 校验该草稿的归属权
+        if(!draft.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        // 清楚草稿数据 搞好顺序！ 先删除DraftItem再删除DraftTopic
+        draftItemMapper.deleteDraftItemsByTopicId(draftId);
+        draftTopicMapper.deleteDraftTopic(draftId);
+
+        // 返回删除的草稿
+        return Result.ok(draft, ResultCodeEnum.SUCCESS);
+    }
+
 
     @Override
     public Result publishDraft(Integer draftId, Integer userId) {
