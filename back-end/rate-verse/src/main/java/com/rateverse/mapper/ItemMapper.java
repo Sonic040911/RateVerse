@@ -1,6 +1,7 @@
 package com.rateverse.mapper;
 
 import com.rateverse.bean.Item;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -34,14 +35,11 @@ public interface ItemMapper {
 
 
     // ==================== 统计与更新操作 ====================
-    // 更新评分项的统计信息 (平均评分，总评分人数)
-    int updateRatingStatus(Integer itemId, Integer newRating);
+    // 更新评分项的评分统计信息 (平均评分，总评分人数)
+    int updateRatingStats(@Param("id") Integer id, @Param("avg") Double avg, @Param("count") Integer count);
 
-    // 增加评论数量
-    int incrementCommentCount(Integer id);
-
-    // 减少评论数量 (未来写)
-
+    // 更新评分项的评论统计信息
+    int updateCommentStats(@Param("id") Integer id, @Param("count") Integer count);
 
     // 统计主题下的评分项总数
     int countItemsByTopicId(Integer topicId);

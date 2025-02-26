@@ -41,18 +41,19 @@
     </select>
 
 
-    <!-- 更新统计信息 -->
-    <update id="updateRatingStatus">
-        UPDATE item SET
-        total_ratings = total_ratings + 1,
-        average_rating = ((average_rating * total_ratings) + #{newRating}) / (total_ratings + 1)
-        WHERE id = #{itemId}
+    <!-- 更新评分统计信息 -->
+    <update id="updateRatingStats">
+        update item set
+        average_rating = #{avg},
+        total_ratings = #{count}
+        where id = #{id}
     </update>
 
-    <update id="incrementCommentCount">
-        UPDATE item SET
-        total_comments = total_comments + 1
-        WHERE id = #{itemId}
+    <!-- 更新评论统计信息 -->
+    <update id="updateCommentStats">
+        update item set
+        total_comments = #{count}
+        where id = #{id}
     </update>
 
     <update id="countItemsByTopicId">

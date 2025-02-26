@@ -15,11 +15,21 @@ public enum ResultCodeEnum {
     EMAIL_FORMAT_ERROR(504, "email format is invalid"),
     PASSWORD_ERROR(504, "password error"),
     NOT_LOGIN(505, "not login"),
+
     NULL_DRAFT(601, "Draft does not exist"),
     HAD_DRAFT(602, "User already had a draft"),
-    DRAFT_PERMISSION_ERROR(602, "no permission to publish others' drafts"),
-    NO_ANY_ITEM(603, "at least one rating item is required"),
-    DATABASE_ERROR(1001, "database change failed");
+    DRAFT_PERMISSION_ERROR(603, "no permission to publish others' drafts"),
+    NO_ANY_ITEM(604, "at least one rating item is required"),
+
+    TOPIC_DOES_NOT_EXISTS(701, "rating topic does not exist"),
+    ITEM_DOES_NOT_EXISTS(702, "rating item does not exist"),
+
+
+    RATING_EXISTS(801, "user had already rated this item"),
+    RATING_SCORE_ERROR(802, "please rate your score to 1 - 5 star"),
+
+    DATABASE_ERROR(1001, "database change failed")
+    ;
 
     private final Integer code;
     private final String message;

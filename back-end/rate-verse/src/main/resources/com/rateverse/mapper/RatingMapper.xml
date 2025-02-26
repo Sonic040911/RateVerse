@@ -1,0 +1,57 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rateverse.mapper.RatingMapper">
+    <!-- 插入评分 -->
+    <insert id="insertRating" parameterType="com.rateverse.bean.Rating" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO rating (user_id, item_id, score, created_at)
+        VALUES (#{userId}, #{itemId}, #{score}, NOW())
+        ON DUPLICATE KEY UPDATE score = VALUES(score), created_at = NOW();
+    </insert>
+
+    <!-- 更新评分 -->
+    <update id="updateRating" parameterType="com.rateverse.bean.Rating">
+        UPDATE rating
+        SET score = #{score}, created_at = NOW()
+        WHERE user_id = #{userId} AND item_id = #{itemId};
+    </update>
+
+    <!-- 删除评分 -->
+    <delete id="deleteRating">
+        DELETE FROM rating WHERE user_id = #{userId} AND item_id = #{itemId};
+    </delete>
+
+    <!-- 查询某个评分项的平均分 -->
+    <select id="getAverageScoreByItemId" resultType="java.lang.Double">
+        SELECT AVG(score) FROM rating WHERE item_id = #{itemId};
+    </select>
+
+    <!-- 获取总评分人数 -->
+    <select id="getRatingCountByItemId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM rating
+        WHERE item_id = #{itemId}
+    </select>
+
+    <!-- 查询用户对某个评分项的评分 -->
+    <select id="getUserRating" resultType="com.rateverse.bean.Rating">
+        SELECT * FROM rating WHERE user_id = #{userId} AND item_id = #{itemId};
+    </select>
+
+    <!-- 查询某个评分项的所有评分 -->
+    <select id="getRatingsByItemId" resultType="com.rateverse.bean.Rating">
+        SELECT * FROM rating WHERE item_id = #{itemId} ORDER BY created_at DESC;
+    </select>
+
+    <!-- 查询某个用户的所有评分 -->
+    <select id="getRatingsByUserId" resultType="com.rateverse.bean.Rating">
+        SELECT * FROM rating WHERE user_id = #{userId} ORDER BY created_at DESC;
+    </select>
+
+    <select id="countDistinctUsersByTopicId" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT r.user_id)
+        FROM rating r
+        JOIN item i ON r.item_id = i.id
+        WHERE i.topic_id = #{topicId}
+    </select>
+</mapper>

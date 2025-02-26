@@ -18,9 +18,9 @@ public class Item {
     private String imageUrl;
 
     // 动态计算
-    private String averageRating;  // 平均评分
-    private String totalRatings;   // 总评分数
-    private String totalComments;  // 总评论人数
+    private Double averageRating;  // 平均评分
+    private Integer totalRatings;   // 总评分数
+    private Integer totalComments;  // 总评论人数
 
     private Date createdAt;
     private Date updatedAt;

@@ -32,6 +32,7 @@ window.addEventListener("click", (e) => {
 const urlParams = new URLSearchParams(window.location.search);
 currentDraftId = urlParams.get('draftId');
 
+
 if (!currentDraftId) {
     alert("Invalid draft ID, redirecting to homepage...");
     window.location.href = "Home.html";
