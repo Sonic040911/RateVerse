@@ -44,12 +44,14 @@ public class RatingServiceImpl implements RatingService {
         // 查询是否已存在评分
         Rating isExists = ratingMapper.getUserRating(rating.getUserId(), rating.getItemId());
 
+        // 如果评分已存在，那就更新用户的评分
         if (isExists != null) {
-            return Result.fail(isExists, ResultCodeEnum.RATING_EXISTS);
+            ratingMapper.updateRating(rating);
         }
-
-        // 插入新评分
-        int row = ratingMapper.insertRating(rating);
+        // 如果不存在，则添加评分
+        else {
+            ratingMapper.insertRating(rating);
+        }
 
         // 更新Item和Topic的统计
         updateItemStats(rating.getItemId());
