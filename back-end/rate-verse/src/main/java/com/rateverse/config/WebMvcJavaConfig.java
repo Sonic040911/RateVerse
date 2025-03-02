@@ -1,5 +1,6 @@
 package com.rateverse.config;
 
+import com.rateverse.filter.ApiInterceptor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
@@ -30,4 +31,8 @@ public class WebMvcJavaConfig implements WebMvcConfigurer {
     }
 
     // 拦截器
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new ApiInterceptor()).addPathPatterns("/api/**");
+    }
 }

@@ -3,8 +3,10 @@ package com.rateverse.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rateverse.bean.DraftItem;
+import com.rateverse.bean.DraftTopic;
 import com.rateverse.bean.Item;
 import com.rateverse.mapper.DraftItemMapper;
+import com.rateverse.mapper.DraftTopicMapper;
 import com.rateverse.service.DraftItemService;
 import com.rateverse.utils.PageBean;
 import com.rateverse.utils.Result;
@@ -23,10 +25,19 @@ import java.util.List;
 @Service
 public class DraftItemServiceImpl implements DraftItemService {
     @Autowired
+    private DraftTopicMapper draftTopicMapper;
+
+    @Autowired
     private DraftItemMapper draftItemMapper;
 
     @Override
     public Result addDraftItem(Integer draftId, DraftItem item) {
+        // 添加前判断这个draftId是否存在
+        DraftTopic draftTopic = draftTopicMapper.selectDraftTopicById(draftId);
+        if (draftTopic == null) {
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
         // 设置它的draft_topic_id
         item.setDraftTopicId(draftId);
         int row = draftItemMapper.insertDraftItem(item);
@@ -57,7 +68,7 @@ public class DraftItemServiceImpl implements DraftItemService {
         // 分页
         PageHelper.startPage(currentPage, pageSize);
 
-        // 查询
+        // 查询 (如果没有对应的draftId没有Items，会返回空列表)
         List<DraftItem> draftItems = draftItemMapper.selectDraftItemsByTopicId(draftId);
 
         // 分页查询数据

@@ -18,16 +18,26 @@
         where id = #{id}
     </update>
 
+    <update id="updateTotalComments">
+        UPDATE topic SET
+            total_comments = #{totalComments},
+            updated_at = NOW()
+        WHERE id = #{topicId}
+    </update>
+
+    <update id="updateTotalRatings">
+        UPDATE topic SET
+            total_ratings = #{totalRatings},
+            updated_at = NOW()
+        WHERE id = #{topicId}
+    </update>
+
     <delete id="deleteTopicById">
         DELETE FROM topic WHERE id = #{id}
     </delete>
 
 
     <!-- 查询 -->
-    <select id="selectTopicById" resultType="com.rateverse.bean.Topic">
-        select * from topic where id = #{id}
-    </select>
-
     <select id="selectTopicByUserId" resultType="com.rateverse.bean.Topic">
         select * from topic where user_id = #{userId} order by created_at DESC
     </select>
@@ -38,5 +48,77 @@
     
     <select id="searchTopicsByTitle" resultType="com.rateverse.bean.Topic">
         select * from topic where title like concat('%', #{keyword}, '%')
+    </select>
+
+
+    <resultMap id="TopicResultMapWithItems" type="com.rateverse.bean.Topic">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="user_id" property="userId"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="total_comments" property="totalComments"/>
+        <result column="total_ratings" property="totalRatings"/>
+
+        <!-- 关联的评分项（Item）-->
+        <collection property="items" ofType="com.rateverse.bean.Item">
+            <id column="item_id" property="id"/>
+            <result column="topic_id" property="topicId"/>
+            <result column="name" property="name"/>
+            <result column="item_description" property="description"/>
+            <result column="average_rating" property="averageRating"/>
+            <result column="item_total_ratings" property="totalRatings"/>
+            <result column="item_total_comments" property="totalComments"/>
+            <result column="item_created_at" property="createdAt"/>
+            <result column="item_updated_at" property="updatedAt"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="TopicResultMapWithUser" type="com.rateverse.bean.Topic">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="totalComments" column="total_comments"/>
+        <result property="totalRatings" column="total_ratings"/>
+        <result property="userId" column="user_id"/>
+
+        <!-- 关联 User -->
+        <association property="user" javaType="com.rateverse.bean.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="email" column="email"/>
+            <result property="passwordHash" column="password_hash"/>
+            <result property="avatarUrl" column="avatar_url"/>
+            <result property="createdAt" column="created_at"/>
+            <result property="updatedAt" column="updated_at"/>
+        </association>
+    </resultMap>
+
+
+    <!-- 主页点击单个Topic时用 (路径中携带着id，用id查询这个) -->
+    <select id="selectTopicByIdWithUser" resultMap="TopicResultMapWithUser">
+        SELECT
+            t.*,
+            u.id AS user_id, u.username, u.email, u.password_hash,
+            u.avatar_url, u.created_at, u.updated_at
+        FROM topic t
+        LEFT JOIN user u ON t.user_id = u.id
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 主页中显示所有Topic，根据创建的时间 -->
+    <select id="selectAllByTime" resultMap="TopicResultMapWithItems">
+        select
+            t.id, t.title, t.description, t.user_id,
+            t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+            i.id as item_id, i.topic_id, i.name, i.description as item_description,
+            i.average_rating, i.total_ratings as item_total_ratings,
+            i.total_comments as item_total_comments, i.created_at as item_created_at, i.updated_at as item_updated_at
+        from `topic` t
+        left join `item` i on t.id = i.topic_id
+        order by t.created_at desc
     </select>
 </mapper>

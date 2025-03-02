@@ -1,6 +1,7 @@
 package com.rateverse.mapper;
 
 import com.rateverse.bean.Topic;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface TopicMapper {
     // ==================== CRUD 操作 ====================
-    // 增加topic
+    // 增加topic (返回自增长id)
     int insertTopic(Topic topic);
 
     // 删除topic (根据id)
@@ -21,10 +22,23 @@ public interface TopicMapper {
     // 更新主题信息
     int updateTopic(Topic topic);
 
+    // 更新主题的总评论数
+    int updateTotalComments(Integer topicId, Integer totalComments);
+
+    // 更新主题的总评分人数
+    int updateTotalRatings(@Param("topicId") Integer topicId, @Param("totalRatings") Integer totalRatings);
+
 
     // ==================== 查询操作 ====================
     // 查询主题 (根据主题的id)
-    Topic selectTopicById(Integer id);
+    Topic selectTopicByIdWithUser(Integer id);
+
+    // 查询所有主题 (按时间排序 最新的先出现) (分页)
+    List<Topic> selectAllByTime();
+
+
+    // 查询所有主题 (按热度排序)
+
 
     // 查询主题 (根据userId) (未来最好改成分页查询)
     List<Topic> selectTopicByUserId(Integer id);

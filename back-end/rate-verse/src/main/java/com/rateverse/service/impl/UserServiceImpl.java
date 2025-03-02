@@ -3,7 +3,6 @@ package com.rateverse.service.impl;
 import com.rateverse.bean.User;
 import com.rateverse.mapper.UserMapper;
 import com.rateverse.service.UserService;
-import com.rateverse.utils.RegexUtil;
 import com.rateverse.utils.Result;
 import com.rateverse.utils.ResultCodeEnum;
 import jakarta.servlet.http.Cookie;

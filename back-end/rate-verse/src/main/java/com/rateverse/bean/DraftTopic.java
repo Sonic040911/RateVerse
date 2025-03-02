@@ -14,7 +14,7 @@ import java.util.Date;
 public class DraftTopic {
     private Integer draftId;     // 草稿ID
     private Integer userId;      // 用户ID
-    private String title;        // 草稿标题Z
+    private String title;        // 草稿标题
     private String description;  // 草稿描述
     private Date createdAt;      // 创建时间
 }

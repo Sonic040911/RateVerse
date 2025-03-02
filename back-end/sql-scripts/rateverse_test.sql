@@ -23,6 +23,11 @@ CREATE TABLE topic (
     FOREIGN KEY (user_id) REFERENCES USER(id)
 );
 
+-- 在 topic 表中添加统计字段，减少实时计算压力：
+ALTER TABLE topic 
+ADD COLUMN total_ratings INT DEFAULT 0 COMMENT '总评分人数',
+ADD COLUMN total_comments INT DEFAULT 0 COMMENT '总评论数';
+
 
 CREATE TABLE item (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -93,15 +98,35 @@ CREATE TABLE draft_topic (
 
 CREATE TABLE draft_item (
     draft_item_id INT PRIMARY KEY AUTO_INCREMENT,
-    draft_topic_id INT NOT NULL COMMENT '关联的草稿主题ID',
-    NAME VARCHAR(200) NOT NULL COMMENT '评分项名称',
-    description TEXT COMMENT '评分项描述',
-    image_url VARCHAR(255) COMMENT '图片URL',
-    created_at DATETIME DEFAULT NOW() COMMENT '创建时间',
+    draft_topic_id INT NOT NULL,
+    NAME VARCHAR(200) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    created_at DATETIME DEFAULT NOW(),
     FOREIGN KEY (draft_topic_id) REFERENCES draft_topic(draft_id)
 );
 
 
+SELECT * FROM `user`;
+SELECT * FROM draft_topic;
+SELECT * FROM draft_item;
+SELECT * FROM topic;
+SELECT * FROM item;
+SELECT draft_id FROM draft_topic WHERE user_id = 13
 
 
+DELETE FROM `draft_topic`;
+DELETE FROM `draft_item`;
+DELETE FROM `topic`;
+DELETE FROM `item`;
 
+
+SELECT
+        t.id, t.title, t.description, t.user_id,
+        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+        i.average_rating, i.total_ratings AS item_total_ratings,
+        i.total_comments AS item_total_comments, i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM `topic` t
+        LEFT JOIN `item` i ON t.id = i.topic_id
+        ORDER BY t.created_at DESC
