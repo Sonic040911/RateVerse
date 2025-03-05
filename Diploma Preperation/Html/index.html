@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RateVerse - Home</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <body class="text-lg">
+        
+        <header class="w-full bg-[#3D3A74]">
+            <div class="container mx-auto flex justify-between items-center mb-8 p-4">
+                <div class="flex gap-2 items-center">
+                    <img src="/public/logo.svg" alt="Logo" class="w-16 h-16 object-cover">
+                    <span class="text-4xl font-extrabold text-white">RateVerse</span>
+                </div>
+                
+                <nav>
+                    <ul class="flex gap-6 text-white text-lg">
+                        <li>
+                            <a href="/" class="border-b-2 border-white">Home</a>
+                        </li>
+        
+                        <li>
+                            <a href="/#">Sections</a>
+                        </li>
+        
+                        <li>
+                            <a href="/#">Score</a>
+                        </li>
+        
+                        <li>
+                            <a href="/#">Ranking</a>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <div class="flex gap-4 items-center">
+                    <input type="text" placeholder="Search" class="py-2 px-4 rounded-full border border-white text-black">
+                    <button class="bg-none">
+                        <img src="https://img.icons8.com/material-outlined/24/ffffff/alarm--v1.png" />
+                    </button>
+                    <img src="https://img.icons8.com/?&id=7819&format=png&color=ffffff" alt="">
+                </div>
+        
+            </div>
+        </header>
+
+
+        <div class="container mx-auto">
+            <div class="p-4 rounded-lg shadow-md bg-[#E8EAF6]">
+                <div class="w-full flex items-center gap-2">
+                    <img src="https://img.icons8.com/?size=48&id=18515&format=png&color=000000" alt="">
+                    <p class="font-bold">Ranking Board</p>
+                    <button class="ml-auto flex items-center gap-2 rounded-full bg-[#3D3A74] py-1 px-4 text-white">
+                        All list
+                        <img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffffff" alt="">
+                    </button>
+                </div>
+
+                <div id="tags" class="w-full flex gap-4 my-4">
+                </div>
+
+                <div id="list" class="w-full flex gap-4">
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-8">
+
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Recomended for you</h2>
+            <div class="p-4 rounded-lg shadow-md bg-[#E8EAF6]">
+                <div id="gameList" class="flex flex-col gap-4"></div>
+            </div>
+        </div>
+
+        <button class="mx-auto my-8 flex items-center gap-2 rounded-full bg-[#3D3A74] py-1 px-4 text-white">
+            Show more
+            <img src="https://img.icons8.com/?size=16&id=99991&format=png&color=ffffff" alt="">
+        </button>
+
+        <button
+            id="addObject"
+            class="fixed right-10 bottom-10 bg-red-600 text-white rounded-full p-2 flex items-center justify-center shadow-lg hover:bg-red-700">
+            <img src="https://img.icons8.com/?size=24&id=3220&format=png&color=ffffff" alt="">
+        </button>
+
+        <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+                <h2 class="text-2xl font-bold text-center mb-4">Add Object</h2>
+                
+                <label class="block font-medium">Enter the object name</label>
+                <input type="text" placeholder="Enter name..." class="w-full border border-gray-300 p-2 rounded-md mt-1 mb-4">
+                
+                <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                    <h3 class="text-center font-medium mb-2">Add object cover</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button
+                            class="flex flex-col items-center justify-center bg-white p-4 rounded-md border border-gray-300 hover:bg-gray-200">
+                            <img src="https://img.icons8.com/ios/50/camera--v1.png" alt="Find Pictures">
+                            <span class="text-sm mt-2">Help you find pictures</span>
+                        </button>
+                        <button
+                            class="flex flex-col items-center justify-center bg-white p-4 rounded-md border border-gray-300 hover:bg-gray-200">
+                            <img src="https://img.icons8.com/ios/50/upload.png" alt="Upload">
+                            <span class="text-sm mt-2">Upload from device</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <label class="block font-medium">Description (optional)</label>
+                <input type="text" placeholder="Enter description..."
+                    class="w-full border border-gray-300 p-2 rounded-md mt-1 mb-4">
+                    
+                <div class="flex justify-between">
+                    <button id="closeModal"
+                        class="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400">Cancel</button>
+                    <button class="bg-[#3D3A74] text-white py-2 px-6 rounded-md hover:bg-indigo-800">Save</button>
+                </div>
+            </div>
+        
+        </div>
+        
+        <footer class="bg-[#3D3A74] text-white py-10">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold">RateVerse</h2>
+                    <p class="text-sm mt-2">Elevate Your Advertisement, Optimize Your Impact</p>
+                    <div class="flex gap-4 mt-4">
+                        <a href="#" class="p-3 bg-yellow-400 rounded-full"><img src="https://img.icons8.com/ios-filled/24/ffffff/facebook--v1.png" alt="Facebook"></a>
+                        <a href="#" class="p-3 bg-yellow-400 rounded-full"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new.png" alt="Instagram"></a>
+                        <a href="#" class="p-3 bg-yellow-400 rounded-full"><img src="https://img.icons8.com/ios-filled/24/ffffff/twitter.png" alt="Twitter"></a>
+                        <a href="#" class="p-3 bg-yellow-400 rounded-full"><img src="https://img.icons8.com/ios-filled/24/ffffff/youtube-play.png" alt="YouTube"></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold mb-3">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Home</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> About Us</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Top Ratings</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Create Rating</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Search & Categories</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold mb-3">Statistics</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Trending Ratings</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 flex items-center gap-2 hover:gap-4 transition-all duration-300"><img src="https://img.icons8.com/?size=16&id=98967&format=png&color=ffee58" alt=""> Leaderboards</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold mb-3">Contact</h3>
+                    <p class="flex items-center gap-2">
+                        <img src="https://img.icons8.com/ios-filled/20/FFD700/marker.png" alt="Location">
+                        44 Danwers, NY City, USA, 70-102
+                    </p>
+                    <p class="flex items-center gap-2 mt-2">
+                        <img src="https://img.icons8.com/ios-filled/20/FFD700/email.png" alt="Email">
+                        <a href="mailto:Lamaro@Lamaroyc.Us">Lamaro@Lamaroyc.Us</a>
+                    </p>
+                    <p class="flex items-center gap-2 mt-2">
+                        <img src="https://img.icons8.com/ios-filled/20/FFD700/phone.png" alt="Phone">
+                        91+585-656-658
+                    </p>
+                </div>
+        
+            </div>
+        
+            <div class="text-center mt-8 text-sm">
+                © 2025 RateVerse – The Best Ratings in One Place!
+            </div>
+        </footer>
+
+        <script src="script.js"></script>
+    </body>
+</html>
