@@ -1,3 +1,4 @@
+/*js code for 5 stars rating*/ 
 const ratings = document.querySelectorAll('.my-rating');
 
 ratings.forEach(rating => {
@@ -23,7 +24,7 @@ ratings.forEach(rating => {
   }
 });
 
-
+/*js code for like and dislike*/ 
 document.querySelectorAll(".comment-footer").forEach(footer => {
   const likeBtn = footer.querySelector(".like-btn");
   const dislikeBtn = footer.querySelector(".dislike-btn");
@@ -38,3 +39,33 @@ document.querySelectorAll(".comment-footer").forEach(footer => {
       likeBtn.classList.remove("active");
   });
 });
+
+/*js code for modal window(share button)*/
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modal");
+  const shareBtn = document.querySelector(".share-btn");
+  const closeBtn = document.querySelector(".close");
+  const copyBtn = document.getElementById("copy-btn");
+  const shareUrl = document.getElementById("share-url");
+
+  shareBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+  });
+
+  closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+          modal.style.display = "none";
+      }
+  });
+
+  copyBtn.addEventListener("click", () => {
+      shareUrl.select();
+      document.execCommand("copy");
+      alert("Link copied!");
+  });
+});
+

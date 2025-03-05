@@ -190,12 +190,12 @@
                 <div class="comment-input">
                     <input class="write-comment" type="text" placeholder="Write a comment...">
                     <button class="smile-btn"><img src="/assets/smile.svg" alt="smile" class="smile"></button>
-                    <button class="gallery-btn"><img src="/assets/gallery.svg" alt="gallery" class="gallery">
+                    <button class="gallery-btn"><img src="/assets/gallery.svg" alt="gallery" class="gallery"></button>
+                    <button class="send-btn"><img src="/assets/send button.svg" alt="send-button" class="send-comment"></button>
                 </div>
-                <button class="send-btn"><img src="/assets/Vector 1.svg" alt="send icon" class="send"></button>
+                <button class="share-btn"><img src="/assets/Vector 1.svg" alt="share icon" class="share"></button>
             </div>
         </div>
-        
     </main>
     <footer>
         <div class="foot">
@@ -236,7 +236,32 @@
             © 2025 RateVerse – The Best Ratings in One Place!
         </div>
     </footer>
-    
+
+    <!--Start Modal page-->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="text-share">
+                <h2 class="modal-title">Share</h2>
+                <p classs="info-share">Share the link via social networks or messengers</p>
+            </div>
+            <div class="share-social">
+                <a href="#"><img src="/assets/WhatsApp_icon.svg" alt="WhatsApp"></a>
+                <a href="#"><img src="/assets/Facebook_icon.svg" alt="Facebook"></a>
+                <a href="#"><img src="/assets/Instagram_icon.svg" alt="Instagram"></a>
+                <a href="#"><img src="/assets/Telegram_icon.svg" alt="Telegram"></a>
+                <a href="#"><img src="/assets/Twitter_icon.svg" alt="Twitter"></a>
+                <a href="#"><img src="/assets/Gmail_icon.svg" alt="Gmail"></a>
+                <a href="#"><img src="/assets/Vk_icon.svg" alt="Vk"></a>
+                <a href="#"><img src="/assets/Tiktok_icon.svg" alt="Tiktok"></a>
+            </div>
+            <div class="share-link">
+                <input type="text" value="http://127.0.0.1:5500/Html/Comment.html" id="share-url" readonly>
+                <button id="copy-btn">Copy</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/JavaScript/Comment.js"></script>
 </body>
 </html>
