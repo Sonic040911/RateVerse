@@ -1,0 +1,123 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rateverse.mapper.CommentMapper">
+    <!-- 插入评论 -->
+    <insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comment (
+        user_id, item_id, parent_comment_id,
+        content, likes, dislikes, created_at, updated_at
+        ) VALUES (
+        #{userId}, #{itemId}, #{parentCommentId},
+        #{content}, 0, 0, NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 删除评论 -->
+    <delete id="deleteComment">
+        DELETE FROM comment WHERE id = #{commentId}
+    </delete>
+
+    <!-- 更新评论内容 -->
+    <update id="updateContent">
+        UPDATE comment
+        SET content = #{content}, updated_at = NOW()
+        WHERE id = #{commentId}
+    </update>
+
+    <!-- 根据ID查询评论 -->
+    <select id="selectById" resultType="com.rateverse.bean.Comment">
+        SELECT * FROM comment WHERE id = #{commentId}
+    </select>
+
+    <!-- 按点赞数排序 (只返回顶级评论，连接Rating表获得该评论用户对它的评分，连接User表获得用户信息) -->
+    <select id="selectByItemIdOrderByLikes" resultMap="CommentResultMap">
+        SELECT
+        c.*,
+        r.score AS userRating,
+        u.username,
+        u.avatar_url
+        FROM comment c
+        LEFT JOIN rating r ON c.user_id = r.user_id AND c.item_id = r.item_id
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.item_id = #{itemId} AND c.parent_comment_id IS NULL
+        ORDER BY likes DESC, created_at DESC
+    </select>
+
+    <!-- 按时间排序 (只返回顶级评论，连接Rating表获得该评论用户对它的评分，连接User表获得用户信息) -->
+    <select id="selectByItemIdOrderByTime" resultMap="CommentResultMap">
+        SELECT
+        c.*,
+        r.score AS userRating,
+        u.username,
+        u.avatar_url
+        FROM comment c
+        LEFT JOIN rating r ON c.user_id = r.user_id AND c.item_id = r.item_id
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.item_id = #{itemId} AND c.parent_comment_id IS NULL
+        ORDER BY c.created_at DESC
+    </select>
+
+    <!-- 查询子评论 -->
+    <select id="selectChildrenByParentId" resultMap="CommentResultMap">
+        SELECT
+        c.*,
+        r.score AS userRating,
+        u.username,
+        u.avatar_url
+        FROM comment c
+        LEFT JOIN rating r ON c.user_id = r.user_id AND c.item_id = r.item_id
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.parent_comment_id = #{parentCommentId}
+        ORDER BY created_at ASC
+    </select>
+
+    <!-- 统计评论数 根据item_id -->
+    <select id="countByItem" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM comment
+        WHERE item_id = #{itemId}
+    </select>
+
+    <!-- 统计评论数 根据topic_id -->
+    <select id="countByTopic" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM comment c
+        JOIN item i ON c.item_id = i.id
+        WHERE i.topic_id = #{topicId}
+    </select>
+
+    <!-- 点赞/点踩原子操作 -->
+    <update id="incrementLikes">
+        UPDATE comment SET likes = likes + 1 WHERE id = #{commentId}
+    </update>
+
+    <update id="decrementLikes">
+        UPDATE comment SET likes = GREATEST(likes - 1, 0) WHERE id = #{commentId}
+    </update>
+
+    <update id="incrementDislike">
+        UPDATE comment SET dislikes = dislikes + 1 WHERE id = #{commentId}
+    </update>
+
+    <update id="decrementDislike">
+        UPDATE comment SET dislikes = GREATEST(dislikes - 1, 0) WHERE id = #{commentId}
+    </update>
+
+    <!-- ResultMap 用于映射 Comment、User 和 userRating -->
+    <resultMap id="CommentResultMap" type="com.rateverse.bean.Comment">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="parentCommentId" column="parent_comment_id"/>
+        <result property="content" column="content"/>
+        <result property="likes" column="likes"/>
+        <result property="dislikes" column="dislikes"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="userRating" column="userRating"/> <!-- 从 Rating 表获取 -->
+        <association property="user" javaType="com.rateverse.bean.User">
+            <result property="username" column="username"/>
+            <result property="avatarUrl" column="avatar_url"/>
+        </association>
+    </resultMap>
+</mapper>

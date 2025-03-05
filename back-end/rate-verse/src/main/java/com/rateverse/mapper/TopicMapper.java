@@ -23,7 +23,7 @@ public interface TopicMapper {
     int updateTopic(Topic topic);
 
     // 更新主题的总评论数
-    int updateTotalComments(Integer topicId, Integer totalComments);
+    int updateTotalComments(@Param("topicId") Integer topicId, @Param("totalComments") Integer totalComments);
 
     // 更新主题的总评分人数
     int updateTotalRatings(@Param("topicId") Integer topicId, @Param("totalRatings") Integer totalRatings);

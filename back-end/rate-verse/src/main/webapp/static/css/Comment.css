@@ -63,7 +63,7 @@ nav ul li {
     list-style: none;
 }
 
-.active { 
+.active {
     color: #FFFFFF;
     border-bottom: 3px solid #FFFFFF;
 }
@@ -255,13 +255,13 @@ main {
     display: inline-block;
     font-size: 35px;
 }
-  
+
 .my-star-rating .my-star {
     color: #ccc;
     cursor: pointer;
     transition: color 0.3s ease;
 }
-  
+
 .my-star-rating .my-star.active {
     color: gold;
     border: none;
@@ -627,6 +627,40 @@ main {
     margin-top: -3%;
 }
 
+<<<<<<< Updated upstream:back-end/rate-verse/src/main/webapp/Diploma Preperation/CSS/Comment.css
+=======
+<<<<<<< HEAD:back-end/rate-verse/src/main/webapp/static/css/Comment.css
+/* 在 Comment.css 末尾添加 */
+.reply-input {
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9em;
+}
+
+.submit-reply {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.8em;
+}
+
+.submit-reply:hover {
+    background-color: #0056b3;
+}
+
+.reply {
+    margin-left: 50px; /* 增加缩进 */
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+=======
+>>>>>>> Stashed changes:back-end/rate-verse/src/main/webapp/static/css/Comment.css
 /*Start Modal page*/
 .modal {
     display: none;
@@ -722,4 +756,8 @@ main {
 
 .share-link button:hover {
     background: #0056b3;
+<<<<<<< Updated upstream:back-end/rate-verse/src/main/webapp/Diploma Preperation/CSS/Comment.css
+=======
+>>>>>>> b36b2331da9ebb4b840f3fd32d55ec5ed0493e9c:back-end/rate-verse/src/main/webapp/Diploma Preperation/CSS/Comment.css
+>>>>>>> Stashed changes:back-end/rate-verse/src/main/webapp/static/css/Comment.css
 }

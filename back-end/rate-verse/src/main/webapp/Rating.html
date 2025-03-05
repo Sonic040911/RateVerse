@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ratings</title>
+    <link rel="stylesheet" href="static/css/Rating.css">
+</head>
+<body>
+<header>
+    <div class="rateverse-logo">
+        <img class="logo" src="static/assets/logo.svg" alt="logo">
+        <span class="rateverse">Rateverse</span>
+    </div>
+    <nav>
+        <ul>
+            <li><a class="active" href="#">Home</a></li>
+            <li><a href="#">Sections</a></li>
+            <li><a href="#">Score</a></li>
+            <li><a href="#">Ranking</a></li>
+        </ul>
+    </nav>
+    <div class="search-bar">
+        <input class="search-input" type="text" placeholder="Search">
+        <button class="search-logo"><img src="static/assets/Search1.svg" alt="search logo"></button>
+    </div>
+    <img class="notification" src="static/assets/notification.svg" alt="notification">
+    <img class="profile" src="static/assets/profile.svg" alt="profile">
+</header>
+
+<main class="container">
+    <section class="category">
+        <img class="img-category" src="static/assets/Block_with_X(2).svg" alt="category-image">
+        <div class="info-category">
+            <h1 class="name-category"></h1> <!-- 动态填充 title -->
+            <p class="description-category"></p> <!-- 动态填充 description -->
+            <p class="user-create"><img class="user-img" src="static/assets/User.svg" alt="user account"></p> <!-- 动态填充 username -->
+        </div>
+    </section>
+
+    <div class="filter">
+        <div>
+            <p class="all-ratings">All Ratings</p>
+        </div>
+        <div class="filter-buttons">
+            <button class="type-button">Popular</button>
+            <button class="type-button">Up to date</button>
+            <button class="type-button">High Score</button>
+            <button class="type-button">Low Score</button>
+        </div>
+    </div>
+
+    <section class="ratings">
+        <!-- 动态插入 Item 卡片 -->
+        <div class="more-ratings">
+            <button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="">Show More</button>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="foot">
+        <div class="footer-column">
+            <h2>RateVerse</h2>
+            <p>Elevate Your Advertisement. Optimize Your Impact</p>
+            <div class="social-icons">
+                <a href="#"><img src="static/assets/face%20book.svg" alt="Facebook"></a>
+                <a href="#"><img src="static/assets/Instagram.svg" alt="Instagram"></a>
+                <a href="#"><img src="static/assets/twitter1.svg" alt="Twitter"></a>
+                <a href="#"><img src="static/assets/youtub.svg" alt="Youtube"></a>
+            </div>
+        </div>
+
+        <div class="footer-navigation">
+            <div class="footer-links">
+                <h3>Quick Link</h3>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Home</a>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">About Us</a>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Top Ratings</a>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Create Rating</a>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Search & Categories</a>
+            </div>
+            <div class="footer-statistics">
+                <h3>Statistics</h3>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Trending Ratings</a>
+                <a href="#"><img src="static/assets/mask13.svg" alt="mask">Leaderboards</a>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact</h3>
+                <p><img src="static/assets/home.svg" alt="address"> 44 Danwers, NY City, USA, 70-102</p>
+                <p><img src="static/assets/email.svg" alt="email"> Lamaro@Lamaroyc.Us</p>
+                <p><img src="static/assets/phone-number.svg" alt="phone-number"> 91+585-656-658</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2025 RateVerse – The Best Ratings in One Place!
+    </div>
+</footer>
+
+<script src="static/js/Rating.js"></script>
+</body>
+</html>

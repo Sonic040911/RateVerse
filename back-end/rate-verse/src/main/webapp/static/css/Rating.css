@@ -425,3 +425,112 @@ body {
     font-size: 1em;
     margin-top: -3%;
 }
+
+<<<<<<< HEAD:back-end/rate-verse/src/main/webapp/static/css/Rating.css
+.star {
+    color: #ccc; /* 空星颜色 */
+}
+.star.light {
+    color: #ffd700; /* 满星颜色（例如金色） */
+}
+.star.half {
+    color: #ffd700; /* 半星颜色 */
+    /* 可选：使用渐变或裁剪来显示半星 */
+=======
+/*Start Modal page*/
+.modal {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+>>>>>>> b36b2331da9ebb4b840f3fd32d55ec5ed0493e9c:back-end/rate-verse/src/main/webapp/Diploma Preperation/CSS/Create.css
+}
+
+.rating-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.rating-info {
+    display: flex;
+}
+
+.img-rating {
+    width: 50px;
+    height: 50px;
+}
+
+.name-desc {
+    margin-left: 10px;
+}
+
+.game-info {
+    text-align: right;
+    min-width: 120px; /* 固定右侧宽度 */
+}
+
+.score {
+    font-size: 1.5em; /* 增大分数文字 */
+    margin: 8px 0;
+}
+
+.star-rating {
+    color: #ffd700;
+}
+
+.interactive-stars .star {
+    cursor: pointer;
+    color: #ccc;
+    font-size: 20px;
+}
+
+/* 保持原有样式，只修改以下部分 */
+.interactive-stars {
+    display: inline-block;
+    font-size: 36px; /* 原为 25px → 增大到 36px */
+    line-height: 1;  /* 防止行高影响对齐 */
+}
+
+.interactive-stars .star {
+    cursor: pointer;
+    color: #ccc; /* 空星颜色 */
+    margin-right: 5px; /* 增加星级之间的间距 */
+}
+
+.interactive-stars .star {
+    cursor: pointer;
+    color: #ccc;
+    margin-right: 8px; /* 增大星星间距 */
+    transition: all 0.2s ease; /* 添加过渡动画 */
+}
+
+.interactive-stars .star.light {
+    color: #ffd700;
+    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3); /* 增强立体感 */
+}
+
+.interactive-stars .star.half {
+    position: relative;
+    background: linear-gradient(90deg, #ffd700 50%, #ccc 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* 悬停效果优化 */
+.interactive-stars .star:hover {
+    transform: scale(1.1); /* 悬停时轻微放大 */
+}
+
+.interactive-stars .star:hover,
+.interactive-stars .star:hover:before {
+    color: #ffd700;
+}

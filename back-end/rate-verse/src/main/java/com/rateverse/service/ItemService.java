@@ -13,4 +13,6 @@ public interface ItemService {
     Result getItemsByTopicId(int topicId, int pageSize, int currentPage);
 
     Result getItemById(int itemId);
+
+    Result getItemByIdWithStats(Integer itemId);
 }

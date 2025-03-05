@@ -22,7 +22,7 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
-    // 在主页中按照事件排序返回所有Topic (分页)
+    // 在主页中按照时间排序返回所有Topic (Topic中包含List<Item>)
     @GetMapping("/getAllByTime/{pageSize}/{currentPage}")
     public Result getAllTopicsByTime(@PathVariable int pageSize,
                                      @PathVariable int currentPage) {

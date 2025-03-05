@@ -1,6 +1,7 @@
 package com.rateverse.mapper;
 
 import com.rateverse.bean.Rating;
+import com.rateverse.bean.ScoreDistribution;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface RatingMapper {
 
 
     // 删除评分 (用户撤销评分)
-    int deleteRating(int userId, int itemId);
+    int deleteRating(@Param("userId") int userId, @Param("itemId") int itemId);
 
 
     // ==================== 查询操作 ====================
@@ -48,4 +49,8 @@ public interface RatingMapper {
 
     // 统计某个 Topic 下去重的评分用户数 (一共有多少个人评价了这个Topic，而不是Topic里面的Items)
     Integer countDistinctUsersByTopicId(Integer topicId);
+
+
+    // 获取评分项的评分分布数据
+    List<ScoreDistribution> selectScoreDistributionByItem(Integer itemId);
 }

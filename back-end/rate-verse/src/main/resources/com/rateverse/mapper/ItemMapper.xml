@@ -40,6 +40,10 @@
         select * from item where topic_id = #{topicId} order by created_at desc
     </select>
 
+    <select id="getTopicIdByItemId" resultType="java.lang.Integer">
+        select topic_id from item where id = #{itemId}
+    </select>
+
 
     <!-- 更新评分统计信息 -->
     <update id="updateRatingStats">

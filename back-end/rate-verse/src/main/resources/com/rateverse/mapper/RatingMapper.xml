@@ -54,4 +54,16 @@
         JOIN item i ON r.item_id = i.id
         WHERE i.topic_id = #{topicId}
     </select>
+
+    <!-- 获取评分项的评分分布数据 -->
+    <select id="selectScoreDistributionByItem" resultType="com.rateverse.bean.ScoreDistribution">
+        SELECT
+            score,
+            COUNT(*) AS count,
+            (COUNT(*) / (SELECT COUNT(*) FROM rating WHERE item_id = #{itemId})) * 100 AS percentage
+        FROM rating
+        WHERE item_id = #{itemId}
+        GROUP BY score
+        ORDER BY score DESC
+    </select>
 </mapper>

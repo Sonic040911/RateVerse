@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home page</title>
-    <link rel="stylesheet" href="Home.css">
+    <link rel="stylesheet" href="static/css/Home.css">
 </head>
 
 <body>
@@ -16,7 +16,6 @@
             <li><a href="#">Sections</a></li>
             <li><a href="#">Score</a></li>
             <li><a href="#">Ranking</a></li>
-
             <!-- Create Button (For Test) -->
             <li><button id="createBtn">Create Topic</button></li>
         </ul>
@@ -24,7 +23,12 @@
     <input type="text" placeholder="Search">
 </header>
 
-<script src="static/js/Home.js"></script>
+<!-- Topic 列表容器 -->
+<div id="topicList" class="topic-list"></div>
 
+<!-- 分页控件 -->
+<div id="pagination" class="pagination"></div>
+
+<script src="static/js/Home.js"></script>
 </body>
 </html>

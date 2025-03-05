@@ -33,6 +33,8 @@ public interface ItemMapper {
     // 查询一堆评分项 (根据topic_id) (分页)
     List<Item> selectItemsByTopicId(Integer topicId);
 
+    Integer getTopicIdByItemId(Integer id);
+
 
     // ==================== 统计与更新操作 ====================
     // 更新评分项的评分统计信息 (平均评分，总评分人数)

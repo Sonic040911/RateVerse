@@ -71,6 +71,18 @@ CREATE TABLE `comment` (
 );
 
 
+CREATE TABLE comment_like (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    comment_id INT NOT NULL,
+    action_type ENUM('like', 'dislike') NOT NULL,
+    UNIQUE KEY unique_user_comment_action (user_id, comment_id, action_type)
+);
+
+
+ALTER TABLE COMMENT 
+ADD COLUMN dislike INT DEFAULT 0 COMMENT '点踩数';
+
 CREATE TABLE tag (
     id INT PRIMARY KEY AUTO_INCREMENT,
     NAME VARCHAR(50) UNIQUE NOT NULL        -- 标签名称（如“鼠标”）

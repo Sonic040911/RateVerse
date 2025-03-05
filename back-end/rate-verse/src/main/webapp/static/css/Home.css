@@ -1,41 +1,113 @@
-
-
-* {
+/* 基础样式 */
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-body {
-    font-family: "Montserrat", serif;
-    font-weight: 300;
-}
-
-a {
-    text-decoration: none;
-}
-
-img {
-    max-width: 100%;
-}
-
 .container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    width: 1400px;
-    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+}
+
+.rateverse {
+    font-size: 24px;
+    font-weight: bold;
 }
 
 nav ul {
+    list-style: none;
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    gap: 20px;
 }
 
-input {
-    width: 300px;
-    height: 38px;
-    border-radius: 18.5px;
-    background-color: #3B567D;
-    border-color: #3B567D;
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+}
+
+nav ul li.active a {
+    color: #007bff;
+}
+
+input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Topic 列表样式 */
+.topic-list {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.topic-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: box-shadow 0.3s;
+}
+
+.topic-card:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.topic-card h2 {
+    margin: 0 0 10px;
+    font-size: 20px;
+}
+
+.topic-card p {
+    margin: 5px 0;
+}
+
+.items {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.item {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.item h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+}
+
+.item p {
+    margin: 0;
+}
+
+/* 分页控件样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
 }

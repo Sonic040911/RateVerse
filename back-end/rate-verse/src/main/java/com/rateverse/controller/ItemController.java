@@ -22,6 +22,7 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
+
     @GetMapping("/getItemsByTopicId/{topicId}/{pageSize}/{currentPage}")
     public Result getItemsByTopicId(@PathVariable int topicId,
                                     @PathVariable int pageSize,
@@ -34,7 +35,19 @@ public class ItemController {
         return result;
     }
 
+    // 获取Item详细 (包含评分分布)
+    @GetMapping("/status/{itemId}")
+    public Result getItemByIdWithStats(@PathVariable Integer itemId) {
+        Result result = itemService.getItemByIdWithStats(itemId);
 
+        System.out.println("===========log.info============");
+        log.info("用户打开的Item为: {}", result);
+
+        return result;
+    }
+
+
+    // 暂时不用这个
     @GetMapping("{itemId}")
     public Result getItemById(@PathVariable int itemId) {
         Result result = itemService.getItemById(itemId);

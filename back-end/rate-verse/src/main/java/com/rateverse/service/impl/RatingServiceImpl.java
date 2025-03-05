@@ -1,10 +1,11 @@
-package com.rateverse.service;
+package com.rateverse.service.impl;
 
 import com.rateverse.bean.Item;
 import com.rateverse.bean.Rating;
 import com.rateverse.mapper.ItemMapper;
 import com.rateverse.mapper.RatingMapper;
 import com.rateverse.mapper.TopicMapper;
+import com.rateverse.service.RatingService;
 import com.rateverse.utils.Result;
 import com.rateverse.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,10 @@ public class RatingServiceImpl implements RatingService {
         }
 
         // 查询是否已存在评分
-        Rating isExists = ratingMapper.getUserRating(rating.getUserId(), rating.getItemId());
+        Rating existingRating = ratingMapper.getUserRating(rating.getUserId(), rating.getItemId());
 
         // 如果评分已存在，那就更新用户的评分
-        if (isExists != null) {
+        if (existingRating != null) {
             ratingMapper.updateRating(rating);
         }
         // 如果不存在，则添加评分
