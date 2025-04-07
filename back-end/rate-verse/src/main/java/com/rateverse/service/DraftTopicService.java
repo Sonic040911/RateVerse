@@ -13,7 +13,7 @@ public interface DraftTopicService {
     Result createDraft(Integer userId);
 
     // 实时更新用户的草稿
-    Result updateDraftInfo(Integer draftId, String title, String description);
+    Result updateDraftInfo(Integer draftId, String title, String description, Integer userId);
 
     // 显示用户之前保存的草稿，如果没有则显示空
     Result getDraftWithCheck(Integer draftId, Integer userId);

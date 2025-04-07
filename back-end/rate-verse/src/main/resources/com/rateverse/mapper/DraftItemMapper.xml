@@ -22,4 +22,12 @@
         SELECT draft_item_id, draft_topic_id, name, description, image_url, created_at
             FROM draft_item WHERE draft_topic_id = #{draftTopicId}
     </select>
+
+    <select id="selectDraftTopicByDraftItemId" resultType="com.rateverse.bean.DraftTopic">
+        select dt.* from
+            draft_item di
+            left join draft_topic dt
+            on di.draft_topic_id = dt.draft_id
+            where di.draft_topic_id = #{id}
+    </select>
 </mapper>

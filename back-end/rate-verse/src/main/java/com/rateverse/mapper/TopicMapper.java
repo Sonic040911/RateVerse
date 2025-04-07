@@ -37,7 +37,9 @@ public interface TopicMapper {
     List<Topic> selectAllByTime();
 
 
-    // 查询所有主题 (按热度排序)
+    // 查询所有主题 (按热度排序) (分页)
+    List<Topic> selectAllByHeat();
+
 
 
     // 查询主题 (根据userId) (未来最好改成分页查询)
@@ -48,4 +50,6 @@ public interface TopicMapper {
 
     // 根据标题关键词搜索主题
     List<Topic> searchTopicsByTitle(String keyword);
+
+    List<Topic> selectByKeyword(String keyword);
 }

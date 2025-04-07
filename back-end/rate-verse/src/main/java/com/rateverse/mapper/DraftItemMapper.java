@@ -1,6 +1,7 @@
 package com.rateverse.mapper;
 
 import com.rateverse.bean.DraftItem;
+import com.rateverse.bean.DraftTopic;
 
 import java.util.List;
 
@@ -22,4 +23,7 @@ public interface DraftItemMapper {
 
     // 根据草稿主题ID删除所有评分项
     int deleteDraftItemsByTopicId(Integer draftTopicId);
+
+    // 根据草稿评分项的id查询草稿主题
+    DraftTopic selectDraftTopicByDraftItemId(Integer draftItemId);
 }

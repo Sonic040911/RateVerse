@@ -117,10 +117,12 @@
                 </div>
                 <div class="cover-option">
                     <img src="static/assets/upload_image.svg" alt="Upload from device">
-                    <p>Upload from device</p>
+                    <p id="upload-from-device">Upload from device</p>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
                 </div>
             </div>
         </div>
+        <input type="hidden" id="image-url">
 
         <div class="descriptions">
             <label for="object-description">Description (optional)</label>

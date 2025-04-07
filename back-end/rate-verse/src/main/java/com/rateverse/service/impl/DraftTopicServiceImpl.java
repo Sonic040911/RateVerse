@@ -21,7 +21,7 @@ import java.util.List;
  * Project Name: rate-verse
  *
  * @author: Sonic
- * @description:
+ * @description: 草稿的业务层
  */
 @Service
 @Transactional
@@ -42,7 +42,7 @@ public class DraftTopicServiceImpl implements DraftTopicService {
     // 根据user_id临时创建一个DraftTopic在数据库
     @Override
     public Result createDraft(Integer userId) {
-        // 如果该用户已经有一个draft，就不能再创建一个了，返回这个draft (疑问, 未来解决)
+        // 如果该用户已经有一个draft，就不能再创建一个了，返回这个draft
         DraftTopic oldDraftTopic = draftTopicMapper.selectDraftTopicIdByUserId(userId);
         if (oldDraftTopic != null) {
             return Result.ok(oldDraftTopic, ResultCodeEnum.HAD_DRAFT);
@@ -52,25 +52,29 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         DraftTopic draftTopic = new DraftTopic();
         draftTopic.setUserId(userId);
 
-        // 在数据库中插入数据
-        int row = draftTopicMapper.insertDraftTopic(draftTopic);
+        // 在数据库中插入一个草稿
+        draftTopicMapper.insertDraftTopic(draftTopic);
 
-        if (row == 0) {
-            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
-        }
-
-        // 得到新创建的草稿的id，很重要！
+        // 得到新创建的草稿的id，返回给前端
         draftTopic.setDraftId(draftTopic.getDraftId());
 
         return Result.ok(draftTopic, ResultCodeEnum.SUCCESS);
     }
 
+
     // 显示用户之前创建的草稿信息
     @Override
     public Result getDraftWithCheck(Integer draftId, Integer userId) {
+        // 获取当前草稿文件
         DraftTopic draft = draftTopicMapper.selectDraftTopicById(draftId);
 
-        if (draft == null || !draft.getUserId().equals(userId)) {
+        // 草稿是否为空
+        if (draft == null) {
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
+        // 验证当前用户是否有权获取这个草稿
+        if (!draft.getUserId().equals(userId)) {
             return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
         }
 
@@ -80,16 +84,26 @@ public class DraftTopicServiceImpl implements DraftTopicService {
 
     // 实时更新该draftId的信息
     @Override
-    public Result updateDraftInfo(Integer draftId, String title, String description) {
+    public Result updateDraftInfo(Integer draftId, String title, String description, Integer userId) {
+        // 找到旧的草稿
         DraftTopic oldDraftTopic = draftTopicMapper.selectDraftTopicById(draftId);
+
+        // 校验草稿的存在与否
+        if (oldDraftTopic == null){
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
+        // 校验该草稿的归属权
+        if(!oldDraftTopic.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        // 把新的信息赋值给它
         oldDraftTopic.setTitle(title);
         oldDraftTopic.setDescription(description);
 
-        // 进行update
-        int row = draftTopicMapper.updateDraftTopic(oldDraftTopic);
-        if (row == 0) {
-            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
-        }
+        // update 先有草稿
+        draftTopicMapper.updateDraftTopic(oldDraftTopic);
 
         return Result.ok(oldDraftTopic, ResultCodeEnum.SUCCESS);
     }
@@ -147,10 +161,9 @@ public class DraftTopicServiceImpl implements DraftTopicService {
         topic.setDescription(draft.getDescription());
         topic.setUserId(draft.getUserId());
 
-        int row = topicMapper.insertTopic(topic);
-        if (row == 0) {
-            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
-        }
+        // 插入新的Topic
+        topicMapper.insertTopic(topic);
+
 
         // 数据转换 List<DraftItem> -> Items
         for (DraftItem draftItem : draftItemList) {

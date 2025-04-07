@@ -121,4 +121,25 @@
         left join `item` i on t.id = i.topic_id
         order by t.created_at desc
     </select>
+
+    <!-- 主页中显示所有Topic，根据热度 -->
+    <select id="selectAllByHeat" resultMap="TopicResultMapWithItems">
+
+    </select>
+
+
+    <!-- 搜索, 根据时间 -->
+    <select id="selectByKeyword" resultMap="TopicResultMapWithItems">
+        select
+        t.id, t.title, t.description, t.user_id,
+        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+        i.id as item_id, i.topic_id, i.name, i.description as item_description,
+        i.average_rating, i.total_ratings as item_total_ratings,
+        i.total_comments as item_total_comments, i.created_at as item_created_at, i.updated_at as item_updated_at
+        from `topic` t
+        left join `item` i on t.id = i.topic_id
+        where t.title LIKE CONCAT('%', #{keyword}, '%')
+        OR t.description LIKE CONCAT('%', #{keyword}, '%')
+        order by t.created_at desc
+    </select>
 </mapper>

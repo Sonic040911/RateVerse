@@ -10,10 +10,10 @@ import com.rateverse.utils.Result;
  * @description:
  */
 public interface DraftItemService {
-    Result addDraftItem(Integer draftId, DraftItem item);
+    Result addDraftItem(Integer draftId, DraftItem item, Integer userId);
 
-    Result deleteDraftItem(Integer draftItemId);
+    Result deleteDraftItem(Integer draftItemId, Integer userId);
 
-    Result page(int draftId, int pageSize, int currentPage);
+    Result page(int draftId, int pageSize, int currentPage, Integer userId);
 
 }

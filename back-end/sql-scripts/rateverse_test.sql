@@ -133,12 +133,4 @@ DELETE FROM `topic`;
 DELETE FROM `item`;
 
 
-SELECT
-        t.id, t.title, t.description, t.user_id,
-        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
-        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
-        i.average_rating, i.total_ratings AS item_total_ratings,
-        i.total_comments AS item_total_comments, i.created_at AS item_created_at, i.updated_at AS item_updated_at
-        FROM `topic` t
-        LEFT JOIN `item` i ON t.id = i.topic_id
-        ORDER BY t.created_at DESC
+

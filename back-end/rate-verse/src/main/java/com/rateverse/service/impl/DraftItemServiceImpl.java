@@ -33,11 +33,16 @@ public class DraftItemServiceImpl implements DraftItemService {
     private DraftItemMapper draftItemMapper;
 
     @Override
-    public Result addDraftItem(Integer draftId, DraftItem item) {
-        // 添加前判断这个draftId是否存在
+    public Result addDraftItem(Integer draftId, DraftItem item, Integer userId) {
+        // 添加前判断这个draft是否存在
         DraftTopic draftTopic = draftTopicMapper.selectDraftTopicById(draftId);
         if (draftTopic == null) {
             return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
+        // 验证草稿归属权
+        if (!draftTopic.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
         }
 
         // 设置它的draft_topic_id
@@ -55,18 +60,40 @@ public class DraftItemServiceImpl implements DraftItemService {
     }
 
     @Override
-    public Result deleteDraftItem(Integer draftItemId) {
-        int row = draftItemMapper.deleteDraftItem(draftItemId);
+    public Result deleteDraftItem(Integer draftItemId, Integer userId) {
+        // 先获取这个draftItem所属的DraftTopic
+        DraftTopic draftTopic = draftItemMapper.selectDraftTopicByDraftItemId(draftItemId);
 
-        if (row == 0) {
-            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+        // 验证这个草稿是否存在
+        if (draftTopic == null) {
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
         }
+
+        // 验证草稿归属权
+        if (!draftTopic.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        // 一切正常，开始删除
+        draftItemMapper.deleteDraftItem(draftItemId);
 
         return Result.ok(null, ResultCodeEnum.SUCCESS);
     }
 
+    // 分页显示所有DraftItem
     @Override
-    public Result page(int draftId, int pageSize, int currentPage) {
+    public Result page(int draftId, int pageSize, int currentPage, Integer userId) {
+        // 检查草稿Topic存在与否
+        DraftTopic draftTopic = draftTopicMapper.selectDraftTopicById(draftId);
+        if (draftTopic == null) {
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+
+        // 验证草稿归属权
+        if (!draftTopic.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
         // 分页
         PageHelper.startPage(currentPage, pageSize);
 

@@ -1,10 +1,10 @@
 // Get topicId from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const topicId = urlParams.get('topicId');
-if (!topicId) {
-    alert('Topic ID not found');
-    window.location.href = 'Home.html'; // Redirect to homepage if topicId is missing
-}
+// if (!topicId) {
+//     alert('Topic ID not found');
+//     window.location.href = 'Home.html'; // Redirect to homepage if topicId is missing
+// }
 
 // Pagination configuration
 let currentPage = 1;

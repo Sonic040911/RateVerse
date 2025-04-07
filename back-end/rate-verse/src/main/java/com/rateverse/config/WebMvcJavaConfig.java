@@ -24,6 +24,13 @@ import org.springframework.web.servlet.config.annotation.*;
 @ComponentScan({"com.rateverse.controller"})
 @EnableWebMvc
 public class WebMvcJavaConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("/static/images/")
+                .setCachePeriod(0); // 可选：禁用缓存，便于开发时实时更新
+    }
+
     //开启静态资源
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {

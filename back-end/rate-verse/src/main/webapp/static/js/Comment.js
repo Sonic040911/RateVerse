@@ -1,10 +1,10 @@
 // Get itemId from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const itemId = urlParams.get('itemId');
-if (!itemId) {
-  alert('Item ID not found');
-  window.location.href = 'Rating.html'; // Redirect to Rating page if itemId is missing
-}
+// if (!itemId) {
+//   alert('Item ID not found');
+//   window.location.href = 'Rating.html'; // Redirect to Rating page if itemId is missing
+// }
 
 // Pagination configuration
 let currentPage = 1;
@@ -23,9 +23,16 @@ async function fetchItem() {
       const data = result.data;
       const item = data.item;
       const distributions = data.scoreDistribution;
+
+      // Set item details
       document.querySelector('.name-block').textContent = item.name;
       document.querySelector('.some-name').textContent = item.name;
       document.querySelector('.description').textContent = item.description;
+
+      // Set item image (Test)
+      const itemImage = document.querySelector('.some-image img');
+      itemImage.src = item.imageUrl || 'static/assets/Block_with_X(2).svg'; // Fallback to default image
+
       renderRatingDistribution(distributions);
       document.querySelector('.rating-score').textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
     } else {
