@@ -1,5 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@300;400;500;600;800&family=Saira+Semi+Condensed:wght@400;500&display=swap');
 
+:root {
+    --bg-color: #ffffff;
+    --section-color: #3D3A74;
+    --container-color: #E8EAF6;
+    --container-border-color: #3D3A74;
+    --text-color: #000000;
+    --input-color: #FFFFFF;
+    --input-border-color: #EDEDEF;
+    --input-text: #8B9AA6;
+    --input-text-focus: #000000;
+    --login-text-color: #3C64AD;
+
+    --toggle-bg: #ffffff;
+    --toggle-border: #cccccc;
+    --sun-color: #f0c94c; 
+    --moon-color: #888888; 
+}
+  
+.dark-mode {
+    --bg-color: #212121;
+    --section-color: #1f1f3a;
+    --container-color: #3a3a3a;
+    --container-border-color: #666;
+    --text-color: #ffffff;
+    --input-color: #424242;
+    --input-border-color: #666;
+    --input-text: #FFFFFF;
+    --input-text-focus: #ffffff;
+    --login-text-color: #9fa0ff;
+
+    --toggle-bg: #555555;
+    --toggle-border: #999999;
+    --sun-color: #aaaaaa;
+    --moon-color: #ffd700; 
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -10,6 +46,7 @@ body {
     font-family: "Saira Condensed", sans-serif;
     font-weight: 500;
     padding: 10px;
+    background-color: var(--bg-color);
 }
 
 a {
@@ -23,7 +60,7 @@ img {
 header { 
     width: 100%;
     height: 140px;
-    background-color: #3D3A74;
+    background-color: var(--section-color);
     color: #FFFFFF;
     font-weight: 800;
     font-size: 36px;
@@ -43,8 +80,8 @@ section {
 
 .form-box {
     position: relative;
-    background: #E8EAF6;
-    border: 1px solid #3D3A74;
+    background: var(--container-color);
+    border: 1px solid var(--container-border-color);
     width: 730px;
     height: 650px;
     display: flex;
@@ -64,6 +101,7 @@ h2 {
     font-weight: 400;
     font-size: 35px;
     margin: 10px 0;
+    color: var(--text-color);
 }
 
 .application {
@@ -86,7 +124,7 @@ h2 {
 }
 
 .details {
-    color: #374753;
+    color: #8B9AA6;
     font-family: "Saira SemiCondensed", sans-serif;
     font-weight: 500;
     font-size: 15px;
@@ -96,14 +134,19 @@ h2 {
     width: 300px;
     height: 50px;
     border-radius: 8px;
-    border: 1px solid #EDEDEF;
-    color: #8B9AA6;
+    background-color: var(--input-color);
+    border: 1px solid var(--input-border-color);
     padding-left: 15px;
 }
 
-.input-box input:focus {
-    color: #000000;
+.input-box input::placeholder {
+    color: var(--input-text);
 }
+
+.input-box input:focus {
+    color: var(--input-text-focus);
+}
+
 .input-box {
     width: 50%
 }
@@ -114,16 +157,16 @@ h2 {
     font-family: "Saira SemiCondensed", sans-serif;
     font-weight: 500;
     font-size: 15px;
-    margin-top: 25px;
+    margin: 25px 0 50px 0;
 }
 
 .cancel {
     width: 300px;
     height: 50px;
     border-radius: 8px;
-    border: 1px solid #EDEDEF;
-    background-color: #FFFFFF;
-    color: #000000;
+    border: 1px solid #666666;
+    background-color: #666666;
+    color: #FFFFFF;
 }
 
 .confirm {
@@ -137,8 +180,13 @@ h2 {
 
 .login {
     display: flex;
+    flex-direction: row;
+    gap: 5px;
     justify-content: center;
-    margin-top: 50px;
+    align-items: center;
+}
+
+.login p {
     color: #838383;
     font-size: 15px;
     font-family: "Saira SemiCondensed", sans-serif;
@@ -146,7 +194,7 @@ h2 {
 }
 
 .login a {
-    color: #3C64AD;
+    color: var(--login-text-color);
     font-family: "Saira SemiCondensed", sans-serif;
     font-size: 15px;
     font-weight: 500;

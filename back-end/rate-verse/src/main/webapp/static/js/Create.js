@@ -2,7 +2,6 @@ const modal = document.getElementById("modal");
 const openModalBtn = document.getElementById("openModal");
 const closeModalBtn = document.getElementById("closeModal");
 const submitBtn = document.querySelector(".submit-btn");
-const imageUploadInput = document.getElementById("image-upload"); // 新增：图片上传输入框
 let currentDraftId = null;
 let items = [];
 
@@ -11,6 +10,7 @@ let items = [];
 const titleInput = document.getElementById("topic");
 const descInput = document.getElementById("list-description");
 const sidebar = document.querySelector(".ratings");
+
 
 // ==================== Modal Controls ====================
 openModalBtn.addEventListener("click", () => {
@@ -31,6 +31,7 @@ window.addEventListener("click", (e) => {
 // ==================== Initialization Validation ====================
 const urlParams = new URLSearchParams(window.location.search);
 currentDraftId = urlParams.get('draftId');
+
 
 if (!currentDraftId) {
     alert("Invalid draft ID, redirecting to homepage...");
@@ -88,8 +89,7 @@ async function loadDraftContent() {
             ? itemsData.data.data.map(item => ({
                 id: item.draftItemId,
                 name: item.name,
-                description: item.description,
-                imageUrl: item.imageUrl // 新增：加载图片 URL
+                description: item.description
             }))
             : [];
 
@@ -110,7 +110,7 @@ function renderItems() {
                     <p>${item.description || "No description"}</p>
                     <button class="delete-item">🗑️ Delete</button>
                 </div>
-                <img src="${item.imageUrl || 'static/assets/default_image.png'}" class="rating-image">
+                <img src="static/assets/image1.png" class="rating-image">
             </div>
         `;
         sidebar.insertAdjacentHTML("beforeend", itemHTML);
@@ -140,15 +140,10 @@ titleInput.addEventListener("blur", () => autoSaveDraft());
 descInput.addEventListener("blur", () => autoSaveDraft());
 
 // ==================== Page Lifecycle ====================
-let isSubmitting = false; // 新增标志位
-
 window.addEventListener("DOMContentLoaded", async () => {
     await loadDraftContent();
 
     window.addEventListener("beforeunload", async (e) => {
-        // 如果是提交操作，不触发保存提示
-        if (isSubmitting) return;
-
         if (items.length > 0 || titleInput.value) {
             e.preventDefault();
             e.returnValue = "";
@@ -187,42 +182,10 @@ document.querySelector(".ratings").addEventListener("click", async (e) => {
     }
 });
 
-// ==================== Image Upload ====================
-document.querySelector('.cover-option:last-child').addEventListener('click', () => {
-    imageUploadInput.click(); // 触发文件选择
-});
-
-// 用户选择图片后上传
-imageUploadInput.addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-        const res = await fetch('/api/upload/image', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include'
-        });
-        const result = await res.json();
-        if (result.flag) {
-            document.getElementById('image-url').value = result.data; // 存储图片 URL
-            showSaveStatus('Image uploaded successfully');
-        } else {
-            showSaveStatus('Image upload failed', true);
-        }
-    } catch (error) {
-        showSaveStatus('Image upload request failed', true);
-    }
-});
-
 // ==================== Add Rating Item ====================
 document.querySelector(".modal-content .save").addEventListener("click", async () => {
     const name = document.getElementById("object-name").value.trim();
     const desc = document.getElementById("object-description").value.trim();
-    const imageUrl = document.getElementById("image-url").value; // 获取图片 URL
 
     if (!name) {
         showSaveStatus("Name cannot be empty", true);
@@ -234,7 +197,7 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
         const res = await fetch(`/api/drafts/item/${currentDraftId}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, description: desc, imageUrl }), // 添加 imageUrl
+            body: JSON.stringify({ name, description: desc }),
             credentials: "include"
         });
         const result = await res.json();
@@ -243,15 +206,12 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
             items.unshift({
                 id: result.data.draftItemId,
                 name: result.data.name,
-                description: result.data.description,
-                imageUrl: result.data.imageUrl // 存储图片 URL
+                description: result.data.description
             });
             renderItems();
             modal.style.display = "none";
             document.getElementById("object-name").value = "";
             document.getElementById("object-description").value = "";
-            document.getElementById("image-url").value = ""; // 清空图片 URL
-            imageUploadInput.value = ""; // 清空文件输入框
             showSaveStatus("Added successfully");
         }
     } catch (error) {
@@ -262,14 +222,12 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
 // ==================== Publish Function ====================
 submitBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    isSubmitting = true; // 设置提交标志位
 
     showSaveStatus("Preparing to publish...");
     if (!await autoSaveDraft()) return;
 
     if (items.length === 0) {
         showSaveStatus("At least one rating item required", true);
-        isSubmitting = false; // 重置标志位
         return;
     }
 
@@ -285,10 +243,8 @@ submitBtn.addEventListener("click", async (e) => {
             window.location.href = `Home.html`;
         } else {
             showSaveStatus(`Publish failed: ${result.message}`, true);
-            isSubmitting = false; // 重置标志位
         }
     } catch (error) {
         showSaveStatus("Publish request failed", true);
-        isSubmitting = false; // 重置标志位
     }
 });
