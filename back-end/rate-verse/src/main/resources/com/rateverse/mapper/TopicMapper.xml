@@ -45,12 +45,12 @@
     <select id="countTopicsByUserId" resultType="int">
         select count(*) from topic where user_id = #{userId}
     </select>
-    
+
     <select id="searchTopicsByTitle" resultType="com.rateverse.bean.Topic">
         select * from topic where title like concat('%', #{keyword}, '%')
     </select>
 
-
+    <!-- Topic和List<Item>的resultMap -->
     <resultMap id="TopicResultMapWithItems" type="com.rateverse.bean.Topic">
         <id column="id" property="id"/>
         <result column="title" property="title"/>
@@ -67,6 +67,7 @@
             <result column="topic_id" property="topicId"/>
             <result column="name" property="name"/>
             <result column="item_description" property="description"/>
+            <result column="image_url" property="imageUrl"/> <!-- 添加 imageUrl 映射 -->
             <result column="average_rating" property="averageRating"/>
             <result column="item_total_ratings" property="totalRatings"/>
             <result column="item_total_comments" property="totalComments"/>
@@ -75,6 +76,7 @@
         </collection>
     </resultMap>
 
+    <!-- Topic和User的ResultMap -->
     <resultMap id="TopicResultMapWithUser" type="com.rateverse.bean.Topic">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
@@ -109,37 +111,111 @@
         WHERE t.id = #{id}
     </select>
 
-    <!-- 主页中显示所有Topic，根据创建的时间 -->
+
     <select id="selectAllByTime" resultMap="TopicResultMapWithItems">
-        select
+        SELECT
             t.id, t.title, t.description, t.user_id,
             t.created_at, t.updated_at, t.total_comments, t.total_ratings,
-            i.id as item_id, i.topic_id, i.name, i.description as item_description,
-            i.average_rating, i.total_ratings as item_total_ratings,
-            i.total_comments as item_total_comments, i.created_at as item_created_at, i.updated_at as item_updated_at
-        from `topic` t
-        left join `item` i on t.id = i.topic_id
-        order by t.created_at desc
+            i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+            i.image_url,  <!-- 添加 image_url 列 -->
+            i.average_rating, i.total_ratings AS item_total_ratings,
+            i.total_comments AS item_total_comments,
+            i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM `topic` t
+        LEFT JOIN `item` i ON t.id = i.topic_id
+        ORDER BY t.created_at DESC
     </select>
 
-    <!-- 主页中显示所有Topic，根据热度 -->
     <select id="selectAllByHeat" resultMap="TopicResultMapWithItems">
-
-    </select>
-
-
-    <!-- 搜索, 根据时间 -->
-    <select id="selectByKeyword" resultMap="TopicResultMapWithItems">
-        select
+        SELECT
         t.id, t.title, t.description, t.user_id,
         t.created_at, t.updated_at, t.total_comments, t.total_ratings,
-        i.id as item_id, i.topic_id, i.name, i.description as item_description,
-        i.average_rating, i.total_ratings as item_total_ratings,
-        i.total_comments as item_total_comments, i.created_at as item_created_at, i.updated_at as item_updated_at
-        from `topic` t
-        left join `item` i on t.id = i.topic_id
-        where t.title LIKE CONCAT('%', #{keyword}, '%')
+        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+        i.image_url,  <!-- 添加 image_url 列 -->
+        i.average_rating, i.total_ratings AS item_total_ratings,
+        i.total_comments AS item_total_comments,
+        i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM `topic` t
+        LEFT JOIN (
+        SELECT i2.*
+        FROM `item` i2
+        WHERE i2.id IN (
+        SELECT id
+        FROM (
+        SELECT id,
+        ROW_NUMBER() OVER (PARTITION BY topic_id ORDER BY created_at DESC) AS rn
+        FROM `item`
+        ) tmp
+        WHERE rn &lt;= 3
+        )
+        ) i ON t.id = i.topic_id
+        ORDER BY (
+        SELECT COALESCE(SUM(i3.total_ratings) + SUM(i3.total_comments), 0)
+        FROM `item` i3
+        WHERE i3.topic_id = t.id
+        ) DESC, t.created_at DESC
+    </select>
+
+    <select id="selectByKeywordTime" resultMap="TopicResultMapWithItems">
+        SELECT
+        t.id, t.title, t.description, t.user_id,
+        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+        i.image_url,  <!-- 添加 image_url 列 -->
+        i.average_rating, i.total_ratings AS item_total_ratings,
+        i.total_comments AS item_total_comments,
+        i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM `topic` t
+        LEFT JOIN `item` i ON t.id = i.topic_id
+        WHERE t.title LIKE CONCAT('%', #{keyword}, '%')
         OR t.description LIKE CONCAT('%', #{keyword}, '%')
-        order by t.created_at desc
+        ORDER BY t.created_at DESC
+    </select>
+
+    <select id="selectByKeywordHeat" resultMap="TopicResultMapWithItems">
+        SELECT
+        t.id, t.title, t.description, t.user_id,
+        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+        i.image_url,  <!-- 添加 image_url 列 -->
+        i.average_rating, i.total_ratings AS item_total_ratings,
+        i.total_comments AS item_total_comments,
+        i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM `topic` t
+        LEFT JOIN (
+        SELECT i2.*
+        FROM `item` i2
+        WHERE (
+        SELECT COUNT(*)
+        FROM `item` i3
+        WHERE i3.topic_id = i2.topic_id
+        AND i3.created_at > i2.created_at
+        ) &lt; 3
+        ) i ON t.id = i.topic_id
+        WHERE t.title LIKE CONCAT('%', #{keyword}, '%')
+        OR t.description LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY (
+        SELECT COALESCE(SUM(i4.total_ratings) + SUM(i4.total_comments), 0)
+        FROM `item` i4
+        WHERE i4.topic_id = t.id
+        ) DESC, t.created_at DESC
+    </select>
+
+
+    <select id="countTopicLikesByUserId" resultType="int">
+        SELECT COALESCE(SUM(cl.id), 0)
+        FROM topics t
+        JOIN items i ON t.id = i.topic_id
+        JOIN comments c ON i.id = c.item_id
+        JOIN comment_likes cl ON c.id = cl.comment_id
+        WHERE t.user_id = #{userId} AND cl.action_type = 'LIKE'
+    </select>
+
+    <select id="countTopicCommentsByUserId" resultType="int">
+        SELECT COALESCE(SUM(t.total_comments), 0) FROM topics t WHERE t.user_id = #{userId}
+    </select>
+
+    <select id="countTopicRatingsByUserId" resultType="int">
+        SELECT COALESCE(SUM(t.total_ratings), 0) FROM topics t WHERE t.user_id = #{userId}
     </select>
 </mapper>

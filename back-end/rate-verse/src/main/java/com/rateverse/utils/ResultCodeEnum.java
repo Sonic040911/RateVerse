@@ -37,7 +37,7 @@ public enum ResultCodeEnum {
 
 
     // 评论状态码
-    PARENT_COMMENT_NOT_FOUND(901, "parrent comment not exists"),
+    PARENT_COMMENT_NOT_FOUND(901, "parent comment not exists"),
     COMMENT_ITEM_MISMATCH(902, "the two comments belong to different items"),
     COMMENT_NOT_FOUND(903, "comment not exists"),
 
@@ -46,8 +46,10 @@ public enum ResultCodeEnum {
     DATABASE_ERROR(1001, "database change failed"),
     PERMISSION_DENIED(1002, "permission denied"),
     FILE_EMPTY(1003, "file empty"),
-    UPLOAD_ERROR(1004, "upload error")
-    ;
+    UPLOAD_ERROR(1004, "upload error"),
+    USERNAME_EMPTY(1005, "username is empty!"),
+
+    AVATAR_URL_EMPTY(1006, "avatar url is empty");
 
     private final Integer code;
     private final String message;

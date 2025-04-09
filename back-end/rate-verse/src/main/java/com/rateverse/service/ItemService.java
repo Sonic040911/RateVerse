@@ -10,9 +10,8 @@ import com.rateverse.utils.Result;
  */
 public interface ItemService {
     // 根据topicId获取它对应的items
-    Result getItemsByTopicId(int topicId, int pageSize, int currentPage);
+    Result getItemsByTopicId(int topicId, int pageSize, int currentPage, String sortType);
 
-    Result getItemById(int itemId);
-
+    // 获取指定Item的信息 (包含评分分布表)
     Result getItemByIdWithStats(Integer itemId);
 }

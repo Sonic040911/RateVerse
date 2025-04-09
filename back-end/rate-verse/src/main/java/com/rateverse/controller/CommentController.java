@@ -16,49 +16,49 @@ import java.util.List;
  * Project Name: rate-verse
  *
  * @author: Sonic
- * @description:
+ * @description: 评论的处理类
  */
 
 @RestController
 @RequestMapping("/api/comment")
 @Slf4j
-/* 这个Controller对itemId的依赖非常之大，让前端传itemId! */
 public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    /***
+     * 获取所有评论（根据 sortType 动态排序）只获取父评论, 子评论由另一个handler获取
+     *
+     * @param itemId       评分项id
+     * @param pageSize     一页显示多少个评论
+     * @param currentPage  当前页数
+     * @param sortType     排序方式
+     *
+     * @return 成功:
+     *              * 返回所有父评论
+     *         失败:
+     *              * ITEM_DOES_NOT_EXISTS(702): 评分项不存在
+     */
+    @GetMapping("/getCommentsByItemId/{itemId}/{pageSize}/{currentPage}")
+    public Result getCommentsByItemId(
+            @PathVariable int itemId,
+            @PathVariable int pageSize,
+            @PathVariable int currentPage,
+            @RequestParam(defaultValue = "time") String sortType) {
+        Result result = commentService.getCommentsByItemId(itemId, pageSize, currentPage, sortType);
 
-    // 得到所有Comments (根据时间)
-    @GetMapping({"/getCommentsByTime/{itemId}/{pageSize}/{currentPage}"})
-    public Result getCommentsByTime(@PathVariable int itemId,
-                                    @PathVariable int pageSize,
-                                    @PathVariable int currentPage) {
-        Result result = commentService.getCommentsByTime(itemId, pageSize, currentPage);
-
-        System.out.println("===========log.info============");
-        log.info("查询到的comments: {}", result);
-
-        return result;
-    }
-
-    // 是否在这里需要添加一个查询子评论的handler:
-
-
-
-    // 得到所有Comments (根据点赞数排序)
-    @GetMapping("getCommentsByLikes/{itemId}/{pageSize}/{currentPage}")
-    public Result getCommentsByLikes(@PathVariable int itemId,
-                                     @PathVariable int pageSize,
-                                     @PathVariable int currentPage) {
-        Result result = commentService.getCommentsByLikes(itemId, pageSize, currentPage);
-
-        System.out.println("===========log.info============");
-        log.info("查询到的comments: {}", result);
+        log.info("查询到的comments (sortType={}): {}", sortType, result);
 
         return result;
     }
 
-    // 新增：获取某个父评论的子评论
+    /**
+     * 获取每个父评论的子评论
+     *
+     * @param parentCommentId 父评论id
+     *
+     * @return 直接返回所有子评论
+     */
     @GetMapping("/replies/{parentCommentId}")
     public Result getRepliesByParentId(@PathVariable Integer parentCommentId) {
         List<Comment> replies = commentService.getRepliesByParentId(parentCommentId);
@@ -70,6 +70,7 @@ public class CommentController {
 
     /***
      * 添加一个评论
+     *
      * @param comment 评论信息
      *                前端要传入的内容: 该评论项的内容
      *
@@ -77,7 +78,10 @@ public class CommentController {
      *
      * @param session 用于获取用户的Id, 设置该评论是由谁创建的
      *
-     * @return 评论的所有信息
+     * @return 成功:
+     *              * 评论的所有信息
+     *         失败:
+     *              * ITEM_DOES_NOT_EXISTS(702): 找不到Item, 添加评论失败
      */
     @PostMapping("{itemId}")
     public Result addComment(@RequestBody Comment comment, @PathVariable Integer itemId,
@@ -85,7 +89,6 @@ public class CommentController {
         // 获取当前用户
         User user = (User) session.getAttribute("user");
 
-        System.out.println("==============调试==================");
         System.out.println(user.getId());
         System.out.println(itemId);
 
@@ -109,7 +112,11 @@ public class CommentController {
      *
      * @param session 获取当前回复的用户id, 设置该评论是由谁创建的
      *
-     * @return 返回子评论的所有信息
+     * @return 成功:
+     *              * 回复成功, 返回子评论的所有信息
+     *         失败:
+     *              * PARENT_COMMENT_NOT_FOUND(901): 找不到对应的父评论, 回复失败
+     *              * COMMENT_ITEM_MISMATCH(902):    父评论和子评论所在的Item不一致, 回复失败
      */
     @PostMapping("/reply")
     public Result replyComment(@RequestBody Comment childComment, HttpSession session) {
@@ -130,9 +137,14 @@ public class CommentController {
 
     /***
      * 删除一个评论 (用户只能删除自己的评论)
+     *
      * @param commentId 评论的id (前端传过来)
      * @param session 用于该用户的id, 验证别的用户不能删除别人的评论
-     * @return
+     *
+     * @return 成功: 删除成功
+     *         失败:
+     *              * COMMENT_NOT_FOUND(903):  评论不存在, 无法删除
+     *              * PERMISSION_DENIED(1002): 无权删除别人的评论
      */
     @DeleteMapping("/{commentId}")
     public Result deleteComment(@PathVariable Integer commentId, HttpSession session) {
@@ -147,7 +159,6 @@ public class CommentController {
         return result;
     }
 
-
     // 点赞
     @PostMapping("/like/{commentId}")
     public Result likeComment(@PathVariable Integer commentId, HttpSession session) {
@@ -160,7 +171,6 @@ public class CommentController {
 
         return result;
     }
-
 
     // 倒赞
     @PostMapping("/dislike/{commentId}")

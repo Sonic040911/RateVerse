@@ -796,3 +796,14 @@ main {
   font-size: 1em;
   margin-top: -3%;
 }
+
+
+.topic-container {
+  margin-bottom: 20px;
+}
+
+.topic-container .recommended_header,
+.topic-container .all-comments,
+.topic-container .recommended_list {
+  /* 保持与现有样式一致 */
+}

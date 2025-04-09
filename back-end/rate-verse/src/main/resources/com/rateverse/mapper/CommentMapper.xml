@@ -31,8 +31,8 @@
         SELECT * FROM comment WHERE id = #{commentId}
     </select>
 
-    <!-- 按点赞数排序 (只返回顶级评论，连接Rating表获得该评论用户对它的评分，连接User表获得用户信息) -->
-    <select id="selectByItemIdOrderByLikes" resultMap="CommentResultMap">
+    <!-- 按 sortType 动态排序 (只返回顶级评论，连接 Rating 表获得该评论用户对它的评分，连接 User 表获得用户信息) -->
+    <select id="selectByItemIdWithSort" resultMap="CommentResultMap">
         SELECT
         c.*,
         r.score AS userRating,
@@ -42,21 +42,21 @@
         LEFT JOIN rating r ON c.user_id = r.user_id AND c.item_id = r.item_id
         LEFT JOIN user u ON c.user_id = u.id
         WHERE c.item_id = #{itemId} AND c.parent_comment_id IS NULL
-        ORDER BY likes DESC, created_at DESC
-    </select>
-
-    <!-- 按时间排序 (只返回顶级评论，连接Rating表获得该评论用户对它的评分，连接User表获得用户信息) -->
-    <select id="selectByItemIdOrderByTime" resultMap="CommentResultMap">
-        SELECT
-        c.*,
-        r.score AS userRating,
-        u.username,
-        u.avatar_url
-        FROM comment c
-        LEFT JOIN rating r ON c.user_id = r.user_id AND c.item_id = r.item_id
-        LEFT JOIN user u ON c.user_id = u.id
-        WHERE c.item_id = #{itemId} AND c.parent_comment_id IS NULL
-        ORDER BY c.created_at DESC
+        ORDER BY
+        <choose>
+            <when test="sortType == 'likes'">
+                likes DESC, created_at DESC
+            </when>
+            <when test="sortType == 'time'">
+                created_at DESC
+            </when>
+            <when test="sortType == 'time-asc'">
+                created_at ASC
+            </when>
+            <otherwise>
+                created_at DESC
+            </otherwise>
+        </choose>
     </select>
 
     <!-- 查询子评论 -->

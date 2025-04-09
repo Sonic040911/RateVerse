@@ -14,9 +14,7 @@ import java.util.List;
 public interface CommentService {
     Result addComment(Comment comment);
 
-    Result getCommentsByTime(int itemId, int pageSize, int currentPage);
-
-    Result getCommentsByLikes(int itemId, int pageSize, int currentPage);
+    Result getCommentsByItemId(int itemId, int pageSize, int currentPage, String sortType);
 
     Result replyComment(Comment childComment);
 

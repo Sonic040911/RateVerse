@@ -9,6 +9,7 @@ const topicId = urlParams.get('topicId');
 // Pagination configuration
 let currentPage = 1;
 const pageSize = 4;
+let sortType = 'popular'; // 默认排序方式为 popular
 
 // Fetch and display Topic information
 async function fetchTopic() {
@@ -35,16 +36,20 @@ async function fetchTopic() {
     }
 }
 
-// Fetch and display paginated Item data
+// Fetch and display paginated Item data with sorting
 async function fetchItems() {
     try {
-        const response = await fetch(`/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}`, {
+        // 修改接口调用，添加 sortType 参数
+        const response = await fetch(`/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`, {
             method: 'GET',
             credentials: 'include'
         });
         const result = await response.json();
         if (result.code === 200) {
             const items = result.data.data;
+            // 清空现有卡片（避免重复）
+            const ratingsSection = document.querySelector('.ratings');
+            ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
             renderItems(items);
             document.querySelector('.show-more').style.display = items.length === pageSize ? 'block' : 'none';
         } else {
@@ -99,7 +104,8 @@ function renderItems(items) {
 
     // Add star click event
     document.querySelectorAll('.interactive-stars .star').forEach(star => {
-        star.addEventListener('click', async function () {
+        star.addEventListener('click', async function (e) {
+            e.stopPropagation(); // 防止点击星星时触发卡片跳转
             const itemId = this.parentElement.getAttribute('data-item-id');
             const score = parseInt(this.getAttribute('data-value'));
             await submitRating(itemId, score); // Submit immediately on click
@@ -175,14 +181,36 @@ async function refreshItem(itemId) {
     }
 }
 
-// "Show More" button event
-document.querySelector('.show-more').addEventListener('click', () => {
-    currentPage++;
+// Add filter button event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.type-button');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // 移除所有按钮的激活样式
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // 给当前点击的按钮添加激活样式
+            button.classList.add('active');
+
+            // 根据按钮文本设置 sortType
+            const buttonText = button.textContent.toLowerCase().replace(' ', '_');
+            sortType = buttonText; // e.g., "popular", "up_to_date", "high_score", "low_score"
+
+            // 重置分页并重新加载数据
+            currentPage = 1;
+            fetchItems();
+        });
+    });
+
+    // 默认激活 "Up to date" 按钮
+    document.querySelector('.type-button:nth-child(2)').classList.add('active');
+
+    // Initialize page
+    fetchTopic();
     fetchItems();
 });
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', () => {
-    fetchTopic();
+// "Show More" button event
+document.querySelector('.show-more').addEventListener('click', () => {
+    currentPage++;
     fetchItems();
 });

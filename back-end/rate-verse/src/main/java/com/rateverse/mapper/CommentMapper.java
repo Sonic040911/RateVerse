@@ -23,11 +23,8 @@ public interface CommentMapper {
     // 更新评论内容
     int updateContent(@Param("commentId") Integer commentId, @Param("content") String content);
 
-    // 按点赞数排序 查询所有Comment
-    List<Comment> selectByItemIdOrderByLikes(Integer itemId);
-
-    // 按时间排序   查询所有Comment
-    List<Comment> selectByItemIdOrderByTime(Integer itemId);
+    // 根据ItemId查询所有评论 (可分类)
+    List<Comment> selectByItemIdWithSort(@Param("itemId") int itemId, @Param("sortType") String sortType);
 
     // 查询某个评论的子评论（回复）
     List<Comment> selectChildrenByParentId(Integer parentCommentId);
