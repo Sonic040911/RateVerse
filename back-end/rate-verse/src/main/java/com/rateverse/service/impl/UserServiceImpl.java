@@ -133,4 +133,15 @@ public class UserServiceImpl implements UserService {
 
         return Result.ok(users, ResultCodeEnum.SUCCESS);
     }
+
+    // 更改用户信息 (名字, 头像, 邮箱等，都可以)
+    @Override
+    public Result updateUser(User user) {
+        int rows = userMapper.updateUser(user);
+        if (rows > 0) {
+            return Result.ok(null, ResultCodeEnum.SUCCESS);
+        } else {
+            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+        }
+    }
 }

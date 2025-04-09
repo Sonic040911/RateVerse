@@ -111,4 +111,21 @@ public class TopicServiceImpl implements TopicService {
 
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
+
+
+    public int getTopicCountByUserId(Integer userId) {
+        return topicMapper.countTopicsByUserId(userId);
+    }
+
+    public int getTopicLikesCountByUserId(Integer userId) {
+        return topicMapper.countTopicLikesByUserId(userId);
+    }
+
+    public int getTopicCommentsCountByUserId(Integer userId) {
+        return topicMapper.countTopicCommentsByUserId(userId);
+    }
+
+    public int getTopicRatingsCountByUserId(Integer userId) {
+        return topicMapper.countTopicRatingsByUserId(userId);
+    }
 }

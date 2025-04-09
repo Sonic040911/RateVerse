@@ -26,5 +26,9 @@ public interface UserService {
     // 持久化JSESSIONID
     void rememberSessionId(HttpServletResponse response, String sessionId);
 
+    // 搜索用户
     Result searchUsers(String keyword);
+
+    // 更改自己用户的内容
+    Result updateUser(User user);
 }

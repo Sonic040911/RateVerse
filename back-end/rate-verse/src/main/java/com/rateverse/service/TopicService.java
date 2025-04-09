@@ -23,4 +23,12 @@ public interface TopicService {
 
     // 搜索所有Topic, 根据关键词返回所有相关Topic (最近创建优先)
     Result searchTopicsByTime(String keyword, int pageSize, int currentPage);
+
+    int getTopicCountByUserId(Integer id);
+
+    int getTopicLikesCountByUserId(Integer id);
+
+    int getTopicCommentsCountByUserId(Integer id);
+
+    int getTopicRatingsCountByUserId(Integer id);
 }

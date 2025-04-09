@@ -44,5 +44,6 @@ public interface UserMapper {
     // 更新用户头像
     int updateUserAvatar(int id, String avatarUrl);
 
+    // 搜索用户
     List<User> searchUsers(String s);
 }

@@ -50,4 +50,9 @@ public interface TopicMapper {
 
     // 搜索, 根据热度
     List<Topic> selectByKeywordHeat(String keyword);
+
+
+    int countTopicLikesByUserId(Integer userId);
+    int countTopicCommentsByUserId(Integer userId);
+    int countTopicRatingsByUserId(Integer userId);
 }

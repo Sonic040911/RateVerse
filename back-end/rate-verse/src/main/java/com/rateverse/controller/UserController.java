@@ -3,12 +3,15 @@ package com.rateverse.controller;
 import com.rateverse.bean.User;
 import com.rateverse.service.UserService;
 import com.rateverse.utils.Result;
+import com.rateverse.utils.ResultCodeEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.util.List;
 
@@ -122,6 +125,55 @@ public class UserController {
         log.info("用户搜索 - 关键词: {} | 返回数量: {}", keyword,
                 result.isFlag() ? ((List<?>) result.getData()).size() : 0);
 
+        return result;
+    }
+
+
+    // 获取当前用户信息（名字和头像）
+    @GetMapping("/api/profile")
+    public Result getUserProfile(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        Map<String, Object> profile = new HashMap<>();
+
+        profile.put("username", user.getUsername());
+        profile.put("avatarUrl", user.getAvatarUrl());
+
+        return Result.ok(profile, ResultCodeEnum.SUCCESS);
+    }
+
+    // 更改自己的用户名
+    @PostMapping("/api/update-username")
+    public Result updateUsername(@RequestParam String newUsername, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (newUsername == null || newUsername.trim().isEmpty()) {
+            return Result.fail(null, ResultCodeEnum.USERNAME_EMPTY);
+        }
+
+        user.setUsername(newUsername.trim());
+
+        Result result = userService.updateUser(user);
+        if (result.isFlag()) {
+            // 更新 session 中的用户信息
+            session.setAttribute("user", user);
+        }
+
+        return result;
+    }
+
+    // 更改用户头像
+    @PostMapping("/api/update-avatar")
+    public Result updateAvatar(@RequestParam String avatarUrl, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            return Result.fail(null, ResultCodeEnum.AVATAR_URL_EMPTY);
+        }
+
+        user.setAvatarUrl(avatarUrl.trim());
+        Result result = userService.updateUser(user);
+        if (result.isFlag()) {
+            session.setAttribute("user", user);
+        }
         return result;
     }
 }

@@ -1,8 +1,11 @@
 package com.rateverse.controller;
 
+import com.rateverse.bean.User;
 import com.rateverse.service.TopicService;
 import com.rateverse.utils.PageBean;
 import com.rateverse.utils.Result;
+import com.rateverse.utils.ResultCodeEnum;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -132,5 +135,37 @@ public class TopicController {
                 result.isFlag() ? ((PageBean<?>) result.getData()).getData().size() : 0);
 
         return result;
+    }
+
+    // 获取用户 Topic 数量
+    @GetMapping("/user-topic-count")
+    public Result getUserTopicCount(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int count = topicService.getTopicCountByUserId(user.getId());
+        return Result.ok(count, ResultCodeEnum.SUCCESS);
+    }
+
+    // 获取用户所有 Topic 的点赞数量
+    @GetMapping("/user-topic-likes-count")
+    public Result getUserTopicLikesCount(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int likesCount = topicService.getTopicLikesCountByUserId(user.getId());
+        return Result.ok(likesCount, ResultCodeEnum.SUCCESS);
+    }
+
+    // 获取用户所有 Topic 的评论数量
+    @GetMapping("/user-topic-comments-count")
+    public Result getUserTopicCommentsCount(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int commentsCount = topicService.getTopicCommentsCountByUserId(user.getId());
+        return Result.ok(commentsCount, ResultCodeEnum.SUCCESS);
+    }
+
+    // 获取用户所有 Topic 的评分数量
+    @GetMapping("/user-topic-ratings-count")
+    public Result getUserTopicRatingsCount(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int ratingsCount = topicService.getTopicRatingsCountByUserId(user.getId());
+        return Result.ok(ratingsCount, ResultCodeEnum.SUCCESS);
     }
 }

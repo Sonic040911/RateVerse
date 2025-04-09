@@ -46,8 +46,10 @@ public enum ResultCodeEnum {
     DATABASE_ERROR(1001, "database change failed"),
     PERMISSION_DENIED(1002, "permission denied"),
     FILE_EMPTY(1003, "file empty"),
-    UPLOAD_ERROR(1004, "upload error")
-    ;
+    UPLOAD_ERROR(1004, "upload error"),
+    USERNAME_EMPTY(1005, "username is empty!"),
+
+    AVATAR_URL_EMPTY(1006, "avatar url is empty");
 
     private final Integer code;
     private final String message;
