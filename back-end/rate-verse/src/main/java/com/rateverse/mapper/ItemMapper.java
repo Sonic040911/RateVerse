@@ -30,9 +30,13 @@ public interface ItemMapper {
     // 查询评分项 (根据item_id)
     Item selectItemById(Integer id);
 
-    // 查询一堆评分项 (根据topic_id) (分页)
+    // 查询一堆评分项 (根据topic_id)
     List<Item> selectItemsByTopicId(Integer topicId);
 
+    // 用topicId根据 sortType 查询 Items
+    List<Item> selectItemsByTopicIdWithSort(@Param("topicId") Integer topicId, @Param("sortType") String sortType);
+
+    // 根据ItemId获取它的TopicId
     Integer getTopicIdByItemId(Integer id);
 
 

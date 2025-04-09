@@ -1,6 +1,7 @@
 package com.rateverse.controller;
 
 import com.rateverse.service.TopicService;
+import com.rateverse.utils.PageBean;
 import com.rateverse.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,16 @@ public class TopicController {
         return result;
     }
 
-    // 按热度排序在主页中显示所有Topic
+    /***
+     * (后续前端需要连接)
+     *
+     * 按热度排序在主页中显示所有Topic
+     *
+     * @param pageSize     一页中显示多少个Topic
+     * @param currentPage  当前页数
+     *
+     * @return  按照分页正常返回 List<Topic> 每一个Topic中包含List<Item> 为了显示前3个Item
+     */
     @GetMapping("/getAllByHeat/{pageSize}/{currentPage}")
     public Result getAllTopicsByHeat(@PathVariable int pageSize,
                                      @PathVariable int currentPage) {
@@ -53,8 +63,16 @@ public class TopicController {
     }
 
 
-
-    // 用户点开了一个Topic，返回Topic的所有信息给前端 (包括用户信息, 因为需要知道谁创建的)
+    /***
+     * 用户点开了一个Topic，返回Topic的所有信息给前端 (包括用户信息, 因为需要知道谁创建的)
+     *
+     * @param topicId 评分主题的id
+     *
+     * @return 成功:
+     *              * 返回 Topic, 里面包含 User 对象, 也就是这个Topic的创建者
+     *         失败:
+     *              * TOPIC_DOES_NOT_EXISTS(701): 没找到相关Topic
+     */
     @GetMapping("/{topicId}")
     public Result getTopicById(@PathVariable int topicId) {
         Result result = topicService.getTopicById(topicId);
@@ -66,17 +84,53 @@ public class TopicController {
     }
 
 
-    // 搜索 (按照时间排序)
-    @GetMapping("/search")
-    public Result searchTopics(@RequestParam String keyword) {
-        Result result = topicService.searchTopics(keyword);
+    /***
+     * (后续前端需要连接)
+     *
+     * @param keyword     搜索关键词
+     * @param pageSize    一页中显示多少个Topic
+     * @param currentPage 当前页数
+     *
+     * @return 成功:
+     *              * 返回所有相关的Topic
+     *         失败:
+     *              * SEARCH_KEYWORD_EMPTY(703): 搜索词为空, 不给任何数据, 前端不让搜索
+     */
+    @GetMapping("/searchByHeat/{pageSize}/{currentPage}")
+    public Result searchTopicsByHeat(@RequestParam String keyword,
+                                     @PathVariable int pageSize,
+                                     @PathVariable int currentPage) {
+        Result result = topicService.searchTopicsByHeat(keyword, pageSize, currentPage);
 
         log.info("搜索关键词: {} | 结果数量: {}", keyword,
-                result.isFlag() ? ((List<?>) result.getData()).size() : 0);
+                result.isFlag() ? ((PageBean<?>) result.getData()).getData().size() : 0);
 
         return result;
     }
 
+    /***
+     * (后续前端需要连接)
+     *
+     * 搜索Topic (根据时间, 最近创建的优先)
+     *
+     * @param keyword    搜索关键词
+     * @param pageSize    一页中显示多少个Topic
+     * @param currentPage 当前页数
+     *
+     * @return 成功:
+     *              * 返回所有相关的Topic
+     *         失败:
+     *              * SEARCH_KEYWORD_EMPTY(703): 搜索词为空, 不给任何数据, 前端不让搜索
+     */
+    @GetMapping("/searchByTime/{pageSize}/{currentPage}")
+    public Result searchTopicsByTime(@RequestParam String keyword,
+                                     @PathVariable int pageSize,
+                                     @PathVariable int currentPage) {
+        Result result = topicService.searchTopicsByTime(keyword, pageSize, currentPage);
 
-    // 搜索 (按照热度排序)
+        log.info("搜索关键词: {} | 结果数量: {}", keyword,
+                result.isFlag() ? ((PageBean<?>) result.getData()).getData().size() : 0);
+
+        return result;
+    }
 }

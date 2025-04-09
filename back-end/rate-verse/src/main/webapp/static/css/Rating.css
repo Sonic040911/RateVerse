@@ -470,6 +470,13 @@ body {
     cursor: pointer;
 }
 
+
+/*.type-button.active {*/
+/*    background-color: #007bff;*/
+/*    color: white;*/
+/*    border-color: #007bff;*/
+/*}*/
+
 .ratings {
     display: flex;
     flex-direction: column;
@@ -682,7 +689,6 @@ body {
     margin-top: -3%;
 }
 
-<<<<<<< HEAD:back-end/rate-verse/src/main/webapp/static/css/Rating.css
 .star {
     color: #ccc; /* 空星颜色 */
 }
@@ -692,7 +698,9 @@ body {
 .star.half {
     color: #ffd700; /* 半星颜色 */
     /* 可选：使用渐变或裁剪来显示半星 */
-=======
+}
+
+
 /*Start Modal page*/
 .modal {
     display: none; 
@@ -705,7 +713,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
->>>>>>> b36b2331da9ebb4b840f3fd32d55ec5ed0493e9c:back-end/rate-verse/src/main/webapp/Diploma Preperation/CSS/Create.css
 }
 
 .rating-card {

@@ -30,16 +30,44 @@
     </delete>
 
 
-
     <!-- 查询 -->
     <select id="selectItemById" resultType="com.rateverse.bean.Item">
         select * from item where id = #{id}
     </select>
-    <!-- 必须是分页！！！ -->
+
+    <!-- 查询一堆评分项 (根据topic_id) -->
     <select id="selectItemsByTopicId" resultType="com.rateverse.bean.Item">
         select * from item where topic_id = #{topicId} order by created_at desc
     </select>
 
+
+    <!-- 查询一堆评分项 (根据 topic_id 和 sortType 动态排序) -->
+    <select id="selectItemsByTopicIdWithSort" resultType="com.rateverse.bean.Item">
+        SELECT *
+        FROM item
+        WHERE topic_id = #{topicId}
+        ORDER BY
+        <choose>
+            <when test="sortType == 'popular'">
+                (total_ratings + total_comments) DESC, created_at DESC
+            </when>
+            <when test="sortType == 'up_to_date'">
+                created_at DESC
+            </when>
+            <when test="sortType == 'high_score'">
+                average_rating DESC, created_at DESC
+            </when>
+            <when test="sortType == 'low_score'">
+                average_rating ASC, created_at DESC
+            </when>
+            <otherwise>
+                created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <!-- 根据ItemId获取它的TopicId -->
     <select id="getTopicIdByItemId" resultType="java.lang.Integer">
         select topic_id from item where id = #{itemId}
     </select>

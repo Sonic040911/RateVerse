@@ -37,7 +37,7 @@ public enum ResultCodeEnum {
 
 
     // 评论状态码
-    PARENT_COMMENT_NOT_FOUND(901, "parrent comment not exists"),
+    PARENT_COMMENT_NOT_FOUND(901, "parent comment not exists"),
     COMMENT_ITEM_MISMATCH(902, "the two comments belong to different items"),
     COMMENT_NOT_FOUND(903, "comment not exists"),
 

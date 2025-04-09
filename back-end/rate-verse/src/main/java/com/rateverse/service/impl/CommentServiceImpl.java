@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rateverse.bean.Comment;
 import com.rateverse.bean.CommentLike;
+import com.rateverse.bean.Item;
 import com.rateverse.mapper.CommentLikeMapper;
 import com.rateverse.mapper.CommentMapper;
 import com.rateverse.mapper.ItemMapper;
@@ -39,8 +40,10 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private TopicMapper topicMapper;
 
+
+    // 获取所有评论（根据 sortType 动态排序）
     @Override
-    public Result getCommentsByTime(int itemId, int pageSize, int currentPage) {
+    public Result getCommentsByItemId(int itemId, int pageSize, int currentPage, String sortType) {
         // 校验评论项是否存在
         if (itemMapper.selectItemById(itemId) == null) {
             return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
@@ -48,33 +51,29 @@ public class CommentServiceImpl implements CommentService {
 
         // 分页返回结果给前端（只返回顶级评论）
         PageHelper.startPage(currentPage, pageSize);
-        List<Comment> comments = commentMapper.selectByItemIdOrderByTime(itemId);
+        List<Comment> comments = commentMapper.selectByItemIdWithSort(itemId, sortType);
         PageInfo<Comment> info = new PageInfo<>(comments);
         PageBean<Comment> pageBean = new PageBean<>(currentPage, pageSize, info.getTotal(), info.getList());
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 
+    // 获取所有子评论 (基于父评论的ID)
     @Override
-    public Result getCommentsByLikes(int itemId, int pageSize, int currentPage) {
-        // 校验评论项是否存在
-        if (itemMapper.selectItemById(itemId) == null) {
-            return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
-        }
-
-        // 分页返回结果给前端（只返回顶级评论）
-        PageHelper.startPage(currentPage, pageSize);
-        List<Comment> comments = commentMapper.selectByItemIdOrderByLikes(itemId);
-        PageInfo<Comment> info = new PageInfo<>(comments);
-        PageBean<Comment> pageBean = new PageBean<>(currentPage, pageSize, info.getTotal(), info.getList());
-        return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
+    public List<Comment> getRepliesByParentId(Integer parentCommentId) {
+        return commentMapper.selectChildrenByParentId(parentCommentId);
     }
 
+    // 添加一条评论 (对象里面有对应的ItemId)
     @Override
     public Result addComment(Comment comment) {
-        int row = commentMapper.insertComment(comment);
-        if (row == 0) {
-            return Result.fail(comment, ResultCodeEnum.DATABASE_ERROR);
+        // 查询此Item是否存在
+        Item item = itemMapper.selectItemById(comment.getItemId());
+        if (item == null) {
+            return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
         }
+
+        // 添加评论
+        commentMapper.insertComment(comment);
 
         // 更新统计字段
         updateItemCommentsCount(comment.getItemId());
@@ -101,10 +100,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         // 插入评论
-        int row = commentMapper.insertComment(childComment);
-        if (row == 0) {
-            return Result.fail(childComment, ResultCodeEnum.DATABASE_ERROR);
-        }
+        commentMapper.insertComment(childComment);
 
         // 更新统计字段
         updateItemCommentsCount(childComment.getItemId());
@@ -145,13 +141,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /*
-    *   同时处理点赞和倒赞
-    *       * 第一次点赞/倒赞: 添加记录到comment_like 并 增加评论的对应统计
+    * 同时处理点赞和倒赞
+    *    * 第一次点赞/倒赞: 添加记录到comment_like 并 增加评论的对应统计
     *
-    *       * 第二次点赞/倒赞: 意味着是取消点赞, 删除comment_like中的记录 并 删除评论的对应统计
+    *    * 第二次点赞/倒赞: 意味着是取消点赞, 删除comment_like中的记录 并 删除评论的对应统计
     *
-    *       * 切换点赞/倒赞:   删除旧的comment_like，添加新的comment_like 并 删除再增加对应的评论统计
-    * */
+    *    * 切换点赞/倒赞:   删除旧的comment_like，添加新的comment_like 并 删除再增加对应的评论统计
+    */
     @Override
     public Result handleVote(Integer commentId, Integer userId, String actionType) {
         // 1. 查询历史操作
@@ -194,12 +190,6 @@ public class CommentServiceImpl implements CommentService {
             return Result.ok(action, ResultCodeEnum.SUCCESS);
         }
     }
-
-    @Override
-    public List<Comment> getRepliesByParentId(Integer parentCommentId) {
-        return commentMapper.selectChildrenByParentId(parentCommentId);
-    }
-
 
     // 更新 Item 的 total_comments
     private void updateItemCommentsCount(Integer itemId) {

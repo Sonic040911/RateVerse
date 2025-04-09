@@ -59,6 +59,7 @@ public class TopicServiceImpl implements TopicService {
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 
+    // 用户点开一个Topic时, 返回Topic的所有信息
     @Override
     public Result getTopicById(int topicId) {
         Topic topic = topicMapper.selectTopicByIdWithUser(topicId);
@@ -70,19 +71,44 @@ public class TopicServiceImpl implements TopicService {
         return Result.ok(topic, ResultCodeEnum.SUCCESS);
     }
 
-    @Override
-    public Result searchTopics(String keyword) {
-        try {
-            // 空关键词处理（可选：返回空列表或全部数据）
-            if (keyword == null || keyword.trim().isEmpty()) {
-                return Result.ok(null, ResultCodeEnum.SEARCH_KEYWORD_EMPTY);
-            }
 
-            List<Topic> topics = topicMapper.selectByKeyword(keyword.trim());
-            return Result.ok(topics, ResultCodeEnum.SUCCESS);
-        } catch (Exception e) {
-            log.error("搜索失败", e);
-            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+    // 搜索Topics, 根据热度返回
+    @Override
+    public Result searchTopicsByHeat(String keyword, int pageSize, int currentPage) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Result.fail(null, ResultCodeEnum.SEARCH_KEYWORD_EMPTY);
         }
+
+        PageHelper.startPage(currentPage, pageSize);
+
+        List<Topic> topics = topicMapper.selectByKeywordHeat(keyword.trim());
+
+        PageInfo<Topic> info = new PageInfo<>(topics);
+
+        PageBean<Topic> pageBean =new PageBean<>(currentPage, pageSize,
+                info.getTotal(), info.getList());
+
+        return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
+    }
+
+
+    // 搜索Topics, 根据最近创建返回
+    @Override
+    public Result searchTopicsByTime(String keyword, int pageSize, int currentPage) {
+        // 空关键词处理（可选：返回空列表或全部数据）
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Result.fail(null, ResultCodeEnum.SEARCH_KEYWORD_EMPTY);
+        }
+
+        PageHelper.startPage(currentPage, pageSize);
+
+        List<Topic> topics = topicMapper.selectByKeywordTime(keyword.trim());
+
+        PageInfo<Topic> info = new PageInfo<>(topics);
+
+        PageBean<Topic> pageBean =new PageBean<>(currentPage, pageSize,
+                info.getTotal(), info.getList());
+
+        return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 }

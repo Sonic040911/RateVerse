@@ -7,6 +7,7 @@ import com.rateverse.bean.ScoreDistribution;
 import com.rateverse.bean.Topic;
 import com.rateverse.mapper.ItemMapper;
 import com.rateverse.mapper.RatingMapper;
+import com.rateverse.mapper.TopicMapper;
 import com.rateverse.service.ItemService;
 import com.rateverse.utils.PageBean;
 import com.rateverse.utils.Result;
@@ -35,31 +36,35 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private RatingMapper ratingMapper;
 
+    @Autowired
+    private TopicMapper topicMapper;
+
+
+    // 根据topicId获取它对应的items
     @Override
-    public Result getItemsByTopicId(int topicId, int pageSize, int currentPage) {
+    public Result getItemsByTopicId(int topicId, int pageSize, int currentPage, String sortType) {
+        // 查询topic是否存在
+        Topic topic = topicMapper.selectTopicByIdWithUser(topicId);
+        if (topic == null) {
+            return Result.fail(null, ResultCodeEnum.TOPIC_DOES_NOT_EXISTS);
+        }
+
+        // 分页
         PageHelper.startPage(currentPage, pageSize);
 
-        List<Item> items = itemMapper.selectItemsByTopicId(topicId);
+        // 根据 sortType 查询 Items
+        List<Item> items = itemMapper.selectItemsByTopicIdWithSort(topicId, sortType);
 
         PageInfo<Item> info = new PageInfo<>(items);
 
-        PageBean<Item> pageBean =new PageBean<>(currentPage, pageSize,
+        PageBean<Item> pageBean = new PageBean<>(currentPage, pageSize,
                 info.getTotal(), info.getList());
 
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 
-    @Override
-    public Result getItemById(int itemId) {
-        Item item = itemMapper.selectItemById(itemId);
 
-        if (item == null) {
-            return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
-        }
-
-        return Result.ok(item, ResultCodeEnum.SUCCESS);
-    }
-
+    // 获取指定Item的信息 (包含评分分布表)
     @Override
     public Result getItemByIdWithStats(Integer itemId) {
         // 1. 获取 Item 基本信息
