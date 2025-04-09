@@ -36,3 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
     cardProfile.style.display = "block";
   });
 });
+
+
+/* My profile button */
+const myProfile = document.getElementById('myProfile');
+
+myProfile.addEventListener('click', () => {
+    window.location.href = 'my_profile.html';
+});
