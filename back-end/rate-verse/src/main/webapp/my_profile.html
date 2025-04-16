@@ -6,15 +6,13 @@
     <title>User profile</title>
     <link rel="stylesheet" href="static/css/my_profie.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Подключаем Chart.js для графика -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <!-- Левая секция: профиль -->
         <div class="profile-card">
             <div class="avatar-wrapper">
-                <img src="/assets/Block_with_X(2).svg" alt="Аватар" class="avatar">
+                <img src="static/assets/Block_with_X(2).svg" alt="Avatar" class="avatar">
                 <div class="avatar-overlay">
                     <i class="fas fa-camera"></i>
                 </div>
@@ -27,7 +25,6 @@
                 <button class="btn follow-btn">Follow</button>
                 <button class="btn message-btn">Message</button>
             </div>
-            <!-- Секция с информацией о пользователе -->
             <div class="user-info">
                 <div class="info-item">
                     <span class="info-label">Email:</span>
@@ -44,13 +41,8 @@
             </div>
         </div>
 
-        <!-- Правая секция: форма, статистика по категориям, и другие разделы -->
         <div class="details-card">
             <form class="profile-form">
-                <!--<div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="fullName" value="John Doe">
-                </div>-->
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="email" value="john@example.com">
@@ -64,11 +56,9 @@
                     <input type="text" id="address" value="Bay Area, San Francisco, CA">
                 </div>
                 <button type="submit" class="save-btn">Save Changes</button>
-                <!-- Элемент для уведомления -->
                 <p class="save-notification" style="display: none; color: #2ecc71; margin-top: 0.5rem;">Changes saved!</p>
             </form>
 
-            <!-- Секция: статистика -->
             <div class="user-stats">
                 <h3>User Stats</h3>
                 <div class="stats-grid">
@@ -103,12 +93,11 @@
                 </div>
             </div>
 
-            <!-- Секция: мои рейтинги -->
             <div class="my-ratings">
                 <h3>My Ratings</h3>
                 <div class="ratings-list">
                     <div class="rating-item">
-                        <img src="/assets/game_3.jpg" alt="Samsung Galaxy S23" class="rating-image">
+                        <img src="static/assets/Block_with_X(2).svg" alt="Samsung Galaxy S23" class="rating-image">
                         <div class="rating-info">
                             <h4>Samsung Galaxy S23</h4>
                             <p>High-performance smartphone with a great display.</p>
@@ -120,7 +109,7 @@
                         </div>
                     </div>
                     <div class="rating-item">
-                        <img src="/assets/game_1.jpg" alt="Cristiano Ronaldo" class="rating-image">
+                        <img src="static/assets/Block_with_X(2).svg" alt="Cristiano Ronaldo" class="rating-image">
                         <div class="rating-info">
                             <h4>Cristiano Ronaldo</h4>
                             <p>Legendary footballer with incredible stats.</p>
@@ -132,7 +121,7 @@
                         </div>
                     </div>
                     <div class="rating-item">
-                        <img src="/assets/game_5.jpg" alt="Cristiano Ronaldo" class="rating-image">
+                        <img src="static/assets/Block_with_X(2).svg" alt="Cristiano Ronaldo" class="rating-image">
                         <div class="rating-info">
                             <h4>Rate_3</h4>
                             <p>Legendary footballer with incredible stats.</p>
@@ -146,38 +135,9 @@
                 </div>
             </div>
 
-            <!-- Секция: достижения -->
-            <div class="achievements">
-                <h3>Achievements</h3>
-                <div class="achievements-grid">
-                    <div class="achievement-item">
-                        <i class="fas fa-trophy"></i>
-                        <div class="achievement-info">
-                            <span class="achievement-title">10 Ratings Created</span>
-                            <span class="achievement-desc">You've created 10 ratings!</span>
-                        </div>
-                    </div>
-                    <div class="achievement-item">
-                        <i class="fas fa-heart"></i>
-                        <div class="achievement-info">
-                            <span class="achievement-title">100 Likes</span>
-                            <span class="achievement-desc">Your ratings received 100 likes!</span>
-                        </div>
-                    </div>
-                    <div class="achievement-item">
-                        <i class="fas fa-laptop"></i>
-                        <div class="achievement-info">
-                            <span class="achievement-title">Tech Expert</span>
-                            <span class="achievement-desc">Expert in Technology category!</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
-    <!-- Модальное окно для смены фото -->
     <div class="modal" id="photoModal">
         <div class="modal-content">
             <span class="close-btn">×</span>
@@ -195,7 +155,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно для переименования -->
     <div class="modal" id="renameModal">
         <div class="modal-content rename-modal">
             <span class="close-btn">×</span>
