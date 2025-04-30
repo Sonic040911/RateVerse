@@ -204,18 +204,18 @@
 
     <select id="countTopicLikesByUserId" resultType="int">
         SELECT COALESCE(SUM(cl.id), 0)
-        FROM topics t
-        JOIN items i ON t.id = i.topic_id
-        JOIN comments c ON i.id = c.item_id
-        JOIN comment_likes cl ON c.id = cl.comment_id
+        FROM topic t
+        JOIN item i ON t.id = i.topic_id
+        JOIN comment c ON i.id = c.item_id
+        JOIN comment_like cl ON c.id = cl.comment_id
         WHERE t.user_id = #{userId} AND cl.action_type = 'LIKE'
     </select>
 
     <select id="countTopicCommentsByUserId" resultType="int">
-        SELECT COALESCE(SUM(t.total_comments), 0) FROM topics t WHERE t.user_id = #{userId}
+        SELECT COALESCE(SUM(t.total_comments), 0) FROM topic t WHERE t.user_id = #{userId}
     </select>
 
     <select id="countTopicRatingsByUserId" resultType="int">
-        SELECT COALESCE(SUM(t.total_ratings), 0) FROM topics t WHERE t.user_id = #{userId}
+        SELECT COALESCE(SUM(t.total_ratings), 0) FROM topic t WHERE t.user_id = #{userId}
     </select>
 </mapper>

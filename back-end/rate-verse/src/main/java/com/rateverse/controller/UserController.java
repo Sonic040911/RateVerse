@@ -129,15 +129,17 @@ public class UserController {
     }
 
 
-    // 获取当前用户信息（名字和头像）
+    // 获取当前用户信息（名字、头像、邮箱、电话、地址等）
     @GetMapping("/api/profile")
     public Result getUserProfile(HttpSession session) {
         User user = (User) session.getAttribute("user");
 
         Map<String, Object> profile = new HashMap<>();
-
         profile.put("username", user.getUsername());
         profile.put("avatarUrl", user.getAvatarUrl());
+        profile.put("email", user.getEmail());
+        profile.put("phone", user.getPhone());
+        profile.put("address", user.getAddress());
 
         return Result.ok(profile, ResultCodeEnum.SUCCESS);
     }
@@ -174,6 +176,28 @@ public class UserController {
         if (result.isFlag()) {
             session.setAttribute("user", user);
         }
+        return result;
+    }
+
+    // 更新用户信息（邮箱、电话、地址）
+    @PostMapping("/api/update-profile")
+    public Result updateProfile(
+            @RequestParam String email,
+            @RequestParam String phone,
+            @RequestParam String address,
+            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        user.setEmail(email.trim());
+        user.setPhone(phone.trim());
+        user.setAddress(address.trim());
+
+        Result result = userService.updateUser(user);
+        if (result.isFlag()) {
+            // 更新 session 中的用户信息
+            session.setAttribute("user", user);
+        }
+
         return result;
     }
 }

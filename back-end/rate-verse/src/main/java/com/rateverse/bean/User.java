@@ -19,6 +19,8 @@ public class User {
     private String email;
     private String passwordHash;
     private String avatarUrl;
+    private String phone;
+    private String address;
 
     // 前端不用发送这些
     private Date createdAt;

@@ -16,6 +16,8 @@
             <if test="email != null">email = #{email},</if>
             <if test="passwordHash != null">password_hash = #{passwordHash},</if>
             <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
             updated_at = NOW()
         </set>
         WHERE id = #{id}
