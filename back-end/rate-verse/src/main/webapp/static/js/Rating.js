@@ -1,216 +1,306 @@
-// Get topicId from URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const topicId = urlParams.get('topicId');
-// if (!topicId) {
-//     alert('Topic ID not found');
-//     window.location.href = 'Home.html'; // Redirect to homepage if topicId is missing
-// }
+// Configuration
+const pageSize = 3; // Number of Topics to fetch per page
+let currentTopicPage = 1; // Current page for Topics
+let totalTopicPages = 0; // Total number of Topic pages
 
-// Pagination configuration
-let currentPage = 1;
-const pageSize = 4;
-let sortType = 'popular'; // 默认排序方式为 popular
-
-// Fetch and display Topic information
-async function fetchTopic() {
+// Fetch Topic list
+async function fetchTopics(append = false) {
     try {
-        const response = await fetch(`/api/topic/${topicId}`, {
+        const response = await fetch(`/api/topic/getAllByTime/${pageSize}/${currentTopicPage}`, {
             method: 'GET',
             credentials: 'include'
         });
         const result = await response.json();
         if (result.code === 200) {
-            const topic = result.data;
-            document.querySelector('.name-category').textContent = topic.title;
-            document.querySelector('.description-category').textContent = topic.description;
-            document.querySelector('.user-create').innerHTML = `
-                <img class="user-img" src="static/assets/User.svg" alt="User Avatar">${topic.user.username}
-            `;
+            const pageBean = result.data;
+            renderTopics(pageBean.data, append);
+            totalTopicPages = Math.ceil(pageBean.total / pageSize);
+            updateShowMoreButton();
         } else {
-            console.error('Failed to fetch Topic:', result.message);
-            alert('Failed to load Topic');
+            console.error('Failed to fetch Topics:', result.message);
+            alert('Failed to load data, please try again later');
         }
     } catch (error) {
         console.error('Request failed:', error);
-        alert('Network error');
+        alert('Network error, please check the backend service');
     }
 }
 
-// Fetch and display paginated Item data with sorting
-async function fetchItems() {
-    try {
-        // 修改接口调用，添加 sortType 参数
-        const response = await fetch(`/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        const result = await response.json();
-        if (result.code === 200) {
-            const items = result.data.data;
-            // 清空现有卡片（避免重复）
-            const ratingsSection = document.querySelector('.ratings');
-            ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
-            renderItems(items);
-            document.querySelector('.show-more').style.display = items.length === pageSize ? 'block' : 'none';
-        } else {
-            console.error('Failed to fetch Items:', result.message);
-            alert('Failed to load Items');
-        }
-    } catch (error) {
-        console.error('Request failed:', error);
-        alert('Network error');
+// Render Topic list
+function renderTopics(topics, append = false) {
+    const recommendedSection = document.querySelector('.recommended');
+    if (!recommendedSection) {
+        console.error('Recommended section not found');
+        return;
     }
-}
 
-// Render Item cards
-function renderItems(items) {
-    const ratingsSection = document.querySelector('.ratings');
-    items.forEach(item => {
-        const ratingCard = document.createElement('div');
-        ratingCard.className = 'rating-card';
-        ratingCard.setAttribute('data-item-id', item.id);
+    const topicList = recommendedSection.querySelector('.recommended_list');
+    const topicHeader = recommendedSection.querySelector('.recommended_header');
+    const topicTitle = topicHeader.querySelector('.topic-title');
+    const totalRatings = topicHeader.querySelector('.recommended_total');
+    const allComments = recommendedSection.querySelector('.all-comments');
 
-        ratingCard.innerHTML = `
-            <div class="rating-info">
-                <img class="img-rating" src="${item.imageUrl || 'static/assets/default-image.svg'}" alt="Rating Item Image">
-                <div class="name-desc">
-                    <h3 class="name-rating">${item.name}</h3>
-                    <p class="description-rating">${item.description}</p>
-                </div>
-            </div>
-            <div class="game-info">
-                <div class="interactive-stars" data-item-id="${item.id}">
-                    <span class="star" data-value="1">★</span>
-                    <span class="star" data-value="2">★</span>
-                    <span class="star" data-value="3">★</span>
-                    <span class="star" data-value="4">★</span>
-                    <span class="star" data-value="5">★</span>
-                </div>
-                <div class="score">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</div>
-                <p class="number-rating">${item.totalRatings} ratings</p>
-            </div>
-        `;
-
-        ratingsSection.insertBefore(ratingCard, document.querySelector('.more-ratings'));
-
-        // Initialize star display
-        updateStars(ratingCard.querySelector('.interactive-stars'), item.averageRating);
-
-        // Add click event to navigate to Comment.html with itemId
-        ratingCard.addEventListener('click', () => {
-            window.location.href = `Comment.html?itemId=${item.id}`;
-        });
-    });
-
-    // Add star click event
-    document.querySelectorAll('.interactive-stars .star').forEach(star => {
-        star.addEventListener('click', async function (e) {
-            e.stopPropagation(); // 防止点击星星时触发卡片跳转
-            const itemId = this.parentElement.getAttribute('data-item-id');
-            const score = parseInt(this.getAttribute('data-value'));
-            await submitRating(itemId, score); // Submit immediately on click
-            await refreshItem(itemId); // Refresh rating display
-        });
-    });
-}
-
-// Update star display (based on 1-5 value)
-function updateStars(starContainer, averageRating) {
-    const score = averageRating || 0; // Default to 0 if no rating
-    const fullStars = Math.floor(score);
-    const halfStar = score % 1 >= 0.5 ? 1 : 0;
-    const stars = starContainer.querySelectorAll('.star');
-    stars.forEach((star, index) => {
-        star.classList.remove('light', 'half');
-        if (index + 1 <= fullStars) {
-            star.classList.add('light'); // Full star
-        } else if (index + 1 === fullStars + 1 && halfStar) {
-            star.classList.add('half'); // Half star
-        }
-    });
-}
-
-// Submit rating to backend
-async function submitRating(itemId, score) {
-    try {
-        const response = await fetch('/api/rating', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                itemId: parseInt(itemId),
-                score: parseInt(score)
-            }),
-            credentials: 'include'
-        });
-        const result = await response.json();
-        if (result.code === 200) {
-            console.log('Rating submitted successfully');
-        } else {
-            alert('Failed to submit rating: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Failed to submit rating:', error);
-        alert('Network error');
+    if (!topicList || !topicHeader || !topicTitle || !totalRatings || !allComments) {
+        console.error('Required elements not found in recommended section');
+        return;
     }
-}
 
-// Refresh Item's rating display
-async function refreshItem(itemId) {
-    try {
-        const response = await fetch(`/api/item/${itemId}`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        const result = await response.json();
-        if (result.code === 200) {
-            const item = result.data;
-            const card = document.querySelector(`.rating-card[data-item-id="${itemId}"]`);
-            if (card) {
-                const starContainer = card.querySelector('.interactive-stars');
-                updateStars(starContainer, item.averageRating);
-                card.querySelector('.score').textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
-                card.querySelector('.number-rating').textContent = `${item.totalRatings} ratings`;
+    if (!append) {
+        topicList.innerHTML = '';
+        topicTitle.innerHTML = '';
+        totalRatings.innerHTML = '';
+        allComments.innerHTML = '';
+    }
+
+    if (topics && topics.length > 0) {
+        topics.forEach((topic, index) => {
+            if (append || index > 0) {
+                const newTopicContainer = document.createElement('div');
+                newTopicContainer.className = 'topic-container';
+
+                const newHeader = document.createElement('div');
+                newHeader.className = 'recommended_header';
+                const newSpan = document.createElement('span');
+                const newLink = document.createElement('a');
+                newLink.className = 'recommended_header-link';
+                newLink.href = `Rating.html?topicId=${topic.id}`;
+                newLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = `Rating.html?topicId=${topic.id}`;
+                });
+                const newTitle = document.createElement('h3');
+                newTitle.className = 'topic-title';
+                newTitle.textContent = topic.title || 'Untitled Topic';
+                newLink.appendChild(newTitle);
+                newSpan.appendChild(newLink);
+                newHeader.appendChild(newSpan);
+
+                const newTotalRatings = document.createElement('p');
+                newTotalRatings.className = 'recommended_total';
+                newTotalRatings.textContent = `Total Ratings: ${topic.totalRatings || 0}`;
+                newHeader.appendChild(newTotalRatings);
+
+                const newComments = document.createElement('p');
+                newComments.className = 'all-comments';
+                newComments.textContent = `${topic.totalComments || 0} comments`;
+
+                const newList = document.createElement('div');
+                newList.className = 'recommended_list';
+
+                newTopicContainer.appendChild(newHeader);
+                newTopicContainer.appendChild(newComments);
+                newTopicContainer.appendChild(newList);
+
+                recommendedSection.insertBefore(newTopicContainer, recommendedSection.querySelector('.more-ratings'));
+
+                (topic.items || []).slice(0, 3).forEach(item => {
+                    console.log('Item data:', item); // 添加日志
+                    const itemLink = document.createElement('a');
+                    itemLink.className = 'recommended_item-link';
+                    itemLink.href = `Rating.html?topicId=${topic.id}`;
+                    itemLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = `Rating.html?topicId=${topic.id}`;
+                    });
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'recommended_item';
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'recommended_info';
+
+                    const img = document.createElement('img');
+                    img.className = 'recommended_img';
+                    img.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
+                    console.log(`Loading image for item ${item.id}: ${img.src}`);
+                    img.alt = 'card_img';
+                    img.onerror = () => {
+                        console.error(`Failed to load image for item ${item.id}: ${img.src}`);
+                        img.src = 'static/assets/Block_with_X(2).svg';
+                    };
+                    img.onload = () => {
+                        console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
+                    };
+                    infoDiv.appendChild(img);
+
+                    const name = document.createElement('p');
+                    name.className = 'recommended_name';
+                    name.textContent = item.name || 'Unnamed Item';
+                    infoDiv.appendChild(name);
+
+                    const rankInfoDiv = document.createElement('div');
+                    rankInfoDiv.className = 'rank-info';
+
+                    const rating = document.createElement('div');
+                    rating.className = 'recommended_rating';
+                    rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
+                    rankInfoDiv.appendChild(rating);
+
+                    const count = document.createElement('div');
+                    count.className = 'recommended_count';
+                    count.textContent = `${item.totalRatings || 0} ratings`;
+                    rankInfoDiv.appendChild(count);
+
+                    itemDiv.appendChild(infoDiv);
+                    itemDiv.appendChild(rankInfoDiv);
+                    itemLink.appendChild(itemDiv);
+                    newList.appendChild(itemLink);
+                });
+            } else {
+                topicTitle.textContent = topic.title || 'Untitled Topic';
+                totalRatings.textContent = `Total Ratings: ${topic.totalRatings || 0}`;
+                allComments.textContent = `${topic.totalComments || 0} comments`;
+
+                const topicLink = topicHeader.querySelector('.recommended_header-link');
+                topicLink.href = `Rating.html?topicId=${topic.id}`;
+                topicLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = `Rating.html?topicId=${topic.id}`;
+                });
+
+                (topic.items || []).slice(0, 3).forEach(item => {
+                    console.log('Item data:', item); // 添加日志
+                    const itemLink = document.createElement('a');
+                    itemLink.className = 'recommended_item-link';
+                    itemLink.href = `Rating.html?topicId=${topic.id}`;
+                    itemLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = `Rating.html?topicId=${topic.id}`;
+                    });
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'recommended_item';
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'recommended_info';
+
+                    const img = document.createElement('img');
+                    img.className = 'recommended_img';
+                    img.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
+                    console.log(`Loading image for item ${item.id}: ${img.src}`);
+                    img.alt = 'card_img';
+                    img.onerror = () => {
+                        console.error(`Failed to load image for item ${item.id}: ${img.src}`);
+                        img.src = 'static/assets/Block_with_X(2).svg';
+                    };
+                    img.onload = () => {
+                        console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
+                    };
+                    infoDiv.appendChild(img);
+
+                    const name = document.createElement('p');
+                    name.className = 'recommended_name';
+                    name.textContent = item.name || 'Unnamed Item';
+                    infoDiv.appendChild(name);
+
+                    const rankInfoDiv = document.createElement('div');
+                    rankInfoDiv.className = 'rank-info';
+
+                    const rating = document.createElement('div');
+                    rating.className = 'recommended_rating';
+                    rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
+                    rankInfoDiv.appendChild(rating);
+
+                    const count = document.createElement('div');
+                    count.className = 'recommended_count';
+                    count.textContent = `${item.totalRatings || 0} ratings`;
+                    rankInfoDiv.appendChild(count);
+
+                    itemDiv.appendChild(infoDiv);
+                    itemDiv.appendChild(rankInfoDiv);
+                    itemLink.appendChild(itemDiv);
+                    topicList.appendChild(itemLink);
+                });
             }
-        } else {
-            console.error('Failed to fetch Item:', result.message);
-        }
-    } catch (error) {
-        console.error('Request failed:', error);
+        });
+    } else if (!append) {
+        topicTitle.textContent = 'No Topics Available';
+        totalRatings.textContent = 'Total Ratings: 0';
+        allComments.textContent = '0 comments';
     }
 }
 
-// Add filter button event listeners
+// Update "Show More" button visibility
+function updateShowMoreButton() {
+    const showMoreButton = document.querySelector('.show-more');
+    if (showMoreButton) {
+        showMoreButton.style.display = currentTopicPage < totalTopicPages ? 'block' : 'none';
+    }
+}
+
+// Navigate to Topic detail page
+function goToTopicDetail(topicId) {
+    window.location.href = `Rating.html?topicId=${topicId}`;
+}
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.type-button');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // 移除所有按钮的激活样式
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // 给当前点击的按钮添加激活样式
-            button.classList.add('active');
+    fetchTopics();
 
-            // 根据按钮文本设置 sortType
-            const buttonText = button.textContent.toLowerCase().replace(' ', '_');
-            sortType = buttonText; // e.g., "popular", "up_to_date", "high_score", "low_score"
-
-            // 重置分页并重新加载数据
-            currentPage = 1;
-            fetchItems();
+    const showMoreButton = document.querySelector('.show-more');
+    if (showMoreButton) {
+        showMoreButton.addEventListener('click', () => {
+            currentTopicPage++;
+            fetchTopics(true);
         });
-    });
+    }
 
-    // 默认激活 "Up to date" 按钮
-    document.querySelector('.type-button:nth-child(2)').classList.add('active');
+    const createBtn = document.getElementById('createBtn');
+    if (createBtn) {
+        createBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/drafts', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                const result = await response.json();
 
-    // Initialize page
-    fetchTopic();
-    fetchItems();
-});
+                if (result.code === 602) {
+                    const draftId = result.data.draftId;
+                    if (confirm("You have an unfinished draft. Do you want to continue editing?\nClick [OK] to continue editing, or [Cancel] to discard the draft and create a new one.")) {
+                        window.location.href = `Create.html?draftId=${draftId}`;
+                    } else {
+                        const deleteResponse = await fetch(`/api/drafts/${draftId}`, {
+                            method: 'DELETE',
+                            credentials: 'include'
+                        });
+                        const deleteResult = await deleteResponse.json();
+                        if (deleteResult.flag) {
+                            const newResponse = await fetch('/api/drafts', {
+                                method: 'POST',
+                                credentials: 'include'
+                            });
+                            const newResult = await newResponse.json();
+                            if (newResult.flag) {
+                                window.location.href = `Create.html?draftId=${newResult.data.draftId}`;
+                            } else {
+                                alert(`Failed to create a new draft: ${newResult.message}`);
+                            }
+                        } else {
+                            alert(`Failed to delete draft: ${deleteResult.message}`);
+                        }
+                    }
+                } else {
+                    window.location.href = `Create.html?draftId=${result.data.draftId}`;
+                }
+            } catch (error) {
+                alert('Network request exception');
+            }
+        });
+    }
 
-// "Show More" button event
-document.querySelector('.show-more').addEventListener('click', () => {
-    currentPage++;
-    fetchItems();
+    const searchButton = document.querySelector('.search-logo');
+    const searchInput = document.querySelector('.search-input');
+
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', () => {
+            const keyword = searchInput.value.trim();
+            if (keyword) {
+                // Redirect to Search.html with the search keyword as a URL parameter
+                window.location.href = `Search.html?keyword=${encodeURIComponent(keyword)}`;
+            } else {
+                alert('Please enter a search keyword');
+            }
+        });
+    }
 });

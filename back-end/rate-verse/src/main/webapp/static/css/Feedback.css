@@ -171,7 +171,7 @@ nav ul li a:hover {
   color: #FFFFFF;
 }
 
-.active { 
+nav ul li a.active { 
   color: #FFFFFF;
   border-bottom: 3px solid #FFFFFF;
 }
@@ -226,6 +226,12 @@ nav ul li a:hover {
   transform: scale(1.1);
 }
 
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .notification, .profile {
 cursor: pointer;
   margin-left: 20px;
@@ -235,8 +241,9 @@ cursor: pointer;
 .notification {
   width: 20px;
   height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
-
 .notification:hover {
   transform: scale(1.15);
 }
@@ -868,6 +875,69 @@ main {
   font-weight: 400;
   font-size: 0.9em;
   border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Notification modal styling */
+.notification-modal {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 1001;
+  display: none;
+  background-color: var(--item-bg-color);
+  border-radius: 10px;
+}
+
+.notification-modal.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.notification-modal-content {
+  background-color: var(--item-bg-color);
+  border-radius: 10px;
+  padding: 15px 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  width: 300px; /* Fixed width for consistency */
+}
+
+.notification-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.bell-icon {
+  margin-bottom: 15px;
+}
+
+.notification-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.notification-body p {
+  font-size: 12px;
+  color: var(--third-text-color);
+  line-height: 1.5;
+  max-width: 250px;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+  .notification-modal {
+      right: 20px; /* Adjust for smaller screens */
+  }
 }
 
 /* Media Queries */

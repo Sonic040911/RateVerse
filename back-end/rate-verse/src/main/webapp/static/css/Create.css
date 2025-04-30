@@ -163,7 +163,7 @@ nav ul li a:hover {
   color: #FFFFFF;
 }
 
-.active { 
+nav ul li a.active { 
   color: #FFFFFF;
   border-bottom: 3px solid #FFFFFF;
 }
@@ -218,6 +218,12 @@ nav ul li a:hover {
   transform: scale(1.1);
 }
 
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .notification, .profile {
   cursor: pointer;
   margin-left: 20px;
@@ -227,6 +233,8 @@ nav ul li a:hover {
 .notification {
   width: 20px;
   height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .notification:hover {
@@ -404,8 +412,8 @@ input::placeholder {
   flex: 1.2;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 100px;
+  position: relative;
+  top: 5%;
   height: fit-content;
 }
 
@@ -422,8 +430,8 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  overflow-y: auto;
 }
-
 .rating-card {
   display: flex;
   justify-content: space-between;
@@ -642,20 +650,70 @@ input::placeholder {
   color: white;
   box-shadow: 0 4px 10px rgba(75, 72, 223, 0.2);
 }
-
 .save:hover {
-  background: var(--primary-light);
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(75, 72, 223, 0.3);
 }
 
+/* Notification modal styling */
+.notification-modal {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 1001;
+  display: none;
+  background-color: var(--item-bg-color);
+  border-radius: 10px;
+}
+
+.notification-modal.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.notification-modal-content {
+  background-color: var(--item-bg-color);
+  border-radius: 10px;
+  padding: 15px 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  width: 300px;
+}
+
+.notification-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.bell-icon {
+  margin-bottom: 15px;
+}
+
+.notification-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.notification-body p {
+  font-size: 12px;
+  color: var(--third-text-color);
+  line-height: 1.5;
+  max-width: 250px;
+}
+
 /* Profile dropdown styling */
 .profile-dropdown {
-  position: absolute;
-  top: 80px;
+  position: fixed;
+  top: 90px;
   right: 20px;
   z-index: 1000;
   display: none;
+  background-color: var(--item-bg-color);
+  border-radius: 10px;
 }
 
 .profile-dropdown.active {
@@ -1021,6 +1079,10 @@ input::placeholder {
   
   .notification, .profile {
     margin-left: 15px;
+  }
+
+  .notification-modal {
+    right: 20px;
   }
   
   .cover-options {

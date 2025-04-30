@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create new list</title>
-    <link rel="stylesheet" href="static/css/Create.css">
+    <title>Rating_board page</title>
+    <link rel="stylesheet" href="static/css/Rating_board.css">
 </head>
 <body>
-
 <header>
     <div class="rateverse-logo">
         <img class="logo" src="static/assets/logo.svg" alt="logo">
@@ -30,34 +29,33 @@
     </div>
 </header>
 
-<main>
-    <section class="create-list">
-        <h1>Create a new list</h1>
-        <p>List your movie, TV & celebrity picks</p>
-        <div class="write-topic">
-            <label for="topic">Topic</label>
-            <input type="text" id="topic" placeholder="Enter rating topic...">
+<main class="container">
+    <section class="category">
+        <img class="img-category" src="static/assets/Block_with_X(2).svg" alt="category-image">
+        <div class="info-category">
+            <h1 class="name-category"></h1> <!-- 动态填充 title -->
+            <p class="description-category"></p> <!-- 动态填充 description -->
+            <p class="user-create"><img class="user-img" src="static/assets/User.svg" alt="user account"></p> <!-- 动态填充 username -->
         </div>
-        <div class="write-description">
-            <label for="list-description">Describe</label>
-            <input type="text" id="list-description" placeholder="Describe your list...">
-        </div>
-        <div class="add-rating">
-            <div class="add-queue">
-                <img src="static/assets/add-queue.svg" alt="add-queue">
-                <button id="openModal">Add rating objects</button>
-            </div>
-            <p>~ Adding 3 or more rating objects will get more rating ~</p>
-        </div>
-        <button class="submit-btn">Submit</button>
     </section>
 
-    <aside class="sidebar">
-        <h3>Your objects</h3>
-        <div class="ratings">
-
+    <div class="filter">
+        <div>
+            <p class="all-ratings">All Ratings</p>
         </div>
-    </aside>
+        <div class="filter-buttons">
+            <button class="type-button">Popular</button>
+            <button class="type-button">Up to date</button>
+            <button class="type-button">High Score</button>
+            <button class="type-button">Low Score</button>
+        </div>
+    </div>
+    <section class="ratings">
+        <!-- 动态插入 Item 卡片 -->
+        <div class="more-ratings">
+            <button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button>
+        </div>
+    </section>
 </main>
 
 <footer>
@@ -90,7 +88,7 @@
             <div class="footer-contact">
                 <h3>Contact</h3>
                 <p><img src="static/assets/home.svg" alt="address"> 44 Danwers, NY City, USA, 70-102</p>
-                <p><img src="static/assets/email.svg" alt="email"> Lamaro@Lamaroyc.Us</p>
+                <p><img src="static/assets/email.svg" alt="email"> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9e5c8c4c8dbc6e9e5c8c4c8dbc6d0ca87fcda">[email&#160;protected]</a></p>
                 <p><img src="static/assets/phone-number.svg" alt="phone-number"> 91+585-656-658</p>
             </div>
         </div>
@@ -100,42 +98,7 @@
     </div>
 </footer>
 
-    <!--Start Modal page-->
-    <div class="modal" id="modal" style="display: none;">
-    <div class="modal-content">
-        <h2 class="modal-title">Add Object</h2>
-        <div class="objact-name">
-            <label for="object-name">Enter the object name</label>
-            <input type="text" id="object-name" placeholder="Enter name...">
-        </div>
-
-        <div class="object-cover">
-            <p class="add-object">Add object cover</p>
-            <div class="cover-options">
-                <div class="cover-option">
-                    <img src="static/assets/computer_image.svg" alt="Help you find pictures">
-                    <p>Help you find pictures</p>
-                </div>
-                <div class="cover-option">
-                    <img src="static/assets/upload_image.svg" alt="Upload from device">
-                    <p>Upload from device</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="descriptions">
-            <label for="object-description">Description (optional)</label>
-            <input type="text" id="object-description" placeholder="Enter description...">
-        </div>
-
-        <div class="modal-actions">
-            <button class="cancel-btn" id="closeModal">Cancel</button>
-            <button class="save">Save</button>
-        </div>
-    </div>
-    </div>
-    
-    <!--modal (notification)-->
+    <!-- modal (notification button) -->
     <div class="notification-modal" id="notificationModal">
         <div class="notification-modal-content">
             <div class="notification-body">
@@ -235,7 +198,7 @@
         </div>
       </div>
 
-<!--<script src="static/js/Create.js"></script>-->
+<!--<script src="static/js/Rating_board.js"></script>-->
 <script src="static/js/theme.js"></script>
 <script src="static/js/profile.js"></script>
 <script src="static/js/notification.js"></script>
