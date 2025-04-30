@@ -673,7 +673,14 @@ nav ul li a.active {
 }
 
 .star-rating .star.light {
-    color: gold;
+    color: var(--rating-color); /* #FFC701 */
+}
+
+.star-rating .star.half {
+    color: var(--rating-color);
+    position: relative;
+    overflow: hidden;
+    width: 50%; /* 显示半颗星 */
 }
 
 .score {

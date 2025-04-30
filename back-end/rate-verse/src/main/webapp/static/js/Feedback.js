@@ -5,7 +5,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const itemId = urlParams.get('itemId');
 if (!itemId) {
   alert('Item ID not found');
-  window.location.href = 'Rating.html'; // Redirect to Rating page if itemId is missing
+  window.location.href = 'Rating_board.html'; // Redirect to Rating page if itemId is missing
 }
 
 // Pagination configuration

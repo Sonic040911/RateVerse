@@ -14,9 +14,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // 2. Parse login response
         const loginResult = await loginResponse.json();
         if (loginResult.code === 200) {
-            window.location.href = '/Home.html'; // Redirect on successful login
+            window.location.href = '/Rating.html'; // Redirect on successful login
+        } else if (loginResult.code === 506) {
+            showError("User does not exist");
+        } else if (loginResult.code === 504){
+            showError('Incorrect email or password');
         } else if (loginResult.code === 505) {
-            showError("Incorrect email or password"); // Show error message for code 505
+            showError("Incorrect email or password"); // Show error message for code
         } else {
             showError('Unknown error, please try again');
         }

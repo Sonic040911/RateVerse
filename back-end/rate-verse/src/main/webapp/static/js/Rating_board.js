@@ -1,10 +1,15 @@
+console.log('Rating_board.js loaded'); // 调试：确认脚本加载
+
 // Get topicId from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const topicId = urlParams.get('topicId');
-// if (!topicId) {
-//     alert('Topic ID not found');
-//     window.location.href = 'Home.html'; // Redirect to homepage if topicId is missing
-// }
+console.log('Topic ID:', topicId); // 调试：记录 topicId
+
+if (!topicId) {
+    console.error('Topic ID not found in URL');
+    alert('Topic ID not found');
+    window.location.href = 'Rating.html'; // 重定向到主页
+}
 
 // Pagination configuration
 let currentPage = 1;
@@ -14,175 +19,131 @@ let sortType = 'popular'; // 默认排序方式为 popular
 // Fetch and display Topic information
 async function fetchTopic() {
     try {
+        console.log(`Fetching topic: /api/topic/${topicId}`); // 调试：记录请求
         const response = await fetch(`/api/topic/${topicId}`, {
             method: 'GET',
             credentials: 'include'
         });
         const result = await response.json();
+        console.log('Topic API response:', result); // 调试：记录响应
         if (result.code === 200) {
             const topic = result.data;
-            document.querySelector('.name-category').textContent = topic.title;
-            document.querySelector('.description-category').textContent = topic.description;
-            document.querySelector('.user-create').innerHTML = `
-                <img class="user-img" src="static/assets/User.svg" alt="User Avatar">${topic.user.username}
+            const nameCategory = document.querySelector('.name-category');
+            const descriptionCategory = document.querySelector('.description-category');
+            const userCreate = document.querySelector('.user-create');
+            if (!nameCategory || !descriptionCategory || !userCreate) {
+                console.error('Topic DOM elements not found:', {
+                    nameCategory: !!nameCategory,
+                    descriptionCategory: !!descriptionCategory,
+                    userCreate: !!userCreate
+                });
+                return;
+            }
+            nameCategory.textContent = topic.title || 'Untitled Topic';
+            descriptionCategory.textContent = topic.description || 'No description';
+            userCreate.innerHTML = `
+                <img class="user-img" src="static/assets/User.svg" alt="User Avatar">${topic.user?.username || 'Unknown User'}
             `;
         } else {
             console.error('Failed to fetch Topic:', result.message);
             alert('Failed to load Topic');
         }
     } catch (error) {
-        console.error('Request failed:', error);
-        alert('Network error');
+        console.error('Fetch topic failed:', error);
+        alert('Network error while fetching topic');
     }
 }
 
 // Fetch and display paginated Item data with sorting
 async function fetchItems() {
     try {
-        // 修改接口调用，添加 sortType 参数
+        console.log(`Fetching items: /api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`); // 调试：记录请求
         const response = await fetch(`/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`, {
             method: 'GET',
             credentials: 'include'
         });
         const result = await response.json();
+        console.log('Items API response:', result); // 调试：记录响应
         if (result.code === 200) {
             const items = result.data.data;
-            // 清空现有卡片（避免重复）
             const ratingsSection = document.querySelector('.ratings');
+            if (!ratingsSection) {
+                console.error('Ratings section not found');
+                return;
+            }
+            // 清空现有卡片（避免重复）
             ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
             renderItems(items);
-            document.querySelector('.show-more').style.display = items.length === pageSize ? 'block' : 'none';
+            const showMoreButton = document.querySelector('.show-more');
+            if (showMoreButton) {
+                showMoreButton.style.display = items.length === pageSize ? 'block' : 'none';
+                console.log(`Show More button visibility: ${showMoreButton.style.display}`); // 调试：记录按钮状态
+            }
         } else {
             console.error('Failed to fetch Items:', result.message);
             alert('Failed to load Items');
         }
     } catch (error) {
-        console.error('Request failed:', error);
-        alert('Network error');
+        console.error('Fetch items failed:', error);
+        alert('Network error while fetching items');
     }
 }
 
 // Render Item cards
 function renderItems(items) {
+    console.log(`Rendering items: count=${items.length}`); // 调试：记录渲染数量
     const ratingsSection = document.querySelector('.ratings');
+    if (!ratingsSection) {
+        console.error('Ratings section not found during render');
+        return;
+    }
     items.forEach(item => {
+        console.log(`Rendering item: ${item.name}, rating: ${item.averageRating}`); // 调试：记录项数据
         const ratingCard = document.createElement('div');
         ratingCard.className = 'rating-card';
         ratingCard.setAttribute('data-item-id', item.id);
+
+        // 生成静态星星
+        const fullStars = Math.floor(item.averageRating || 0);
+        const hasHalfStar = (item.averageRating % 1) >= 0.5;
+        let starHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) {
+                starHtml += '<span class="star light">★</span>';
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                starHtml += '<span class="star half">★</span>';
+            } else {
+                starHtml += '<span class="star">★</span>';
+            }
+        }
 
         ratingCard.innerHTML = `
             <div class="rating-info">
                 <img class="img-rating" src="${item.imageUrl || 'static/assets/default-image.svg'}" alt="Rating Item Image">
                 <div class="name-desc">
-                    <h3 class="name-rating">${item.name}</h3>
-                    <p class="description-rating">${item.description}</p>
+                    <h3 class="name-rating">${item.name || 'Unnamed Item'}</h3>
+                    <p class="description-rating">${item.description || 'No description'}</p>
                 </div>
             </div>
             <div class="game-info">
-                <div class="interactive-stars" data-item-id="${item.id}">
-                    <span class="star" data-value="1">★</span>
-                    <span class="star" data-value="2">★</span>
-                    <span class="star" data-value="3">★</span>
-                    <span class="star" data-value="4">★</span>
-                    <span class="star" data-value="5">★</span>
-                </div>
+                <div class="star-rating">${starHtml}</div>
                 <div class="score">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</div>
-                <p class="number-rating">${item.totalRatings} ratings</p>
+                <p class="number-rating">${item.totalRatings || 0} ratings</p>
             </div>
         `;
 
         ratingsSection.insertBefore(ratingCard, document.querySelector('.more-ratings'));
 
-        // Initialize star display
-        updateStars(ratingCard.querySelector('.interactive-stars'), item.averageRating);
-
-        // Add click event to navigate to Comment.html with itemId
+        // Add click event to navigate to Feedback.html with itemId
         ratingCard.addEventListener('click', () => {
-            window.location.href = `Comment.html?itemId=${item.id}`;
+            window.location.href = `Feedback.html?itemId=${item.id}`;
         });
     });
-
-    // Add star click event
-    document.querySelectorAll('.interactive-stars .star').forEach(star => {
-        star.addEventListener('click', async function (e) {
-            e.stopPropagation(); // 防止点击星星时触发卡片跳转
-            const itemId = this.parentElement.getAttribute('data-item-id');
-            const score = parseInt(this.getAttribute('data-value'));
-            await submitRating(itemId, score); // Submit immediately on click
-            await refreshItem(itemId); // Refresh rating display
-        });
-    });
-}
-
-// Update star display (based on 1-5 value)
-function updateStars(starContainer, averageRating) {
-    const score = averageRating || 0; // Default to 0 if no rating
-    const fullStars = Math.floor(score);
-    const halfStar = score % 1 >= 0.5 ? 1 : 0;
-    const stars = starContainer.querySelectorAll('.star');
-    stars.forEach((star, index) => {
-        star.classList.remove('light', 'half');
-        if (index + 1 <= fullStars) {
-            star.classList.add('light'); // Full star
-        } else if (index + 1 === fullStars + 1 && halfStar) {
-            star.classList.add('half'); // Half star
-        }
-    });
-}
-
-// Submit rating to backend
-async function submitRating(itemId, score) {
-    try {
-        const response = await fetch('/api/rating', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                itemId: parseInt(itemId),
-                score: parseInt(score)
-            }),
-            credentials: 'include'
-        });
-        const result = await response.json();
-        if (result.code === 200) {
-            console.log('Rating submitted successfully');
-        } else {
-            alert('Failed to submit rating: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Failed to submit rating:', error);
-        alert('Network error');
-    }
-}
-
-// Refresh Item's rating display
-async function refreshItem(itemId) {
-    try {
-        const response = await fetch(`/api/item/${itemId}`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-        const result = await response.json();
-        if (result.code === 200) {
-            const item = result.data;
-            const card = document.querySelector(`.rating-card[data-item-id="${itemId}"]`);
-            if (card) {
-                const starContainer = card.querySelector('.interactive-stars');
-                updateStars(starContainer, item.averageRating);
-                card.querySelector('.score').textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
-                card.querySelector('.number-rating').textContent = `${item.totalRatings} ratings`;
-            }
-        } else {
-            console.error('Failed to fetch Item:', result.message);
-        }
-    } catch (error) {
-        console.error('Request failed:', error);
-    }
 }
 
 // Add filter button event listeners
 document.addEventListener('DOMContentLoaded', () => {
+
     const filterButtons = document.querySelectorAll('.type-button');
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -202,15 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 默认激活 "Up to date" 按钮
-    document.querySelector('.type-button:nth-child(2)').classList.add('active');
+    const upToDateButton = document.querySelector('.type-button:nth-child(2)');
+    if (upToDateButton) {
+        upToDateButton.classList.add('active');
+    }
 
     // Initialize page
     fetchTopic();
     fetchItems();
-});
 
-// "Show More" button event
-document.querySelector('.show-more').addEventListener('click', () => {
-    currentPage++;
-    fetchItems();
+    // "Show More" button event
+    const showMoreButton = document.querySelector('.show-more');
+    if (showMoreButton) {
+        showMoreButton.addEventListener('click', () => {
+            console.log('Show More clicked'); // 调试：确认点击
+            currentPage++;
+            fetchItems();
+        });
+    } else {
+        console.error('Show More button not found');
+    }
 });

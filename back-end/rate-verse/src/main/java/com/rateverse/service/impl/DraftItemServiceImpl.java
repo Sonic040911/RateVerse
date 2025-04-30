@@ -66,6 +66,7 @@ public class DraftItemServiceImpl implements DraftItemService {
 
         // 验证这个草稿是否存在
         if (draftTopic == null) {
+            System.out.println("=======2==========");
             return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
         }
 

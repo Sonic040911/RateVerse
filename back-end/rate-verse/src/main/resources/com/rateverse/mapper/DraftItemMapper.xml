@@ -28,6 +28,6 @@
             draft_item di
             left join draft_topic dt
             on di.draft_topic_id = dt.draft_id
-            where di.draft_topic_id = #{id}
+            where di.draft_item_id = #{id}
     </select>
 </mapper>

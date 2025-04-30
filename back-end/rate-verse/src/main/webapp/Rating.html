@@ -93,9 +93,9 @@
         <h2 class="section-title">Recommended for you</h2>
         <div class="recommended_header">
         <span>
-          <a href="#" class="recommended_header-link">
-            <h3>Your favorite fps game</h3>
-          </a>
+            <a href="#" class="recommended_header-link">
+                <h3 class="topic-title">Your favorite fps game</h3> <!-- 添加 class="topic-title" -->
+            </a>
         </span>
             <p class="recommended_total">Total Ratings: 911</p>
         </div>
@@ -113,6 +113,7 @@
                     </div>
                 </div>
             </a>
+
             <a href="#" class="recommended_item-link">
                 <div class="recommended_item">
                     <div class="recommended_info">
@@ -125,6 +126,7 @@
                     </div>
                 </div>
             </a>
+
             <a href="#" class="recommended_item-link">
                 <div class="recommended_item">
                     <div class="recommended_info">
@@ -137,6 +139,7 @@
                     </div>
                 </div>
             </a>
+
         </div>
         <div class="more-ratings">
             <button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button>
@@ -144,12 +147,10 @@
     </section>
 </main>
 
-<a href="Create.html">
-    <button class="floating-btn">
-        <span class="plus-icon">+</span>
-        <span class="create-text">Create</span>
-    </button>
-</a>
+<button id="createBtn" class="floating-btn">
+    <span class="plus-icon">+</span>
+    <span class="create-text">Create Topic</span>
+</button>
 
 <footer>
     <div class="footer-container">
@@ -287,7 +288,7 @@
     </div>
 </div>
 
-  <!--<script src="static/js/Rating.js"></script>-->
+  <script src="static/js/Rating.js"></script>
   <script src="static/js/theme.js"></script>
   <script src="static/js/profile.js"></script>
   <script src="static/js/notification.js"></script>
