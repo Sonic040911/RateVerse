@@ -141,6 +141,9 @@ public class UserController {
         profile.put("phone", user.getPhone());
         profile.put("address", user.getAddress());
 
+        System.out.println("===========log.info============");
+        log.info("用户的个人信息为: {}", profile);
+
         return Result.ok(profile, ResultCodeEnum.SUCCESS);
     }
 
@@ -148,6 +151,9 @@ public class UserController {
     @PostMapping("/api/update-username")
     public Result updateUsername(@RequestParam String newUsername, HttpSession session) {
         User user = (User) session.getAttribute("user");
+        String oldName = user.getUsername();
+        System.out.println("======================================");
+        System.out.println(oldName);
         if (newUsername == null || newUsername.trim().isEmpty()) {
             return Result.fail(null, ResultCodeEnum.USERNAME_EMPTY);
         }
@@ -159,6 +165,9 @@ public class UserController {
             // 更新 session 中的用户信息
             session.setAttribute("user", user);
         }
+
+        System.out.println("===========log.info============");
+        log.info("用户的名字成功从: {} 更改为: {}", oldName, newUsername);
 
         return result;
     }
@@ -176,6 +185,10 @@ public class UserController {
         if (result.isFlag()) {
             session.setAttribute("user", user);
         }
+
+        System.out.println("===========log.info============");
+        log.info("用户的头像更改成功: {}", avatarUrl);
+
         return result;
     }
 
@@ -197,6 +210,9 @@ public class UserController {
             // 更新 session 中的用户信息
             session.setAttribute("user", user);
         }
+
+        System.out.println("===========log.info============");
+        log.info("用户的信息更改成功: {}", result);
 
         return result;
     }

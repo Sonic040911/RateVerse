@@ -22,6 +22,7 @@ public class ApiInterceptor implements HandlerInterceptor {
 
         if (user == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 未授权
+            System.out.println("====================未登录!!!=======================");
             response.getWriter().write("please login first");
             return false;
         }

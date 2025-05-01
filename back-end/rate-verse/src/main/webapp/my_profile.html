@@ -33,6 +33,7 @@
                 <div class="avatar-overlay">
                     <i class="fas fa-camera"></i>
                 </div>
+                <input id="avatarInput" type="file" accept="image/*" style="display: none;">
             </div>
             <div class="name-wrapper">
                 <h2>John Doe</h2>
@@ -45,15 +46,15 @@
             <div class="user-info">
                 <div class="info-item">
                     <span class="info-label">Email:</span>
-                    <span class="info-value">john@example.com</span>
+                    <span class="info-value" data-field="email">john@example.com</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Phone:</span>
-                    <span class="info-value">(239) 816-9029</span>
+                    <span class="info-value" data-field="phone">(239) 816-9029</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Address:</span>
-                    <span class="info-value">Bay Area, San Francisco, CA</span>
+                    <span class="info-value" data-field="address">Bay Area, San Francisco, CA</span>
                 </div>
             </div>
         </div>
@@ -82,28 +83,28 @@
                     <div class="stat-item">
                         <i class="fas fa-book"></i>
                         <div class="stat-info">
-                            <span class="stat-value">42</span>
+                            <span class="stat-value" for="topics">42</span>
                             <span class="stat-label">Topics Created</span>
                         </div>
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-heart"></i>
                         <div class="stat-info">
-                            <span class="stat-value">128</span>
+                            <span class="stat-value" for="likes">128</span>
                             <span class="stat-label">Likes on Rating</span>
                         </div>
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-comment"></i>
                         <div class="stat-info">
-                            <span class="stat-value">75</span>
+                            <span class="stat-value" for="comments">75</span>
                             <span class="stat-label">Comments on Rating</span>
                         </div>
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-star"></i>
                         <div class="stat-info">
-                            <span class="stat-value">4.8</span>
+                            <span class="stat-value" for="ratings">4.8</span>
                             <span class="stat-label">User Rating</span>
                         </div>
                     </div>

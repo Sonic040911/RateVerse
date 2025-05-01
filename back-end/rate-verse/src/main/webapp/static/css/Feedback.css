@@ -37,8 +37,8 @@
   --toggle-bg: #ffffff;
   --toggle-border: #e2e8f0;
   --slider-color: #f6ad55;
-  --sun-color: #aaaaaa; 
-  --moon-color: #a0aec0; 
+  --sun-color: #aaaaaa;
+  --moon-color: #a0aec0;
 }
 
 .dark-mode {
@@ -69,8 +69,8 @@
   --toggle-bg: #4a5568;
   --toggle-border: #718096;
   --slider-color: #cbd5e0;
-  --sun-color: #cbd5e0; 
-  --moon-color: #f6e05e; 
+  --sun-color: #cbd5e0;
+  --moon-color: #f6e05e;
 
   /* Fix for smile and gallery buttons in dark mode */
   .smile-btn, .gallery-btn {
@@ -121,12 +121,12 @@ header {
   z-index: 100;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-  
+
 .rateverse-logo {
   display: flex;
   align-items: center;
 }
-  
+
 .rateverse {
   color: #FFFFFF;
   font-size: 22px;
@@ -171,7 +171,7 @@ nav ul li a:hover {
   color: #FFFFFF;
 }
 
-nav ul li a.active { 
+nav ul li a.active {
   color: #FFFFFF;
   border-bottom: 3px solid #FFFFFF;
 }
@@ -233,7 +233,7 @@ nav ul li a.active {
 }
 
 .notification, .profile {
-cursor: pointer;
+  cursor: pointer;
   margin-left: 20px;
   transition: transform 0.2s ease;
 }
@@ -297,8 +297,8 @@ main {
 }
 
 .some-image img {
-  width: 95%;
-  height: 95%;
+  width: 210px;
+  height: 250px;
   border-radius: 24px;
   object-fit: cover;
   cursor: pointer;
@@ -489,6 +489,22 @@ main {
   display: flex;
   gap: 10px;
   padding: 10px 0;
+  position: relative;
+}
+
+.comment.reply {
+  margin-left: 40px;
+  padding-left: 15px;
+}
+
+.comment.reply::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--divider-color);
 }
 
 .user-avatar {
@@ -936,7 +952,7 @@ main {
 /* Media query for smaller screens */
 @media screen and (max-width: 768px) {
   .notification-modal {
-      right: 20px; /* Adjust for smaller screens */
+    right: 20px; /* Adjust for smaller screens */
   }
 }
 
@@ -947,11 +963,11 @@ main {
     gap: 30px;
     padding: 40px 5%;
   }
-  
+
   .footer-column, .footer-navigation {
     width: 100%;
   }
-  
+
   .footer-navigation {
     gap: 30px;
   }
@@ -963,31 +979,31 @@ main {
     flex-wrap: wrap;
     padding: 15px 3%;
   }
-  
+
   .rateverse-logo {
     width: auto;
     margin-bottom: 10px;
   }
-  
+
   nav ul {
     width: 100%;
     justify-content: space-around;
     gap: 5px;
   }
-  
+
   .search-bar {
     width: 100%;
     margin: 10px 0;
   }
-  
+
   .notification, .profile {
     margin-left: 15px;
   }
-  
+
   .something-rating-card {
     width: 95%;
   }
-  
+
   .filter-buttons {
     width: 50%;
   }
@@ -997,15 +1013,15 @@ main {
   .something-rating-card {
     padding: 15px;
   }
-  
+
   .some-name {
     font-size: 1.5rem;
   }
-  
+
   .rating-score {
     font-size: 1.8rem;
   }
-  
+
   .filter-buttons {
     width: 75%;
   }

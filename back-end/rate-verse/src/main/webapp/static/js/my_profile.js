@@ -85,55 +85,55 @@ profileForm.addEventListener('submit', (event) => {
     }, 2000); // Уведомление исчезает через 2 секунды
 });
 
-// Инициализация графика активности
-const ctx = document.getElementById('activityChart').getContext('2d');
-const activityChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-            {
-                label: 'Ratings Created',
-                data: [5, 10, 8, 15, 12, 20],
-                borderColor: '#3498db',
-                backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                fill: true,
-                tension: 0.4
-            },
-            {
-                label: 'Comments Posted',
-                data: [10, 15, 20, 10, 25, 30],
-                borderColor: '#2ecc71',
-                backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                fill: true,
-                tension: 0.4
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Activity Count'
-                }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Month'
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                position: 'top'
-            }
-        }
-    }
-});
+// // Инициализация графика активности
+// const ctx = document.getElementById('activityChart').getContext('2d');
+// const activityChart = new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+//         datasets: [
+//             {
+//                 label: 'Ratings Created',
+//                 data: [5, 10, 8, 15, 12, 20],
+//                 borderColor: '#3498db',
+//                 backgroundColor: 'rgba(52, 152, 219, 0.2)',
+//                 fill: true,
+//                 tension: 0.4
+//             },
+//             {
+//                 label: 'Comments Posted',
+//                 data: [10, 15, 20, 10, 25, 30],
+//                 borderColor: '#2ecc71',
+//                 backgroundColor: 'rgba(46, 204, 113, 0.2)',
+//                 fill: true,
+//                 tension: 0.4
+//             }
+//         ]
+//     },
+//     options: {
+//         responsive: true,
+//         scales: {
+//             y: {
+//                 beginAtZero: true,
+//                 title: {
+//                     display: true,
+//                     text: 'Activity Count'
+//                 }
+//             },
+//             x: {
+//                 title: {
+//                     display: true,
+//                     text: 'Month'
+//                 }
+//             }
+//         },
+//         plugins: {
+//             legend: {
+//                 position: 'top'
+//             }
+//         }
+//     }
+// });
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM 加载完成，开始初始化");
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 获取用户资料
     fetchUserProfile();
     fetchUserStats();
-    fetchUserRatings();
+    //fetchUserRatings(); // 以后搞
 
     // 更新用户名
     const editIcon = document.querySelector('.edit-icon');
@@ -179,12 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renameForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log("提交用户名修改表单");
         const newUsername = newNameInput.value.trim();
         if (!newUsername) {
+            console.warn("用户名为空");
             alert('用户名不能为空');
             return;
         }
-
+        console.log("发送用户名修改请求:", newUsername);
         try {
             const response = await fetch('/user/api/update-username', {
                 method: 'POST',
@@ -194,11 +196,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: `newUsername=${encodeURIComponent(newUsername)}`,
                 credentials: 'include',
             });
+            console.log('更新用户名 API 响应状态:', response.status);
             const result = await response.json();
+            console.log('更新用户名 API 返回数据:', result);
             if (result.code === 200) {
                 document.querySelector('.name-wrapper h2').textContent = newUsername;
                 renameModal.style.display = 'none';
+                alert('用户名更新成功');
             } else {
+                console.error('更新用户名失败:', result.message);
                 alert('更新用户名失败: ' + result.message);
             }
         } catch (error) {
@@ -221,27 +227,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     avatarWrapper.addEventListener('click', () => {
+        console.log("点击头像，触发文件选择");
         avatarInput.click();
     });
 
     avatarInput.addEventListener('change', async () => {
+        console.log("选择头像文件");
         const file = avatarInput.files[0];
-        if (!file) return;
-
+        if (!file) {
+            console.warn("未选择文件");
+            return;
+        }
+        console.log("上传头像文件:", file.name);
         const formData = new FormData();
         formData.append('image', file);
-
         try {
             const uploadResponse = await fetch('/api/upload/image', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
             });
+            console.log('上传图片 API 响应状态:', uploadResponse.status);
             const uploadResult = await uploadResponse.json();
+            console.log('上传图片 API 返回数据:', uploadResult);
             if (uploadResult.code === 200) {
                 const avatarUrl = uploadResult.data;
                 document.querySelector('.avatar').src = avatarUrl;
-
+                console.log("发送头像更新请求:", avatarUrl);
                 const updateResponse = await fetch('/user/api/update-avatar', {
                     method: 'POST',
                     headers: {
@@ -250,11 +262,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: `avatarUrl=${encodeURIComponent(avatarUrl)}`,
                     credentials: 'include',
                 });
+                console.log('更新头像 API 响应状态:', updateResponse.status);
                 const updateResult = await updateResponse.json();
-                if (updateResult.code !== 200) {
+                console.log('更新头像 API 返回数据:', updateResult);
+                if (updateResult.code === 200) {
+                    alert('头像更新成功');
+                } else {
+                    console.error('更新头像失败:', updateResult.message);
                     alert('更新头像失败: ' + updateResult.message);
                 }
             } else {
+                console.error('上传图片失败:', uploadResult.message);
                 alert('上传图片失败: ' + uploadResult.message);
             }
         } catch (error) {
@@ -278,11 +296,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
+        console.log("提交用户信息修改表单");
         const email = document.querySelector('#email').value.trim();
         const phone = document.querySelector('#phone').value.trim();
         const address = document.querySelector('#address').value.trim();
-
+        console.log("发送用户信息修改请求:", { email, phone, address });
         try {
             const response = await fetch('/user/api/update-profile', {
                 method: 'POST',
@@ -295,18 +313,17 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log('更新用户信息 API 响应状态:', response.status);
             const result = await response.json();
             console.log('更新用户信息 API 返回数据:', result);
-
             if (result.code === 200) {
-                // 更新左侧显示
                 document.querySelector('.info-value[data-field="email"]').textContent = email || 'N/A';
                 document.querySelector('.info-value[data-field="phone"]').textContent = phone || 'N/A';
                 document.querySelector('.info-value[data-field="address"]').textContent = address || 'N/A';
-                // 显示保存成功通知
                 saveNotification.style.display = 'block';
                 setTimeout(() => {
                     saveNotification.style.display = 'none';
                 }, 3000);
+                alert('用户信息更新成功');
             } else {
+                console.error('更新用户信息失败:', result.message);
                 alert('更新用户信息失败: ' + result.message);
             }
         } catch (error) {
@@ -318,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* 获取用户资料 */
 async function fetchUserProfile() {
+    console.log("开始获取用户资料");
     try {
         const response = await fetch('/user/api/profile', {
             method: 'GET',
@@ -325,6 +343,7 @@ async function fetchUserProfile() {
         });
         console.log('用户资料 API 响应状态:', response.status);
         if (response.status === 401) {
+            console.log("未登录，跳转到 login.html");
             alert('请先登录');
             window.location.href = 'login.html';
             return;
@@ -337,38 +356,26 @@ async function fetchUserProfile() {
 
         if (result.code === 200) {
             const profile = result.data;
-            // 左侧用户信息
+            // 更新 DOM（保持不变）
             const usernameElement = document.querySelector('.name-wrapper h2');
             const avatarElement = document.querySelector('.avatar');
             const emailElement = document.querySelector('.info-value[data-field="email"]');
             const phoneElement = document.querySelector('.info-value[data-field="phone"]');
             const addressElement = document.querySelector('.info-value[data-field="address"]');
-            // 右侧表单
             const emailInput = document.querySelector('#email');
             const phoneInput = document.querySelector('#phone');
             const addressInput = document.querySelector('#address');
 
-            if (!usernameElement || !avatarElement) {
-                console.error("未找到 usernameElement 或 avatarElement，请检查 my_profile.html 中是否有 .name-wrapper h2 和 .avatar 元素");
-                return;
-            }
-            if (!emailElement || !phoneElement || !addressElement) {
-                console.error("未找到 emailElement, phoneElement 或 addressElement，请检查 my_profile.html 中是否有对应的 .info-value 元素");
-                return;
-            }
-            if (!emailInput || !phoneInput || !addressInput) {
-                console.error("未找到 emailInput, phoneInput 或 addressInput，请检查 my_profile.html 中是否有对应的 input 元素");
+            if (!usernameElement || !avatarElement || !emailElement || !phoneElement || !addressElement) {
+                console.error("未找到必要的 DOM 元素");
                 return;
             }
 
-            // 更新左侧用户信息
             usernameElement.textContent = profile.username || 'Unknown User';
             avatarElement.src = profile.avatarUrl || '/assets/Block_with_X(2).svg';
             emailElement.textContent = profile.email || 'N/A';
             phoneElement.textContent = profile.phone || 'N/A';
             addressElement.textContent = profile.address || 'N/A';
-
-            // 更新右侧表单
             emailInput.value = profile.email || '';
             phoneInput.value = profile.phone || '';
             addressInput.value = profile.address || '';

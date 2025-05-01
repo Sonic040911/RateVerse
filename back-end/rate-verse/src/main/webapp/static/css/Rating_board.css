@@ -49,7 +49,7 @@
     --section-color: #2d3748;
     --btns-bg-color: #424242;
     --btns-text-color: #FFFFFF;
-    --container-color: #3a3a3a;
+    --container-color: #2d3748;
     --container-border-color: #4a5568;
     --text-color: #f7fafc;
     --second-text-color: #90cdf4;
@@ -626,7 +626,7 @@ nav ul li a.active {
 }
 
 .img-rating {
-    width: 50%;
+    width: 150px;
     height: 100%;
     margin-right: 2%;
 }
@@ -636,7 +636,8 @@ nav ul li a.active {
     font-weight: 500;
     font-size: 1.5em;
     color: var(--btns-text-color);
-    margin-bottom: 30%;
+    margin-bottom: 5%;
+    width: 400px;
 }
 
 .description-rating {
@@ -674,13 +675,6 @@ nav ul li a.active {
 
 .star-rating .star.light {
     color: var(--rating-color); /* #FFC701 */
-}
-
-.star-rating .star.half {
-    color: var(--rating-color);
-    position: relative;
-    overflow: hidden;
-    width: 50%; /* 显示半颗星 */
 }
 
 .score {

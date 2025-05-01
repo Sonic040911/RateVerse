@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* My profile button */
-
 const myProfile = document.getElementById('myProfile');
 
 myProfile.addEventListener('click', () => {

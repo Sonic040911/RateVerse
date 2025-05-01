@@ -579,10 +579,10 @@ input::placeholder {
 }
 
 .cover-options {
+  width: 200px;
   display: flex;
-  justify-content: space-between;
-  gap: 15px;
   margin-top: 15px;
+  justify-self: center;
 }
 
 .cover-option {
@@ -1092,4 +1092,24 @@ input::placeholder {
   .submit-btn {
     width: 100%;
   }
+}
+
+
+.delete-item {
+  width: 90px;
+  height: 30px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.75em;
+  color: #ffffff;
+  background: #f83f3f;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
