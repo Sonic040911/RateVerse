@@ -4,7 +4,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.rateverse.bean.DraftItem;
 import com.rateverse.bean.DraftTopic;
-import com.rateverse.bean.Item;
 import com.rateverse.mapper.DraftItemMapper;
 import com.rateverse.mapper.DraftTopicMapper;
 import com.rateverse.service.DraftItemService;
@@ -32,6 +31,9 @@ public class DraftItemServiceImpl implements DraftItemService {
     @Autowired
     private DraftItemMapper draftItemMapper;
 
+    private static final int MAX_ITEM_NAME_LENGTH = 50;
+    private static final int MAX_ITEM_DESC_LENGTH = 200;
+
     @Override
     public Result addDraftItem(Integer draftId, DraftItem item, Integer userId) {
         // 添加前判断这个draft是否存在
@@ -43,6 +45,14 @@ public class DraftItemServiceImpl implements DraftItemService {
         // 验证草稿归属权
         if (!draftTopic.getUserId().equals(userId)) {
             return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        // 验证字数
+        if (item.getName() != null && item.getName().length() > MAX_ITEM_NAME_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_TITLE);
+        }
+        if (item.getDescription() != null && item.getDescription().length() > MAX_ITEM_DESC_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_DES);
         }
 
         // 设置它的draft_topic_id
@@ -79,6 +89,44 @@ public class DraftItemServiceImpl implements DraftItemService {
         draftItemMapper.deleteDraftItem(draftItemId);
 
         return Result.ok(null, ResultCodeEnum.SUCCESS);
+    }
+
+    @Override
+    public Result updateDraftItem(Integer draftItemId, DraftItem item, Integer userId) {
+        // 获取 DraftItem 所属的 DraftTopic
+        DraftTopic draftTopic = draftItemMapper.selectDraftTopicByDraftItemId(draftItemId);
+        if (draftTopic == null) {
+            return Result.fail(null, ResultCodeEnum.NULL_DRAFT);
+        }
+        if (!draftTopic.getUserId().equals(userId)) {
+            return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
+        }
+
+        // 验证字数
+        if (item.getName() != null && item.getName().length() > MAX_ITEM_NAME_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_TITLE);
+        }
+        if (item.getDescription() != null && item.getDescription().length() > MAX_ITEM_DESC_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_DES);
+        }
+
+        // 获取现有 DraftItem
+        DraftItem existingItem = draftItemMapper.selectDraftItemById(draftItemId);
+        if (existingItem == null) {
+            return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
+        }
+
+        // 更新字段
+        existingItem.setName(item.getName());
+        existingItem.setDescription(item.getDescription());
+        existingItem.setImageUrl(item.getImageUrl());
+
+        int row = draftItemMapper.updateDraftItem(existingItem);
+        if (row == 0) {
+            return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+        }
+
+        return Result.ok(existingItem, ResultCodeEnum.SUCCESS);
     }
 
     // 分页显示所有DraftItem

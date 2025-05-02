@@ -168,4 +168,15 @@ public class TopicController {
         int ratingsCount = topicService.getTopicRatingsCountByUserId(user.getId());
         return Result.ok(ratingsCount, ResultCodeEnum.SUCCESS);
     }
+
+    // 在个人资料页面中获取用户最火的Topics
+    @GetMapping("/user-ratings")
+    public Result getUserTopicsForRatings(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        Result result = topicService.getUserTopicsByHeat(user.getId());
+        log.info("用户 {} 的热门Topics查询结果: {}", user.getId(), result);
+
+        return result;
+    }
 }

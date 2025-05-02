@@ -26,4 +26,8 @@ public interface DraftItemMapper {
 
     // 根据草稿评分项的id查询草稿主题
     DraftTopic selectDraftTopicByDraftItemId(Integer draftItemId);
+
+    DraftItem selectDraftItemById(Integer draftItemId);
+
+    int updateDraftItem(DraftItem existingItem);
 }

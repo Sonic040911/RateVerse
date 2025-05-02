@@ -218,4 +218,58 @@
     <select id="countTopicRatingsByUserId" resultType="int">
         SELECT COALESCE(SUM(t.total_ratings), 0) FROM topic t WHERE t.user_id = #{userId}
     </select>
+
+
+    <!-- Topic和最热门Item的resultMap -->
+    <resultMap id="TopicResultMapWithTopItem" type="com.rateverse.bean.Topic">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="user_id" property="userId"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="total_comments" property="totalComments"/>
+        <result column="total_ratings" property="totalRatings"/>
+        <!-- 关联的最热门Item -->
+        <association property="topItem" javaType="com.rateverse.bean.Item">
+            <id column="item_id" property="id"/>
+            <result column="topic_id" property="topicId"/>
+            <result column="name" property="name"/>
+            <result column="item_description" property="description"/>
+            <result column="image_url" property="imageUrl"/>
+            <result column="average_rating" property="averageRating"/>
+            <result column="item_total_ratings" property="totalRatings"/>
+            <result column="item_total_comments" property="totalComments"/>
+            <result column="item_created_at" property="createdAt"/>
+            <result column="item_updated_at" property="updatedAt"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询用户创建的Topic，按热度排序，包含最热门Item，最多3个 -->
+    <select id="selectUserTopicsByHeat" resultMap="TopicResultMapWithTopItem">
+        SELECT
+        t.id, t.title, t.description, t.user_id,
+        t.created_at, t.updated_at, t.total_comments, t.total_ratings,
+        i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
+        i.image_url, i.average_rating,
+        i.total_ratings AS item_total_ratings,
+        i.total_comments AS item_total_comments,
+        i.created_at AS item_created_at, i.updated_at AS item_updated_at
+        FROM topic t
+        LEFT JOIN (
+        SELECT i2.*
+        FROM item i2
+        WHERE i2.id = (
+        SELECT id
+        FROM item i3
+        WHERE i3.topic_id = i2.topic_id
+        ORDER BY (i3.total_ratings + i3.total_comments) DESC, i3.created_at DESC
+        LIMIT 1
+        )
+        ) i ON t.id = i.topic_id
+        WHERE t.user_id = #{userId}
+        ORDER BY (t.total_ratings + t.total_comments) DESC, t.created_at DESC
+        LIMIT 3
+    </select>
+
 </mapper>

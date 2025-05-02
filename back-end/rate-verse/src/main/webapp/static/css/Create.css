@@ -545,6 +545,7 @@ input::placeholder {
   display: block;
 }
 
+/* 确保输入框样式一致 */
 .object-name input, .descriptions input {
   width: 100%;
   padding: 12px 15px;
@@ -563,13 +564,18 @@ input::placeholder {
   box-shadow: 0 0 0 2px rgba(75, 72, 223, 0.2);
 }
 
+/* 调整 object-cover 区域 */
 .object-cover {
   background: var(--container-color);
   padding: 20px;
   border-radius: 12px;
   margin: 15px 0;
   border: 1px solid var(--container-border-color);
+<<<<<<< Updated upstream
   display: flex; /* 合并你的 flex 布局 */
+=======
+  display: flex;
+>>>>>>> Stashed changes
   flex-direction: column;
   align-items: center;
 }
@@ -584,7 +590,10 @@ input::placeholder {
 
 .cover-options {
   display: flex;
+<<<<<<< Updated upstream
   margin-top: 15px;
+=======
+>>>>>>> Stashed changes
   justify-content: space-between; /* 均匀分布 */
   width: 100%; /* 占满容器宽度 */
   gap: 20px; /* 元素间距 */
@@ -603,8 +612,25 @@ input::placeholder {
 }
 
 .cover-option {
+<<<<<<< Updated upstream
   background: var(--item-bg-color);
   cursor: pointer;
+=======
+  width: 200px;
+  text-align: center;
+  background: var(--item-bg-color);
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid var(--input-border-color);
+  transition: all 0.2s ease;
+  float: right;
+}
+
+.cover-option {
+  background: var(--item-bg-color);
+  cursor: pointer;
+>>>>>>> Stashed changes
 }
 
 .cover-option:hover {
@@ -1247,4 +1273,64 @@ input::placeholder {
   align-items: center;
   text-transform: uppercase;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.word-count {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.rating-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.edit-item {
+  width: 90px;
+  height: 30px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 0.75em;
+  color: #ffffff;
+  background: var(--primary-color); /* #4B48DF */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.edit-item:hover {
+  background: var(--primary-light); /* #6A67FF */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cover-preview {
+  text-align: center;
+  flex: 1;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--input-border-color);
+  transition: all 0.2s ease;
+}
+
+.cover-preview img {
+  max-width: 100%; /* 适配容器 */
+  max-height: 150px; /* 固定高度 */
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.cover-preview:empty::after {
+  content: "No image selected";
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--third-text-color);
 }

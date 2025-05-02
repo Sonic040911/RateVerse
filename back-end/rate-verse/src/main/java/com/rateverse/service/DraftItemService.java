@@ -14,6 +14,8 @@ public interface DraftItemService {
 
     Result deleteDraftItem(Integer draftItemId, Integer userId);
 
+    Result updateDraftItem(Integer draftItemId, DraftItem item, Integer userId);
+
     Result page(int draftId, int pageSize, int currentPage, Integer userId);
 
 }

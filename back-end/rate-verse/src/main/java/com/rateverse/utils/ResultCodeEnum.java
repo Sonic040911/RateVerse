@@ -24,6 +24,10 @@ public enum ResultCodeEnum {
     HAD_DRAFT(602, "user already had a draft"),
     DRAFT_PERMISSION_ERROR(603, "no permission to operate others' drafts"),
     NO_ANY_ITEM(604, "at least one rating item is required"),
+    INVALID_INPUT_TOPIC_TITLE(605, "Topic title exceeds 50 characters"),
+    INVALID_INPUT_TOPIC_DES(606, "Topic description exceeds 200 characters"),
+    INVALID_INPUT_ITEM_TITLE(607, "Object title exceeds 50 characters"),
+    INVALID_INPUT_ITEM_DES(608, "Object description exceeds 200 characters"),
 
 
     // Rating Event状态码
@@ -49,7 +53,8 @@ public enum ResultCodeEnum {
     UPLOAD_ERROR(1004, "upload error"),
     USERNAME_EMPTY(1005, "username is empty!"),
 
-    AVATAR_URL_EMPTY(1006, "avatar url is empty");
+    AVATAR_URL_EMPTY(1006, "avatar url is empty")
+    ;
 
     private final Integer code;
     private final String message;

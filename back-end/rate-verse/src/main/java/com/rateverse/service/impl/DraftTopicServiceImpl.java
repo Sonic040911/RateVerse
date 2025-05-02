@@ -39,6 +39,13 @@ public class DraftTopicServiceImpl implements DraftTopicService {
     private ItemMapper itemMapper;
 
 
+    // 字数限制常量
+    private static final int MAX_TOPIC_TITLE_LENGTH = 50;
+    private static final int MAX_TOPIC_DESC_LENGTH = 200;
+    private static final int MAX_ITEM_NAME_LENGTH = 50;
+    private static final int MAX_ITEM_DESC_LENGTH = 200;
+
+
     // 根据user_id临时创建一个DraftTopic在数据库
     @Override
     public Result createDraft(Integer userId) {
@@ -98,6 +105,14 @@ public class DraftTopicServiceImpl implements DraftTopicService {
             return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
         }
 
+        // 验证字数
+        if (title != null && title.length() > MAX_TOPIC_TITLE_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_TOPIC_TITLE);
+        }
+        if (description != null && description.length() > MAX_TOPIC_DESC_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_TOPIC_DES);
+        }
+
         // 把新的信息赋值给它
         oldDraftTopic.setTitle(title);
         oldDraftTopic.setDescription(description);
@@ -148,8 +163,15 @@ public class DraftTopicServiceImpl implements DraftTopicService {
             return Result.fail(null, ResultCodeEnum.DRAFT_PERMISSION_ERROR);
         }
 
+        // 验证字数
+        if (draft.getTitle() != null && draft.getTitle().length() > MAX_TOPIC_TITLE_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_TOPIC_TITLE);
+        }
+        if (draft.getDescription() != null && draft.getDescription().length() > MAX_TOPIC_DESC_LENGTH) {
+            return Result.fail(null, ResultCodeEnum.INVALID_INPUT_TOPIC_DES);
+        }
+
         // 数据转换 DraftTopic -> Topic
-        Topic topic = new Topic();
         List<DraftItem> draftItemList = draftItemMapper.selectDraftItemsByTopicId(draftId);
 
         // 转换前校验有没有至少一个item
@@ -157,6 +179,18 @@ public class DraftTopicServiceImpl implements DraftTopicService {
             return Result.fail(null, ResultCodeEnum.NO_ANY_ITEM);
         }
 
+        // 验证 Item 字数
+        for (DraftItem draftItem : draftItemList) {
+            if (draftItem.getName() != null && draftItem.getName().length() > MAX_ITEM_NAME_LENGTH) {
+                return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_TITLE);
+            }
+            if (draftItem.getDescription() != null && draftItem.getDescription().length() > MAX_ITEM_DESC_LENGTH) {
+                return Result.fail(null, ResultCodeEnum.INVALID_INPUT_ITEM_DES);
+            }
+        }
+
+        // 数据转换 DraftTopic -> Topic
+        Topic topic = new Topic();
         topic.setTitle(draft.getTitle());
         topic.setDescription(draft.getDescription());
         topic.setUserId(draft.getUserId());

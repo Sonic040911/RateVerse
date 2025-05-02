@@ -31,4 +31,6 @@ public interface TopicService {
     int getTopicCommentsCountByUserId(Integer id);
 
     int getTopicRatingsCountByUserId(Integer id);
+
+    Result getUserTopicsByHeat(Integer userId);
 }

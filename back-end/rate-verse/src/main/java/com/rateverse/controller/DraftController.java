@@ -248,4 +248,18 @@ public class DraftController {
 
         return result;
     }
+
+    // 更改Item信息
+    @PutMapping("/item/{draftItemId}")
+    public Result updateDraftItem(@PathVariable Integer draftItemId, @RequestBody DraftItem item, HttpSession session) {
+        // 获取userid
+        User user = (User) session.getAttribute("user");
+
+        Result result = draftItemService.updateDraftItem(draftItemId, item, user.getId());
+
+        System.out.println("===========log.info============");
+        log.info("更改Item信息成功: {}", result);
+
+        return result;
+    }
 }

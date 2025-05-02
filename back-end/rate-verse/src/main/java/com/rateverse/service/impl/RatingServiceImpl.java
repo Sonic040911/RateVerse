@@ -61,6 +61,11 @@ public class RatingServiceImpl implements RatingService {
         return Result.ok(null, ResultCodeEnum.SUCCESS);
     }
 
+    @Override
+    public Rating getUserRating(Integer userId, Integer itemId) {
+        return ratingMapper.getUserRating(userId, itemId);
+    }
+
     // 实时更新Item里面的总评分人数和这个Item的平均评分
     private void updateItemStats(Integer itemId) {
         Double itemRatingAvg = ratingMapper.getAverageScoreByItemId(itemId);

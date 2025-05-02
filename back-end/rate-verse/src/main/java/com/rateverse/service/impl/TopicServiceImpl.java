@@ -112,20 +112,29 @@ public class TopicServiceImpl implements TopicService {
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 
-
+    @Override
     public int getTopicCountByUserId(Integer userId) {
         return topicMapper.countTopicsByUserId(userId);
     }
 
+    @Override
     public int getTopicLikesCountByUserId(Integer userId) {
         return topicMapper.countTopicLikesByUserId(userId);
     }
 
+    @Override
     public int getTopicCommentsCountByUserId(Integer userId) {
         return topicMapper.countTopicCommentsByUserId(userId);
     }
-
+    @Override
     public int getTopicRatingsCountByUserId(Integer userId) {
         return topicMapper.countTopicRatingsByUserId(userId);
+    }
+
+
+    @Override
+    public Result getUserTopicsByHeat(Integer userId) {
+        List<Topic> topics = topicMapper.selectUserTopicsByHeat(userId);
+        return Result.ok(topics, ResultCodeEnum.SUCCESS);
     }
 }

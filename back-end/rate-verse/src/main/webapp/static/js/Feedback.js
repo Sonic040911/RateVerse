@@ -13,6 +13,12 @@ let currentPage = 1;
 const pageSize = 5; // Display 5 comments per page
 let sortType = 'likes'; // Default sorting by time (Latest)
 
+// Reset stars function (moved to global scope)
+function resetStars() {
+  const stars = document.querySelectorAll('.my-star');
+  stars.forEach(star => star.classList.remove('active'));
+}
+
 // Fetch and display Item information
 async function fetchItem() {
   try {
@@ -35,11 +41,11 @@ async function fetchItem() {
 
       // 设置图片
       const itemImage = document.querySelector('.some-image img');
-      itemImage.src = item.imageUrl || 'static/assets/Block_with_X(2).svg'; // 如果 imageUrl 为空，使用默认图片
-      console.log(`Loading image for item ${item.id}: ${itemImage.src}`); // 添加日志
+      itemImage.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
+      console.log(`Loading image for item ${item.id}: ${itemImage.src}`);
       itemImage.onerror = () => {
         console.error(`Failed to load image for item ${item.id}: ${itemImage.src}`);
-        itemImage.src = 'static/assets/Block_with_X(2).svg'; // 加载失败时回退到默认图片
+        itemImage.src = 'static/assets/Block_with_X(2).svg';
       };
       itemImage.onload = () => {
         console.log(`Image loaded successfully for item ${item.id}: ${itemImage.src}`);
@@ -50,6 +56,38 @@ async function fetchItem() {
     }
   } catch (error) {
     console.error('Request failed:', error);
+    alert('Network error');
+  }
+}
+
+// Fetch user rating
+async function fetchUserRating() {
+  try {
+    const response = await fetch(`/api/rating/${itemId}/user`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const result = await response.json();
+    if (result.code === 200) {
+      const rating = result.data;
+      const ratingInput = document.querySelector('.my-rating-input');
+      const stars = document.querySelectorAll('.my-star');
+      if (rating && rating.score) {
+        ratingInput.value = rating.score;
+        resetStars(); // 清空当前星级
+        for (let i = 0; i < rating.score; i++) {
+          stars[i].classList.add('active');
+        }
+      } else {
+        ratingInput.value = 0;
+        resetStars(); // 清空星级
+      }
+    } else {
+      console.error('Failed to fetch user rating:', result.message);
+      alert('Failed to load user rating');
+    }
+  } catch (error) {
+    console.error('Fetch user rating failed:', error);
     alert('Network error');
   }
 }
@@ -82,7 +120,6 @@ function renderRatingDistribution(distributions) {
 // Fetch and display paginated comments
 async function fetchComments() {
   try {
-    // 使用统一的接口，传递 sortType 参数
     const apiUrl = `/api/comment/getCommentsByItemId/${itemId}/${pageSize}/${currentPage}?sortType=${sortType}`;
     const response = await fetch(apiUrl, {
       method: 'GET',
@@ -106,7 +143,7 @@ async function fetchComments() {
 // Render comments
 function renderComments(comments) {
   const commentList = document.querySelector('.comment-list');
-  commentList.innerHTML = ''; // 清空现有评论
+  commentList.innerHTML = '';
   comments.forEach(comment => {
     const commentDiv = document.createElement('div');
     commentDiv.className = 'comment';
@@ -229,18 +266,14 @@ function addCommentInteractions() {
     });
   });
 
-  // 修改过滤按钮事件监听
   const filterButtons = document.querySelectorAll('.filter-btn');
   filterButtons.forEach(btn => {
     btn.addEventListener('click', function () {
-      // 移除所有按钮的激活样式
       filterButtons.forEach(b => b.classList.remove('active'));
-      // 给当前点击的按钮添加激活样式
       this.classList.add('active');
 
-      // 更新 sortType
-      sortType = this.getAttribute('data-sort'); // "likes", "time", "time-asc"
-      currentPage = 1; // 重置分页
+      sortType = this.getAttribute('data-sort');
+      currentPage = 1;
       fetchComments();
     });
   });
@@ -268,10 +301,6 @@ function addCommentInteractions() {
       submitRating(value);
     });
   });
-
-  function resetStars() {
-    stars.forEach(star => star.classList.remove('active'));
-  }
 }
 
 // Submit rating
@@ -291,7 +320,8 @@ async function submitRating(score) {
     const result = await response.json();
     if (result.code === 200) {
       console.log('Rating submitted successfully');
-      fetchItem();
+      fetchItem(); // 更新 Item 信息
+      fetchUserRating(); // 更新用户评分
     } else {
       alert('Failed to submit rating: ' + result.message);
     }
@@ -405,11 +435,10 @@ async function handleVote(commentId, action) {
 document.addEventListener('DOMContentLoaded', () => {
   fetchItem();
   fetchComments();
+  fetchUserRating(); // 加载用户评分
 
-  // 默认激活 "Latest" 按钮
   document.querySelector('.filter-btn[data-sort="time"]').classList.add('active');
 
-  // Share button functionality
   const modal = document.getElementById("modal");
   const shareBtn = document.querySelector(".share-btn");
   const closeBtn = document.querySelector(".close");

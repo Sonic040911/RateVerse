@@ -55,4 +55,6 @@ public interface TopicMapper {
     int countTopicLikesByUserId(Integer userId);
     int countTopicCommentsByUserId(Integer userId);
     int countTopicRatingsByUserId(Integer userId);
+
+    List<Topic> selectUserTopicsByHeat(Integer id);
 }

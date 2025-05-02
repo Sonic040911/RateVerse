@@ -35,4 +35,7 @@ public class Topic {
     * 如果你想知道这个topic有哪些item，在下面添加 List<Item> 用于接收
     * */
     private List<Item> items;
+
+
+    private Item topItem; // 新增：最热门Item
 }

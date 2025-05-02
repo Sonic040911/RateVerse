@@ -30,4 +30,20 @@
             on di.draft_topic_id = dt.draft_id
             where di.draft_item_id = #{id}
     </select>
+
+    <!-- 根据 draft_item_id 查询 DraftItem -->
+    <select id="selectDraftItemById" parameterType="int" resultType="com.rateverse.bean.DraftItem">
+        SELECT draft_item_id, draft_topic_id, name, description, image_url
+        FROM draft_item
+        WHERE draft_item_id = #{draftItemId}
+    </select>
+
+    <!-- 更新 DraftItem -->
+    <update id="updateDraftItem" parameterType="com.rateverse.bean.DraftItem">
+        UPDATE draft_item
+        SET name = #{name},
+        description = #{description},
+        image_url = #{imageUrl}
+        WHERE draft_item_id = #{draftItemId}
+    </update>
 </mapper>

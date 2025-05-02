@@ -4,6 +4,7 @@ import com.rateverse.bean.Rating;
 import com.rateverse.bean.User;
 import com.rateverse.service.RatingService;
 import com.rateverse.utils.Result;
+import com.rateverse.utils.ResultCodeEnum;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,18 @@ public class RatingController {
         log.info("添加的评分项为: {}", result);
 
         return result;
+    }
+
+    // 获取用户对指定 Item 的评分
+    @GetMapping("/{itemId}/user")
+    public Result getUserRating(@PathVariable Integer itemId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        Rating rating = ratingService.getUserRating(user.getId(), itemId);
+        if (rating != null) {
+            return Result.ok(rating, ResultCodeEnum.SUCCESS);
+        } else {
+            return Result.ok(null, ResultCodeEnum.SUCCESS); // 返回 null 表示用户未评分
+        }
     }
 }
