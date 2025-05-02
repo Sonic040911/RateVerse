@@ -1,69 +1,196 @@
-// Получаем элементы для модального окна смены фото
-const avatarWrapper = document.querySelector('.avatar-wrapper');
-const photoModal = document.getElementById('photoModal');
-const photoCloseBtn = photoModal.querySelector('.close-btn');
+document.addEventListener('DOMContentLoaded', () => {
+    const editIcon = document.querySelector('.edit-icon');
+    const renameModal = document.getElementById('renameModal');
+    const closeBtn = renameModal.querySelector('.close-btn');
+    const cancelBtn = renameModal.querySelector('.cancel-btn');
+    const renameForm = renameModal.querySelector('.rename-form');
+    const nameInput = document.getElementById('newName');
+    const avatarWrapper = document.querySelector('.avatar-wrapper');
+    const avatarInput = document.getElementById('avatarInput');
+    const profileForm = document.querySelector('.profile-form');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('address');
+    const saveNotification = document.querySelector('.save-notification');
 
-// Получаем элементы для модального окна переименования
-const editIcon = document.querySelector('.edit-icon');
-const renameModal = document.getElementById('renameModal');
-const renameCloseBtn = renameModal.querySelector('.close-btn');
-const renameForm = renameModal.querySelector('.rename-form');
-const cancelBtn = renameModal.querySelector('.cancel-btn');
+    // Create error message element for rename modal
+    const errorMessage = document.createElement('p');
+    errorMessage.style.color = '#FF3B3B';
+    errorMessage.style.fontSize = '0.8rem';
+    errorMessage.style.marginTop = '0.5rem';
+    errorMessage.style.display = 'none';
+    nameInput.parentElement.appendChild(errorMessage);
 
-// Получаем элементы для формы профиля, отображения информации и уведомления
-const profileForm = document.querySelector('.profile-form');
-const emailValue = document.querySelector('.user-info .info-item:nth-child(1) .info-value');
-const phoneValue = document.querySelector('.user-info .info-item:nth-child(2) .info-value');
-const addressValue = document.querySelector('.user-info .info-item:nth-child(3) .info-value');
-const saveNotification = document.querySelector('.save-notification');
+    // Create error message elements for profile form
+    const emailError = document.createElement('p');
+    emailError.style.color = '#FF3B3B';
+    emailError.style.fontSize = '0.8rem';
+    emailError.style.marginTop = '0.5rem';
+    emailError.style.display = 'none';
+    emailInput.parentElement.appendChild(emailError);
 
-// Открытие модального окна смены фото
-avatarWrapper.addEventListener('click', () => {
-    photoModal.style.display = 'flex';
-    setTimeout(() => {
-        photoModal.querySelector('.modal-content').classList.add('show');
-    }, 10);
-});
+    const phoneError = document.createElement('p');
+    phoneError.style.color = '#FF3B3B';
+    phoneError.style.fontSize = '0.8rem';
+    phoneError.style.marginTop = '0.5rem';
+    phoneError.style.display = 'none';
+    phoneInput.parentElement.appendChild(phoneError);
 
-// Закрытие модального окна смены фото
-photoCloseBtn.addEventListener('click', () => {
-    photoModal.style.display = 'none';
-});
+    const addressError = document.createElement('p');
+    addressError.style.color = '#FF3B3B';
+    addressError.style.fontSize = '0.8rem';
+    addressError.style.marginTop = '0.5rem';
+    addressError.style.display = 'none';
+    addressInput.parentElement.appendChild(addressError);
 
-// Открытие модального окна переименования
-editIcon.addEventListener('click', () => {
-    renameModal.style.display = 'flex';
-    setTimeout(() => {
-        renameModal.querySelector('.modal-content').classList.add('show');
-    }, 10);
-});
+    // Open rename modal when edit icon is clicked
+    editIcon.addEventListener('click', () => {
+        renameModal.style.display = 'flex';
+        setTimeout(() => {
+            renameModal.querySelector('.modal-content').classList.add('show');
+        }, 10);
+        errorMessage.style.display = 'none'; // Reset error on open
+    });
 
-// Закрытие модального окна переименования
-renameCloseBtn.addEventListener('click', () => {
-    renameModal.style.display = 'none';
-});
+    // Close rename modal
+    const closeRenameModal = () => {
+        renameModal.querySelector('.modal-content').classList.remove('show');
+        setTimeout(() => {
+            renameModal.style.display = 'none';
+        }, 300);
+        errorMessage.style.display = 'none'; // Reset error on close
+    };
 
-cancelBtn.addEventListener('click', () => {
-    renameModal.style.display = 'none';
-});
+    closeBtn.addEventListener('click', closeRenameModal);
+    cancelBtn.addEventListener('click', closeRenameModal);
 
-// Закрытие модальных окон при клике вне контента
-window.addEventListener('click', (event) => {
-    if (event.target === photoModal) {
-        photoModal.style.display = 'none';
-    }
-    if (event.target === renameModal) {
-        renameModal.style.display = 'none';
-    }
-});
+    // Validate name input (min 3 characters, max 20 characters)
+    const validateName = (name) => {
+        if (name.trim().length < 3) {
+            return { valid: false, message: 'Name must be at least 3 characters long.' };
+        }
+        if (name.length > 15) {
+            return { valid: false, message: 'Name must not exceed 15 characters.' };
+        }
+        return { valid: true, message: '' };
+    };
 
-// Обработка отправки формы переименования (демонстрация)
-renameForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const newName = document.getElementById('newName').value;
-    document.querySelector('.profile-card h2').textContent = newName;
-    document.getElementById('fullName').value = newName;
-    renameModal.style.display = 'none';
+    // Validate phone input (only digits, hyphens, parentheses, and plus sign; max 15 digits)
+    const validatePhone = (phone) => {
+        // Allow digits, hyphens, parentheses, and plus sign
+        const phoneRegex = /^[0-9+\s()-]+$/;
+        if (!phoneRegex.test(phone)) {
+            return { valid: false, message: 'Phone must contain only numbers, hyphens, parentheses, or a plus sign.' };
+        }
+
+        // Count digits (ignore hyphens, parentheses, and plus sign)
+        const digits = phone.replace(/[^0-9]/g, '');
+        if (digits.length > 11) {
+            return { valid: false, message: 'Phone number must not exceed 11 digits.' };
+        }
+
+        return { valid: true, message: '' };
+    };
+
+    // Validate email input (max 50 characters)
+    const validateEmail = (email) => {
+        if (email.length > 35) {
+            return { valid: false, message: 'Email must not exceed 35 characters.' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    // Validate address input (maximum 5 words and 50 characters)
+    const validateAddress = (address) => {
+        const words = address.trim().split(/\s+/);
+        if (words.length > 5) {
+            return { valid: false, message: 'Address must not exceed 5 words.' };
+        }
+        if (address.length > 35) {
+            return { valid: false, message: 'Address must not exceed 35 characters.' };
+        }
+        return { valid: true, message: '' };
+    };
+
+    // Handle rename form submission
+    renameForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newName = nameInput.value.trim();
+        const validation = validateName(newName);
+
+        if (validation.valid) {
+            document.querySelector('.profile-card h2').textContent = newName;
+            closeRenameModal();
+        } else {
+            errorMessage.textContent = validation.message;
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    // Handle profile form submission to update profile card info
+    profileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Reset error messages
+        emailError.style.display = 'none';
+        phoneError.style.display = 'none';
+        addressError.style.display = 'none';
+
+        // Get new values from the form
+        const newEmail = emailInput.value.trim();
+        const newPhone = phoneInput.value.trim();
+        const newAddress = addressInput.value.trim();
+
+        // Validate email, phone, and address
+        const emailValidation = validateEmail(newEmail);
+        const phoneValidation = validatePhone(newPhone);
+        const addressValidation = validateAddress(newAddress);
+
+        if (!emailValidation.valid) {
+            emailError.textContent = emailValidation.message;
+            emailError.style.display = 'block';
+            return;
+        }
+
+        if (!phoneValidation.valid) {
+            phoneError.textContent = phoneValidation.message;
+            phoneError.style.display = 'block';
+            return;
+        }
+
+        if (!addressValidation.valid) {
+            addressError.textContent = addressValidation.message;
+            addressError.style.display = 'block';
+            return;
+        }
+
+        // Update the profile card info
+        document.querySelector('.info-value[data-field="email"]').textContent = newEmail;
+        document.querySelector('.info-value[data-field="phone"]').textContent = newPhone;
+        document.querySelector('.info-value[data-field="address"]').textContent = newAddress;
+
+        // Show the "Changes saved!" notification
+        saveNotification.style.display = 'block';
+        setTimeout(() => {
+            saveNotification.style.display = 'none';
+        }, 2000);
+    });
+
+    // Trigger file input when avatar is clicked
+    avatarWrapper.addEventListener('click', () => {
+        avatarInput.click();
+    });
+
+    // Handle avatar file selection
+    avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.querySelector('.avatar').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 });
 
 // Обработка отправки формы профиля (синхронизация с .user-info)
@@ -84,56 +211,6 @@ profileForm.addEventListener('submit', (event) => {
         saveNotification.style.display = 'none';
     }, 2000); // Уведомление исчезает через 2 секунды
 });
-
-// // Инициализация графика активности
-// const ctx = document.getElementById('activityChart').getContext('2d');
-// const activityChart = new Chart(ctx, {
-//     type: 'line',
-//     data: {
-//         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-//         datasets: [
-//             {
-//                 label: 'Ratings Created',
-//                 data: [5, 10, 8, 15, 12, 20],
-//                 borderColor: '#3498db',
-//                 backgroundColor: 'rgba(52, 152, 219, 0.2)',
-//                 fill: true,
-//                 tension: 0.4
-//             },
-//             {
-//                 label: 'Comments Posted',
-//                 data: [10, 15, 20, 10, 25, 30],
-//                 borderColor: '#2ecc71',
-//                 backgroundColor: 'rgba(46, 204, 113, 0.2)',
-//                 fill: true,
-//                 tension: 0.4
-//             }
-//         ]
-//     },
-//     options: {
-//         responsive: true,
-//         scales: {
-//             y: {
-//                 beginAtZero: true,
-//                 title: {
-//                     display: true,
-//                     text: 'Activity Count'
-//                 }
-//             },
-//             x: {
-//                 title: {
-//                     display: true,
-//                     text: 'Month'
-//                 }
-//             }
-//         },
-//         plugins: {
-//             legend: {
-//                 position: 'top'
-//             }
-//         }
-//     }
-// });
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM 加载完成，开始初始化");
@@ -168,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     editIcon.addEventListener('click', () => {
-        renameModal.style.display = 'block';
+        renameModal.style.display = 'flex'; // Fixed: Changed from 'block' to 'flex'
     });
 
     closeBtns.forEach(btn => {
@@ -461,4 +538,3 @@ async function fetchUserStats() {
         alert('获取统计数据时发生网络错误');
     }
 }
-

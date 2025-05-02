@@ -655,15 +655,15 @@ input::placeholder {
   box-shadow: 0 6px 15px rgba(75, 72, 223, 0.3);
 }
 
-/* Notification modal styling */
+/* Modal notification button */
 .notification-modal {
   position: fixed;
   top: 90px;
   right: 20px;
   z-index: 1001;
   display: none;
-  background-color: var(--item-bg-color);
   border-radius: 10px;
+  border: 2px solid var(--primary-color);
 }
 
 .notification-modal.active {
@@ -674,16 +674,36 @@ input::placeholder {
 .notification-modal-content {
   background-color: var(--item-bg-color);
   border-radius: 10px;
-  padding: 15px 0;
+  padding: 5px 0;
   box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-  width: 300px;
+  width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-modal-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.notification-modal-content::-webkit-scrollbar-track {
+  background: var(--divider-color);
+  border-radius: 10px;
+}
+
+.notification-modal-content::-webkit-scrollbar-thumb {
+  background: var(--third-text-color);
+  border-radius: 10px;
+}
+
+.notification-modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
 }
 
 .notification-body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 15px 5px;
   text-align: center;
 }
 
@@ -703,6 +723,54 @@ input::placeholder {
   color: var(--third-text-color);
   line-height: 1.5;
   max-width: 250px;
+}
+
+.notification-list {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-list li {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background-color 0.2s ease;
+}
+
+.notification-list li:last-child {
+  border-bottom: none;
+}
+
+.notification-message:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: translate(1px, -1px);
+}
+
+.notification-list li {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background-color 0.2s ease;
+  border-radius: 10px;
+}
+
+.notification-message {
+  font-weight: 500;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: var(--third-text-color);
 }
 
 /* Profile dropdown styling */
@@ -893,7 +961,7 @@ input::placeholder {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 60px 5%;
+  padding: 25px 5%;
 }
 
 .footer-column {
@@ -947,11 +1015,11 @@ input::placeholder {
   transform: translateY(-3px);
 }
 
-.footer-navigation {
+.footer-nav {
   display: flex;
   width: 65%;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .footer-links, .footer-statistics, .footer-contact {

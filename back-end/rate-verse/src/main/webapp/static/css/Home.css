@@ -358,7 +358,7 @@ nav ul li a.active {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: 60px 5%;
+    padding: 25px 5%;
   }
   
   .footer-column {
@@ -412,11 +412,11 @@ nav ul li a.active {
     transform: translateY(-3px);
   }
   
-  .footer-navigation {
+  .footer-nav {
     display: flex;
     width: 65%;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
   }
   
   .footer-links, .footer-statistics, .footer-contact {

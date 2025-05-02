@@ -256,15 +256,15 @@ nav ul li a.active {
   transform: scale(1.08);
 }
 
-/* modal notification */
+/* Modal notification button */
 .notification-modal {
   position: fixed;
   top: 90px;
   right: 20px;
   z-index: 1001;
   display: none;
-  background-color: var(--item-bg-color);
   border-radius: 10px;
+  border: 2px solid var(--primary-color);
 }
 
 .notification-modal.active {
@@ -275,16 +275,36 @@ nav ul li a.active {
 .notification-modal-content {
   background-color: var(--item-bg-color);
   border-radius: 10px;
-  padding: 15px 0;
+  padding: 5px 0;
   box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-  width: 300px; /* Fixed width for consistency */
+  width: 400px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-modal-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.notification-modal-content::-webkit-scrollbar-track {
+  background: var(--divider-color);
+  border-radius: 10px;
+}
+
+.notification-modal-content::-webkit-scrollbar-thumb {
+  background: var(--third-text-color);
+  border-radius: 10px;
+}
+
+.notification-modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
 }
 
 .notification-body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 15px 5px;
   text-align: center;
 }
 
@@ -304,6 +324,54 @@ nav ul li a.active {
   color: var(--third-text-color);
   line-height: 1.5;
   max-width: 250px;
+}
+
+.notification-list {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-list li {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background-color 0.2s ease;
+}
+
+.notification-list li:last-child {
+  border-bottom: none;
+}
+
+.notification-message:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: translate(1px, -1px);
+}
+
+.notification-list li {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+  font-size: 14px;
+  color: var(--text-color);
+  transition: background-color 0.2s ease;
+  border-radius: 10px;
+}
+
+.notification-message {
+  font-weight: 500;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: var(--third-text-color);
 }
 
 /* Profile dropdown styling */
@@ -508,8 +576,8 @@ nav ul li a.active {
 .img-category {
     border-radius: 15px;
     margin-right: 2%;
-    width: 10%;
-    height: 10%;
+    width: 150px;
+    height: 150px;
     margin-top: -5%;
 }
 
@@ -565,18 +633,19 @@ nav ul li a.active {
     width: 50%;
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
 }
 
 .type-button {
-    width: 23%;
+    width: 20%;
     height: 25px;
     font-family: "Montserrat", sans-serif;
     font-weight: 600;
-    font-size: 0.7em;
+    font-size: 0.75em;
     color: #ffffff;
-    border-radius: 5px;
     background: linear-gradient(135deg, #007bff, #0056b3);
     border: none;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -584,6 +653,11 @@ nav ul li a.active {
     align-items: center;
     text-transform: uppercase;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.type-button:focus {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 4px;
 }
 
 .type-button:hover {
@@ -728,7 +802,7 @@ nav ul li a.active {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: 60px 5%;
+    padding: 25px 5%;
   }
   
   .footer-column {
@@ -782,11 +856,11 @@ nav ul li a.active {
     transform: translateY(-3px);
   }
   
-  .footer-navigation {
+  .footer-nav {
     display: flex;
     width: 65%;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
   }
   
   .footer-links, .footer-statistics, .footer-contact {
