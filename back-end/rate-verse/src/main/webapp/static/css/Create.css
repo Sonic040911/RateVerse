@@ -571,11 +571,7 @@ input::placeholder {
   border-radius: 12px;
   margin: 15px 0;
   border: 1px solid var(--container-border-color);
-<<<<<<< Updated upstream
-  display: flex; /* 合并你的 flex 布局 */
-=======
   display: flex;
->>>>>>> Stashed changes
   flex-direction: column;
   align-items: center;
 }
@@ -590,17 +586,14 @@ input::placeholder {
 
 .cover-options {
   display: flex;
-<<<<<<< Updated upstream
   margin-top: 15px;
-=======
->>>>>>> Stashed changes
-  justify-content: space-between; /* 均匀分布 */
-  width: 100%; /* 占满容器宽度 */
-  gap: 20px; /* 元素间距 */
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
 }
 
 .cover-preview, .cover-option {
-  flex: 1; /* 平均分配空间 */
+  flex: 1;
   text-align: center;
   padding: 15px;
   border-radius: 10px;
@@ -612,10 +605,6 @@ input::placeholder {
 }
 
 .cover-option {
-<<<<<<< Updated upstream
-  background: var(--item-bg-color);
-  cursor: pointer;
-=======
   width: 200px;
   text-align: center;
   background: var(--item-bg-color);
@@ -630,7 +619,6 @@ input::placeholder {
 .cover-option {
   background: var(--item-bg-color);
   cursor: pointer;
->>>>>>> Stashed changes
 }
 
 .cover-option:hover {

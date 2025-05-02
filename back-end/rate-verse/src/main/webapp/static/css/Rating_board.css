@@ -576,15 +576,9 @@ nav ul li a.active {
 .img-category {
     border-radius: 15px;
     margin-right: 2%;
-<<<<<<< Updated upstream
     width: 150px;
     height: 150px;
     margin-top: -5%;
-=======
-    width: 150px; /* 固定宽度 */
-    height: 200px; /* 固定高度 */
-    margin-top: 0; /* 移除负边距 */
->>>>>>> Stashed changes
 }
 
 .info-category {

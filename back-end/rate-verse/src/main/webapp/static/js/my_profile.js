@@ -1,16 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM 加载完成，开始初始化");
 
-<<<<<<< Updated upstream
     // 获取 DOM 元素
-=======
-    // 获取用户资料
-    fetchUserProfile();
-    fetchUserStats();
-    fetchUserRatings();
-
-    // 更新用户名
->>>>>>> Stashed changes
     const editIcon = document.querySelector('.edit-icon');
     const renameModal = document.getElementById('renameModal');
     const closeBtn = renameModal?.querySelector('.close-btn');
@@ -69,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addressError.style.color = '#FF3B3B';
     addressError.style.fontSize = '0.8rem';
     addressError.style.marginTop = '0.5rem';
-    addressError.style.display = ' none';
+    errorMessage.style.display = 'none';
     addressInput.parentElement.appendChild(addressError);
 
     // 初始化数据
@@ -216,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('更新头像失败: ' + updateResult.message);
                 }
             } else {
-                alert('上传图片失败: ' + uploadResult.message);
+                alert('上传图片失败: ' + updateResult.message);
             }
         } catch (error) {
             console.error('上传图片出错:', error);
@@ -371,10 +362,6 @@ async function fetchUserStats() {
     }
 }
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 // 截断字符串函数
 function truncateText(text, maxLength) {
     if (text && text.length > maxLength) {
@@ -383,7 +370,6 @@ function truncateText(text, maxLength) {
     return text || '';
 }
 
-<<<<<<< Updated upstream
 // 获取并显示用户评分数据
 async function fetchUserRatings() {
     console.log("开始获取用户评分数据");
@@ -392,16 +378,7 @@ async function fetchUserRatings() {
             method: 'GET',
             credentials: 'include',
         });
-=======
-async function fetchUserRatings() {
-    console.log("开始获取用户评分数据");
-    try {
-        const response = await fetch('/api/topic/user-ratings', {
-            method: 'GET',
-            credentials: 'include',
-        });
         console.log('用户评分 API 响应状态:', response.status);
->>>>>>> Stashed changes
         if (response.status === 401) {
             console.log("未登录，跳转到 login.html");
             alert('请先登录');
@@ -409,40 +386,24 @@ async function fetchUserRatings() {
             return;
         }
         if (!response.ok) {
-<<<<<<< Updated upstream
             const errorData = await response.json();
             console.error('服务器错误响应:', errorData);
             throw new Error(`HTTP 错误: ${response.status} - ${errorData.message || '未知错误'}`);
         }
         const result = await response.json();
-        if (result.code === 200) {
-            const ratings = Array.isArray(result.data) ? result.data : [];
-=======
-            throw new Error(`HTTP 错误: ${response.status}`);
-        }
-        const result = await response.json();
         console.log('用户评分 API 返回数据:', result);
         if (result.code === 200) {
-            const ratings = result.data; // Topic列表
->>>>>>> Stashed changes
+            const ratings = Array.isArray(result.data) ? result.data : [];
             const ratingsList = document.querySelector('.ratings-list');
             if (!ratingsList) {
                 console.error("未找到 ratings-list 元素");
                 return;
             }
-<<<<<<< Updated upstream
             ratingsList.innerHTML = '';
             ratings.slice(0, 3).forEach(rating => {
                 const ratingItem = document.createElement('div');
                 ratingItem.className = 'rating-item';
                 ratingItem.dataset.topicId = rating.id;
-=======
-            ratingsList.innerHTML = ''; // 清空现有内容
-            ratings.slice(0, 3).forEach(rating => { // 确保最多3个
-                const ratingItem = document.createElement('div');
-                ratingItem.className = 'rating-item';
-                ratingItem.dataset.topicId = rating.id; // 存储topicId
->>>>>>> Stashed changes
                 ratingItem.innerHTML = `
                     <img src="${rating.topItem?.imageUrl || '/static/assets/user-solid.svg'}" alt="${rating.title}" class="rating-image">
                     <div class="rating-info">
@@ -468,9 +429,4 @@ async function fetchUserRatings() {
         console.error('获取用户评分出错:', error);
         alert('获取用户评分时发生网络错误');
     }
-<<<<<<< Updated upstream
 }
-=======
-}
-
->>>>>>> Stashed changes
