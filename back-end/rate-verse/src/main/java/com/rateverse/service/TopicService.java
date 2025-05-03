@@ -22,7 +22,7 @@ public interface TopicService {
     Result searchTopicsByHeat(String keyword, int pageSize, int currentPage);
 
     // 搜索所有Topic, 根据关键词返回所有相关Topic (最近创建优先)
-    Result searchTopicsByTime(String keyword, int pageSize, int currentPage);
+    Result searchTopicsByTime(String keyword, int pageSize, int currentPage, String order);
 
     int getTopicCountByUserId(Integer id);
 
@@ -32,5 +32,5 @@ public interface TopicService {
 
     int getTopicRatingsCountByUserId(Integer id);
 
-    Result getUserTopicsByHeat(Integer userId);
+    Result getUserTopicsByTime(Integer userId);
 }

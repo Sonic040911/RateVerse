@@ -1,10 +1,11 @@
 package com.rateverse.service.impl;
 
-import com.rateverse.bean.Item;
-import com.rateverse.bean.Rating;
+import com.rateverse.bean.*;
 import com.rateverse.mapper.ItemMapper;
 import com.rateverse.mapper.RatingMapper;
 import com.rateverse.mapper.TopicMapper;
+import com.rateverse.mapper.UserMapper;
+import com.rateverse.service.NotificationService;
 import com.rateverse.service.RatingService;
 import com.rateverse.utils.Result;
 import com.rateverse.utils.ResultCodeEnum;
@@ -30,6 +31,12 @@ public class RatingServiceImpl implements RatingService {
     @Autowired
     private TopicMapper topicMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
     public Result submitRating(Rating rating) {
         // 查询Item存在与否
@@ -52,6 +59,27 @@ public class RatingServiceImpl implements RatingService {
         // 如果不存在，则添加评分
         else {
             ratingMapper.insertRating(rating);
+        }
+
+        // 生成通知
+        Item item = itemMapper.selectItemById(rating.getItemId());
+        if (item != null) {
+            Integer topicId = item.getTopicId();
+            Topic topic = topicMapper.selectTopicByIdWithUser(topicId);
+            if (topic != null && topic.getUserId() != null && !topic.getUserId().equals(rating.getUserId())) {
+                User sender = userMapper.selectUserById(rating.getUserId());
+                String senderName = sender != null ? sender.getUsername() : "Anonymous";
+                String itemName = item.getName() != null ? item.getName() : "Unknown Item";
+                String message = String.format("%s rated your item '%s' with a score of %d.", senderName, itemName, rating.getScore());
+                Notification notification = new Notification();
+                notification.setUserId(topic.getUserId());
+                notification.setSenderId(rating.getUserId());
+                notification.setType("RATING");
+                notification.setItemId(rating.getItemId());
+                notification.setCommentId(null); // 评分无评论
+                notification.setMessage(message);
+                notificationService.createNotification(notification);
+            }
         }
 
         // 更新Item和Topic的统计

@@ -1,0 +1,29 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.rateverse.mapper.NotificationMapper">
+    <insert id="insertNotification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notification (user_id, sender_id, type, comment_id, item_id, message, created_at, is_read)
+        VALUES (#{userId}, #{senderId}, #{type}, #{commentId}, #{itemId}, #{message}, NOW(), 0)
+    </insert>
+
+    <select id="selectByUserId" resultType="com.rateverse.bean.Notification">
+        SELECT
+        id, user_id AS userId, sender_id AS senderId, type,
+        comment_id AS commentId, item_id AS itemId, message,
+        created_at AS createdAt, is_read AS isRead
+        FROM notification
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*) FROM notification WHERE user_id = #{userId}
+    </select>
+
+    <update id="markRead">
+        UPDATE notification SET is_read = 1 WHERE id = #{id}
+    </update>
+</mapper>

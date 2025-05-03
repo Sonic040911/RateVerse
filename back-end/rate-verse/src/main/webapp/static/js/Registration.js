@@ -38,7 +38,9 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
 
         if (registerResult.code === 200) {
-            window.location.href = '/Login.html'; // Registration successful, redirect to login page
+            setTimeout(() => {
+                window.location.href = '/Login.html?registered=true';
+            }, 2000); // Delay redirect by 2 seconds
         } else {
             showError('Registration failed, please try again later');
         }
@@ -48,8 +50,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         showError('Service is temporarily unavailable, please try again later');
     }
 });
-
-
 
 // Check username availability
 async function checkUsernameAvailability(username) {
@@ -75,6 +75,14 @@ async function registerUser(userData) {
     return response.json();
 }
 
+// Show success message
+function showSuccess(message) {
+    const successElement = document.getElementById('successMessage');
+    if (successElement) {
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+    }
+}
 
 // Show field-level error
 function showFieldError(field, message) {
@@ -100,6 +108,11 @@ function clearErrors() {
         el.style.display = 'none';
         el.textContent = '';
     });
+    const successElement = document.getElementById('successMessage');
+    if (successElement) {
+        successElement.style.display = 'none';
+        successElement.textContent = '';
+    }
     document.querySelectorAll('.input-box').forEach(el => {
         el.classList.remove('has-error');
     });

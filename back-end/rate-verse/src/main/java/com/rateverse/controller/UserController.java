@@ -4,6 +4,7 @@ import com.rateverse.bean.User;
 import com.rateverse.service.UserService;
 import com.rateverse.utils.Result;
 import com.rateverse.utils.ResultCodeEnum;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -93,6 +94,27 @@ public class UserController {
         return result;
     }
 
+    /**
+     * Logout a user
+     */
+    @PostMapping("/logout")
+    public Result logout(HttpServletRequest req, HttpServletResponse resp) {
+        HttpSession session = req.getSession(false); // Don't create new session
+        if (session != null && session.getAttribute("user") != null) {
+            log.info("User logging out, invalidating session: {}", session.getId());
+            session.invalidate();
+
+            // Clear JSESSIONID cookie
+            Cookie sessionCookie = new Cookie("JSESSIONID", "");
+            sessionCookie.setMaxAge(0); // Expire immediately
+            sessionCookie.setPath("/");
+            resp.addCookie(sessionCookie);
+            return Result.ok(null, ResultCodeEnum.SUCCESS);
+        } else {
+            log.warn("No active session or user not logged in");
+            return Result.fail(null, ResultCodeEnum.USER_NOT_FOUND);
+        }
+    }
 
     // 检测用户名是否被占用
     @GetMapping("/checkUserNameUsed/{username}")
@@ -152,14 +174,21 @@ public class UserController {
     public Result updateUsername(@RequestParam String newUsername, HttpSession session) {
         User user = (User) session.getAttribute("user");
         String oldName = user.getUsername();
-        System.out.println("======================================");
-        System.out.println(oldName);
+
+        // 检查用户名是否为空
         if (newUsername == null || newUsername.trim().isEmpty()) {
             return Result.fail(null, ResultCodeEnum.USERNAME_EMPTY);
         }
 
-        user.setUsername(newUsername.trim());
+        newUsername = newUsername.trim();
 
+        // 检查用户名是否被占用
+        Result checkResult = userService.checkUserName(newUsername);
+        if (!checkResult.isFlag()) {
+            return checkResult; // Returns USERNAME_USED(502)
+        }
+
+        user.setUsername(newUsername.trim());
         Result result = userService.updateUser(user);
         if (result.isFlag()) {
             // 更新 session 中的用户信息
@@ -200,6 +229,15 @@ public class UserController {
             @RequestParam String address,
             HttpSession session) {
         User user = (User) session.getAttribute("user");
+
+        email = email.trim();
+        // Check if email is already used
+        if (!email.equals(user.getEmail())) { // Only check if email is changed
+            Result checkResult = userService.checkUserEmail(email);
+            if (!checkResult.isFlag()) {
+                return checkResult; // Returns EMAIL_USED(503)
+            }
+        }
 
         user.setEmail(email.trim());
         user.setPhone(phone.trim());

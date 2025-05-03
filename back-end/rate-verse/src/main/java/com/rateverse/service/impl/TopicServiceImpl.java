@@ -94,7 +94,7 @@ public class TopicServiceImpl implements TopicService {
 
     // 搜索Topics, 根据最近创建返回
     @Override
-    public Result searchTopicsByTime(String keyword, int pageSize, int currentPage) {
+    public Result searchTopicsByTime(String keyword, int pageSize, int currentPage, String order) {
         // 空关键词处理（可选：返回空列表或全部数据）
         if (keyword == null || keyword.trim().isEmpty()) {
             return Result.fail(null, ResultCodeEnum.SEARCH_KEYWORD_EMPTY);
@@ -102,7 +102,7 @@ public class TopicServiceImpl implements TopicService {
 
         PageHelper.startPage(currentPage, pageSize);
 
-        List<Topic> topics = topicMapper.selectByKeywordTime(keyword.trim());
+        List<Topic> topics = topicMapper.selectByKeywordTime(keyword.trim(), order);
 
         PageInfo<Topic> info = new PageInfo<>(topics);
 
@@ -133,8 +133,8 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public Result getUserTopicsByHeat(Integer userId) {
-        List<Topic> topics = topicMapper.selectUserTopicsByHeat(userId);
+    public Result getUserTopicsByTime(Integer userId) {
+        List<Topic> topics = topicMapper.selectUserTopicsByTime(userId);
         return Result.ok(topics, ResultCodeEnum.SUCCESS);
     }
 }

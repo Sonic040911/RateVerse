@@ -188,7 +188,7 @@ function renderItems() {
                         <button class="delete-item">🗑️ Delete</button>
                     </div>
                 </div>
-                <img src="${item.imageUrl || 'static/assets/default_image.png'}" class="rating-image">
+                <img src="${item.imageUrl || 'static/assets/NoImageFound.jpg.png'}" class="rating-image">
             </div>
         `;
         sidebar.insertAdjacentHTML("beforeend", itemHTML);

@@ -131,37 +131,35 @@
         t.id, t.title, t.description, t.user_id,
         t.created_at, t.updated_at, t.total_comments, t.total_ratings,
         i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
-        i.image_url,  <!-- 添加 image_url 列 -->
+        i.image_url,
         i.average_rating, i.total_ratings AS item_total_ratings,
         i.total_comments AS item_total_comments,
         i.created_at AS item_created_at, i.updated_at AS item_updated_at
-        FROM `topic` t
+        FROM topic t
         LEFT JOIN (
-        SELECT i2.*
-        FROM `item` i2
-        WHERE i2.id IN (
-        SELECT id
-        FROM (
-        SELECT id,
-        ROW_NUMBER() OVER (PARTITION BY topic_id ORDER BY created_at DESC) AS rn
-        FROM `item`
-        ) tmp
-        WHERE rn &lt;= 3
-        )
+        SELECT i1.*
+        FROM item i1
+        WHERE (
+        SELECT COUNT(*)
+        FROM item i2
+        WHERE i2.topic_id = i1.topic_id
+        AND i2.created_at > i1.created_at
+        ) &lt; 3
         ) i ON t.id = i.topic_id
         ORDER BY (
         SELECT COALESCE(SUM(i3.total_ratings) + SUM(i3.total_comments), 0)
-        FROM `item` i3
+        FROM item i3
         WHERE i3.topic_id = t.id
         ) DESC, t.created_at DESC
     </select>
+
 
     <select id="selectByKeywordTime" resultMap="TopicResultMapWithItems">
         SELECT
         t.id, t.title, t.description, t.user_id,
         t.created_at, t.updated_at, t.total_comments, t.total_ratings,
         i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
-        i.image_url,  <!-- 添加 image_url 列 -->
+        i.image_url,
         i.average_rating, i.total_ratings AS item_total_ratings,
         i.total_comments AS item_total_comments,
         i.created_at AS item_created_at, i.updated_at AS item_updated_at
@@ -169,7 +167,11 @@
         LEFT JOIN `item` i ON t.id = i.topic_id
         WHERE t.title LIKE CONCAT('%', #{keyword}, '%')
         OR t.description LIKE CONCAT('%', #{keyword}, '%')
-        ORDER BY t.created_at DESC
+        OR i.name LIKE CONCAT('%', #{keyword}, '%')
+        OR COALESCE(i.description, '') LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY t.created_at
+        <if test="order == 'ASC'">ASC</if>
+        <if test="order == 'DESC'">DESC</if>
     </select>
 
     <select id="selectByKeywordHeat" resultMap="TopicResultMapWithItems">
@@ -177,7 +179,7 @@
         t.id, t.title, t.description, t.user_id,
         t.created_at, t.updated_at, t.total_comments, t.total_ratings,
         i.id AS item_id, i.topic_id, i.name, i.description AS item_description,
-        i.image_url,  <!-- 添加 image_url 列 -->
+        i.image_url,
         i.average_rating, i.total_ratings AS item_total_ratings,
         i.total_comments AS item_total_comments,
         i.created_at AS item_created_at, i.updated_at AS item_updated_at
@@ -194,6 +196,8 @@
         ) i ON t.id = i.topic_id
         WHERE t.title LIKE CONCAT('%', #{keyword}, '%')
         OR t.description LIKE CONCAT('%', #{keyword}, '%')
+        OR i.name LIKE CONCAT('%', #{keyword}, '%')
+        OR COALESCE(i.description, '') LIKE CONCAT('%', #{keyword}, '%')
         ORDER BY (
         SELECT COALESCE(SUM(i4.total_ratings) + SUM(i4.total_comments), 0)
         FROM `item` i4
@@ -246,7 +250,7 @@
     </resultMap>
 
     <!-- 查询用户创建的Topic，按热度排序，包含最热门Item，最多3个 -->
-    <select id="selectUserTopicsByHeat" resultMap="TopicResultMapWithTopItem">
+    <select id="selectUserTopicsByTime" resultMap="TopicResultMapWithTopItem">
         SELECT
         t.id, t.title, t.description, t.user_id,
         t.created_at, t.updated_at, t.total_comments, t.total_ratings,
@@ -268,8 +272,7 @@
         )
         ) i ON t.id = i.topic_id
         WHERE t.user_id = #{userId}
-        ORDER BY (t.total_ratings + t.total_comments) DESC, t.created_at DESC
-        LIMIT 3
+        ORDER BY t.created_at DESC
     </select>
 
 </mapper>

@@ -78,7 +78,7 @@ async function fetchItems() {
             ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
             if (items.length === 0) {
                 ratingsSection.innerHTML = '<p class="no-items">No items available for this topic.</p>';
-                imgCategory.src = 'static/assets/default-image.svg'; // 如果没有 Item，使用默认图片
+                imgCategory.src = 'static/assets/NoImageFound.jpg.png'; // 如果没有 Item，使用默认图片
                 return;
             }
 
@@ -93,7 +93,7 @@ async function fetchItems() {
             }
 
             // 更新 Topic 图片为选中 Item 的图片
-            imgCategory.src = selectedItem.imageUrl || 'static/assets/default-image.svg';
+            imgCategory.src = selectedItem.imageUrl || 'static/assets/NoImageFound.jpg.png';
             console.log(`Updated Topic image to: ${imgCategory.src}`);
 
             // 渲染 Item 卡片
@@ -146,7 +146,7 @@ function renderItems(items) {
         }
         ratingCard.innerHTML = `
             <div class="rating-info">
-                <img class="img-rating" src="${item.imageUrl || 'static/assets/default-image.svg'}" alt="Rating Item Image">
+                <img class="img-rating" src="${item.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="Rating Item Image">
                 <div class="name-desc">
                     <h3 class="name-rating">${item.name || 'Unnamed Item'}</h3>
                     <p class="description-rating">${item.description || 'No description'}</p>

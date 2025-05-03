@@ -1,17 +1,17 @@
-const pageSize = 3; // Number of Topics to fetch per page
+const pageSize = 5; // Number of Topics to fetch per page
 let currentTopicPage = 1; // Current page for Topics
 let totalTopicPages = 0; // Total number of Topic pages
 
 // Fetch Topic list
 async function fetchTopics(append = false) {
     try {
-        console.log(`Fetching topics: page=${currentTopicPage}, pageSize=${pageSize}`); // 调试：记录请求参数
-        const response = await fetch(`/api/topic/getAllByTime/${pageSize}/${currentTopicPage}`, {
+        console.log(`Fetching topics: page=${currentTopicPage}, pageSize=${pageSize}`);
+        const response = await fetch(`/api/topic/getAllByHeat/${pageSize}/${currentTopicPage}`, {
             method: 'GET',
             credentials: 'include'
         });
         const result = await response.json();
-        console.log('API response:', result); // 调试：记录后端响应
+        console.log('API response:', result);
         if (result.code === 200) {
             const pageBean = result.data;
             if (!pageBean || !Array.isArray(pageBean.data)) {
@@ -20,7 +20,7 @@ async function fetchTopics(append = false) {
             }
             renderTopics(pageBean.data, append);
             totalTopicPages = Math.ceil(pageBean.total / pageSize);
-            console.log(`Total pages: ${totalTopicPages}`); // 调试：记录总页数
+            console.log(`Total pages: ${totalTopicPages}`);
             updateShowMoreButton();
         } else {
             console.error('Failed to fetch Topics:', result.message);
@@ -57,7 +57,7 @@ function renderTopics(topics, append = false) {
         return;
     }
 
-    console.log(`Rendering topics: count=${topics.length}, append=${append}`); // 调试：记录渲染参数
+    console.log(`Rendering topics: count=${topics.length}, append=${append}`);
 
     if (!append) {
         topicList.innerHTML = '';
@@ -68,100 +68,44 @@ function renderTopics(topics, append = false) {
 
     if (topics && topics.length > 0) {
         topics.forEach((topic, index) => {
-            console.log(`Processing topic: ${topic.title}, id: ${topic.id}`); // 调试：记录主题信息
-            if (append || index > 0) {
-                const newTopicContainer = document.createElement('div');
-                newTopicContainer.className = 'topic-container';
+            console.log(`Processing topic: ${topic.title}, id: ${topic.id}`);
+            const topicContainer = document.createElement('div');
+            topicContainer.className = 'recommended-content';
 
-                const newHeader = document.createElement('div');
-                newHeader.className = 'recommended_header';
-                const newSpan = document.createElement('span');
-                const newLink = document.createElement('a');
-                newLink.className = 'recommended_header-link';
-                newLink.href = `Rating_board.html?topicId=${topic.id}`;
-                newLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.location.href = `Rating_board.html?topicId=${topic.id}`;
-                });
-                const newTitle = document.createElement('h3');
-                newTitle.className = 'topic-title';
-                newTitle.textContent = topic.title || 'Untitled Topic';
-                newLink.appendChild(newTitle);
-                newSpan.appendChild(newLink);
-                newHeader.appendChild(newSpan);
+            const newHeader = document.createElement('div');
+            newHeader.className = 'recommended_header';
+            const newSpan = document.createElement('span');
+            const newLink = document.createElement('a');
+            newLink.className = 'recommended_header-link';
+            newLink.href = `Rating_board.html?topicId=${topic.id}`;
+            newLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = `Rating_board.html?topicId=${topic.id}`;
+            });
+            const newTitle = document.createElement('h3');
+            newTitle.className = 'topic-title';
+            newTitle.textContent = topic.title || 'Untitled Topic';
+            newLink.appendChild(newTitle);
+            newSpan.appendChild(newLink);
+            newHeader.appendChild(newSpan);
 
-                const newTotalRatings = document.createElement('p');
-                newTotalRatings.className = 'recommended_total';
-                newTotalRatings.textContent = `Total Ratings: ${topic.totalRatings || 0}`;
-                newHeader.appendChild(newTotalRatings);
+            const newTotalRatings = document.createElement('p');
+            newTotalRatings.className = 'recommended_total';
+            newTotalRatings.textContent = `Total Ratings: ${topic.totalRatings || 0}`;
+            newHeader.appendChild(newTotalRatings);
 
-                const newComments = document.createElement('p');
-                newComments.className = 'all-comments';
-                newComments.textContent = `${topic.totalComments || 0} comments`;
+            const newComments = document.createElement('p');
+            newComments.className = 'all-comments';
+            newComments.textContent = `${topic.totalComments || 0} comments`;
 
-                const newList = document.createElement('div');
-                newList.className = 'recommended_list';
+            const newList = document.createElement('div');
+            newList.className = 'recommended_list';
 
-                newTopicContainer.appendChild(newHeader);
-                newTopicContainer.appendChild(newComments);
-                newTopicContainer.appendChild(newList);
+            topicContainer.appendChild(newHeader);
+            topicContainer.appendChild(newComments);
+            topicContainer.appendChild(newList);
 
-                recommendedSection.insertBefore(newTopicContainer, recommendedSection.querySelector('.more-ratings'));
-
-                (topic.items || []).slice(0, 3).forEach(item => {
-                    console.log('Item data:', item); // 调试：记录项数据
-                    const itemLink = document.createElement('a');
-                    itemLink.className = 'recommended_item-link';
-                    itemLink.href = `Rating_board.html?topicId=${topic.id}`;
-                    itemLink.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        window.location.href = `Rating_board.html?topicId=${topic.id}`;
-                    });
-
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'recommended_item';
-
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'recommended_info';
-
-                    const img = document.createElement('img');
-                    img.className = 'recommended_img';
-                    img.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
-                    console.log(`Loading image for item ${item.id}: ${img.src}`);
-                    img.alt = 'card_img';
-                    img.onerror = () => {
-                        console.error(`Failed to load image for item ${item.id}: ${img.src}`);
-                        img.src = 'static/assets/Block_with_X(2).svg';
-                    };
-                    img.onload = () => {
-                        console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
-                    };
-                    infoDiv.appendChild(img);
-
-                    const name = document.createElement('p');
-                    name.className = 'recommended_name';
-                    name.textContent = item.name || 'Unnamed Item';
-                    infoDiv.appendChild(name);
-
-                    const rankInfoDiv = document.createElement('div');
-                    rankInfoDiv.className = 'rank-info';
-
-                    const rating = document.createElement('div');
-                    rating.className = 'recommended_rating';
-                    rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
-                    rankInfoDiv.appendChild(rating);
-
-                    const count = document.createElement('div');
-                    count.className = 'recommended_count';
-                    count.textContent = `${item.totalRatings || 0} ratings`;
-                    rankInfoDiv.appendChild(count);
-
-                    itemDiv.appendChild(infoDiv);
-                    itemDiv.appendChild(rankInfoDiv);
-                    itemLink.appendChild(itemDiv);
-                    newList.appendChild(itemLink);
-                });
-            } else {
+            if (!append && index === 0) {
                 topicTitle.textContent = topic.title || 'Untitled Topic';
                 totalRatings.textContent = `Total Ratings: ${topic.totalRatings || 0}`;
                 allComments.textContent = `${topic.totalComments || 0} comments`;
@@ -173,61 +117,65 @@ function renderTopics(topics, append = false) {
                     window.location.href = `Rating_board.html?topicId=${topic.id}`;
                 });
 
-                topicList.innerHTML = ''; // 清空静态卡片
-                (topic.items || []).slice(0, 3).forEach(item => {
-                    console.log('Item data:', item); // 调试：记录项数据
-                    const itemLink = document.createElement('a');
-                    itemLink.className = 'recommended_item-link';
-                    itemLink.href = `Rating_board.html?topicId=${topic.id}`;
-                    itemLink.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        window.location.href = `Rating_board.html?topicId=${topic.id}`;
-                    });
-
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'recommended_item';
-
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'recommended_info';
-
-                    const img = document.createElement('img');
-                    img.className = 'recommended_img';
-                    img.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
-                    console.log(`Loading image for item ${item.id}: ${img.src}`);
-                    img.alt = 'card_img';
-                    img.onerror = () => {
-                        console.error(`Failed to load image for item ${item.id}: ${img.src}`);
-                        img.src = 'static/assets/Block_with_X(2).svg';
-                    };
-                    img.onload = () => {
-                        console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
-                    };
-                    infoDiv.appendChild(img);
-
-                    const name = document.createElement('p');
-                    name.className = 'recommended_name';
-                    name.textContent = item.name || 'Unnamed Item';
-                    infoDiv.appendChild(name);
-
-                    const rankInfoDiv = document.createElement('div');
-                    rankInfoDiv.className = 'rank-info';
-
-                    const rating = document.createElement('div');
-                    rating.className = 'recommended_rating';
-                    rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
-                    rankInfoDiv.appendChild(rating);
-
-                    const count = document.createElement('div');
-                    count.className = 'recommended_count';
-                    count.textContent = `${item.totalRatings || 0} ratings`;
-                    rankInfoDiv.appendChild(count);
-
-                    itemDiv.appendChild(infoDiv);
-                    itemDiv.appendChild(rankInfoDiv);
-                    itemLink.appendChild(itemDiv);
-                    topicList.appendChild(itemLink);
-                });
+                topicList.innerHTML = '';
+            } else {
+                recommendedSection.insertBefore(topicContainer, recommendedSection.querySelector('.more-ratings'));
             }
+
+            const targetList = (!append && index === 0) ? topicList : newList;
+            (topic.items || []).slice(0, 3).forEach(item => {
+                console.log('Item data:', item);
+                const itemLink = document.createElement('a');
+                itemLink.className = 'recommended_item-link';
+                itemLink.href = `Rating_board.html?topicId=${topic.id}`;
+                itemLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = `Rating_board.html?topicId=${topic.id}`;
+                });
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'recommended_item';
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'recommended_info';
+
+                const img = document.createElement('img');
+                img.className = 'recommended_img';
+                img.src = item.imageUrl || 'static/assets/NoImageFound.jpg.png';
+                console.log(`Loading image for item ${item.id}: ${img.src}`);
+                img.alt = 'card_img';
+                img.onerror = () => {
+                    console.error(`Failed to load image for item ${item.id}: ${img.src}`);
+                    img.src = 'static/assets/NoImageFound.jpg.png';
+                };
+                img.onload = () => {
+                    console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
+                };
+                infoDiv.appendChild(img);
+
+                const name = document.createElement('p');
+                name.className = 'recommended_name';
+                name.textContent = item.name || 'Unnamed Item';
+                infoDiv.appendChild(name);
+
+                const rankInfoDiv = document.createElement('div');
+                rankInfoDiv.className = 'rank-info';
+
+                const rating = document.createElement('div');
+                rating.className = 'recommended_rating';
+                rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
+                rankInfoDiv.appendChild(rating);
+
+                const count = document.createElement('div');
+                count.className = 'recommended_count';
+                count.textContent = `${item.totalRatings || 0} ratings`;
+                rankInfoDiv.appendChild(count);
+
+                itemDiv.appendChild(infoDiv);
+                itemDiv.appendChild(rankInfoDiv);
+                itemLink.appendChild(itemDiv);
+                targetList.appendChild(itemLink);
+            });
         });
     } else if (!append) {
         topicTitle.textContent = 'No Topics Available';
@@ -241,7 +189,7 @@ function updateShowMoreButton() {
     const showMoreButton = document.querySelector('.show-more');
     if (showMoreButton) {
         showMoreButton.style.display = currentTopicPage < totalTopicPages ? 'block' : 'none';
-        console.log(`Show More button visibility: ${showMoreButton.style.display}`); // 调试：记录按钮状态
+        console.log(`Show More button visibility: ${showMoreButton.style.display}`);
     } else {
         console.error('Show More button not found');
     }
@@ -254,14 +202,14 @@ function goToTopicDetail(topicId) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing...'); // 调试：确认初始化
+    console.log('DOM loaded, initializing...');
     fetchTopics();
 
     const showMoreButton = document.querySelector('.show-more');
     if (showMoreButton) {
-        console.log('Show More button found, binding event'); // 调试：确认按钮存在
+        console.log('Show More button found, binding event');
         showMoreButton.addEventListener('click', () => {
-            console.log('Show More clicked'); // 调试：确认点击
+            console.log('Show More clicked');
             currentTopicPage++;
             fetchTopics(true);
         });
@@ -309,20 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 alert('Network request exception');
-            }
-        });
-    }
-
-    const searchButton = document.querySelector('.search-logo');
-    const searchInput = document.querySelector('.search-input');
-
-    if (searchButton && searchInput) {
-        searchButton.addEventListener('click', () => {
-            const keyword = searchInput.value.trim();
-            if (keyword) {
-                window.location.href = `Search&Category.html?keyword=${encodeURIComponent(keyword)}`;
-            } else {
-                alert('Please enter a search keyword');
             }
         });
     }

@@ -128,8 +128,9 @@ public class TopicController {
     @GetMapping("/searchByTime/{pageSize}/{currentPage}")
     public Result searchTopicsByTime(@RequestParam String keyword,
                                      @PathVariable int pageSize,
-                                     @PathVariable int currentPage) {
-        Result result = topicService.searchTopicsByTime(keyword, pageSize, currentPage);
+                                     @PathVariable int currentPage,
+                                     @RequestParam(defaultValue = "DESC") String order) {
+        Result result = topicService.searchTopicsByTime(keyword, pageSize, currentPage, order);
 
         log.info("搜索关键词: {} | 结果数量: {}", keyword,
                 result.isFlag() ? ((PageBean<?>) result.getData()).getData().size() : 0);
@@ -169,12 +170,12 @@ public class TopicController {
         return Result.ok(ratingsCount, ResultCodeEnum.SUCCESS);
     }
 
-    // 在个人资料页面中获取用户最火的Topics
+    // 在个人资料页面中获取用户Topics
     @GetMapping("/user-ratings")
     public Result getUserTopicsForRatings(HttpSession session) {
         User user = (User) session.getAttribute("user");
 
-        Result result = topicService.getUserTopicsByHeat(user.getId());
+        Result result = topicService.getUserTopicsByTime(user.getId());
         log.info("用户 {} 的热门Topics查询结果: {}", user.getId(), result);
 
         return result;

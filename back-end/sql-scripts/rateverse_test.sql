@@ -2,7 +2,7 @@ CREATE DATABASE `rateverse_test`;
 
 USE `rateverse_test`;
 
-CREATE TABLE USER (
+CREATE TABLE `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NOT NULL,   -- 用户名（唯一）
     email VARCHAR(100) UNIQUE NOT NULL,    -- 邮箱（唯一）
@@ -119,6 +119,27 @@ CREATE TABLE draft_item (
 );
 
 
+CREATE TABLE notification (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL, -- 接收通知的用户
+    sender_id INT NOT NULL, -- 触发通知的用户
+    TYPE ENUM('LIKE', 'COMMENT', 'REPLY', 'RATING') NOT NULL, -- 通知类型
+    comment_id INT, -- 相关的评论ID（LIKE/REPLY）
+    item_id INT, -- 相关的Item ID（COMMENT）
+    message VARCHAR(255) NOT NULL, -- 通知消息
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 通知创建时间
+    is_read TINYINT(1) DEFAULT 0, -- 是否已读（0=未读，1=已读）
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES `user`(id) ON DELETE CASCADE,
+    FOREIGN KEY (comment_id) REFERENCES COMMENT(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
+) ENGINE=INNODB;
+
+
+
+
+CREATE INDEX idx_notification_user_id ON notification(user_id, created_at);
+
 SELECT * FROM `user`;
 SELECT * FROM draft_topic;
 SELECT * FROM draft_item;
@@ -129,7 +150,7 @@ SELECT draft_id FROM draft_topic WHERE user_id = 13
 
 DELETE FROM `draft_topic`;
 DELETE FROM `draft_item`;
-DELETE FROM `topic`;
+DELETE FROM `topic` WHERE id = 24;
 DELETE FROM `item`;
 
 

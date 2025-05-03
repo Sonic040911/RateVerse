@@ -2,29 +2,21 @@ package com.rateverse.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.rateverse.bean.Comment;
-import com.rateverse.bean.CommentLike;
-import com.rateverse.bean.Item;
-import com.rateverse.mapper.CommentLikeMapper;
-import com.rateverse.mapper.CommentMapper;
-import com.rateverse.mapper.ItemMapper;
-import com.rateverse.mapper.TopicMapper;
+import com.rateverse.bean.*;
+import com.rateverse.mapper.*;
 import com.rateverse.service.CommentService;
+import com.rateverse.service.NotificationService;
 import com.rateverse.utils.PageBean;
 import com.rateverse.utils.Result;
 import com.rateverse.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
-/**
- * Project Name: rate-verse
- *
- * @author: Sonic
- * @description:
- */
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CommentServiceImpl implements CommentService {
@@ -40,16 +32,20 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private TopicMapper topicMapper;
 
+    @Autowired
+    private UserMapper userMapper;
 
-    // 获取所有评论（根据 sortType 动态排序）
+    @Autowired
+    private NotificationService notificationService;
+
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+
     @Override
     public Result getCommentsByItemId(int itemId, int pageSize, int currentPage, String sortType) {
-        // 校验评论项是否存在
         if (itemMapper.selectItemById(itemId) == null) {
             return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
         }
 
-        // 分页返回结果给前端（只返回顶级评论）
         PageHelper.startPage(currentPage, pageSize);
         List<Comment> comments = commentMapper.selectByItemIdWithSort(itemId, sortType);
         PageInfo<Comment> info = new PageInfo<>(comments);
@@ -57,113 +53,132 @@ public class CommentServiceImpl implements CommentService {
         return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
     }
 
-    // 获取所有子评论 (基于父评论的ID)
     @Override
     public List<Comment> getRepliesByParentId(Integer parentCommentId) {
         return commentMapper.selectChildrenByParentId(parentCommentId);
     }
 
-    // 添加一条评论 (对象里面有对应的ItemId)
     @Override
     public Result addComment(Comment comment) {
-        // 查询此Item是否存在
         Item item = itemMapper.selectItemById(comment.getItemId());
         if (item == null) {
             return Result.fail(null, ResultCodeEnum.ITEM_DOES_NOT_EXISTS);
         }
 
-        // 添加评论
+        // 主事务：插入评论和通知
         commentMapper.insertComment(comment);
 
-        // 更新统计字段
-        updateItemCommentsCount(comment.getItemId());
-        updateTopicCommentsCount(comment.getItemId());
+        // 生成通知
+        Integer topicId = itemMapper.getTopicIdByItemId(comment.getItemId());
+        Topic topic = topicMapper.selectTopicByIdWithUser(topicId);
+        if (topic != null && topic.getUserId() != null && !topic.getUserId().equals(comment.getUserId())) {
+            User sender = userMapper.selectUserById(comment.getUserId());
+            String senderName = sender != null ? sender.getUsername() : "Anonymous";
+            String itemName = item.getName() != null ? item.getName() : "Unknown Item";
+            String message = String.format("%s commented on your item '%s'.", senderName, itemName);
+            Notification notification = new Notification();
+            notification.setUserId(topic.getUserId());
+            notification.setSenderId(comment.getUserId());
+            notification.setType("COMMENT");
+            notification.setItemId(comment.getItemId());
+            notification.setCommentId(comment.getId());
+            notification.setMessage(message);
+            notificationService.createNotification(notification);
+        }
 
-        // 把数据库中的id返回给前端，以后要根据这个id进行回复
+        // 异步更新计数（新事务）
+        try {
+            updateCountsWithRetry(comment.getItemId());
+        } catch (Exception e) {
+            // 记录错误但不回滚主事务
+            System.err.println("Failed to update counts for itemId=" + comment.getItemId() + ": " + e.getMessage());
+        }
+
         comment.setId(comment.getId());
-
         return Result.ok(comment, ResultCodeEnum.SUCCESS);
     }
 
-    // 回复一条评论
     @Override
     public Result replyComment(Comment childComment) {
-        // 校验父评论的是否存在
         Comment parentComment = commentMapper.selectById(childComment.getParentCommentId());
         if (parentComment == null) {
             return Result.fail(childComment, ResultCodeEnum.PARENT_COMMENT_NOT_FOUND);
         }
 
-        // 校验父评论和子评论是否属于同一个评分项
         if (!parentComment.getItemId().equals(childComment.getItemId())) {
             return Result.fail(childComment, ResultCodeEnum.COMMENT_ITEM_MISMATCH);
         }
 
-        // 插入评论
+        // 主事务：插入回复和通知
         commentMapper.insertComment(childComment);
 
-        // 更新统计字段
-        updateItemCommentsCount(childComment.getItemId());
-        updateTopicCommentsCount(childComment.getItemId());
+        // 生成通知
+        if (parentComment.getUserId() != null && !parentComment.getUserId().equals(childComment.getUserId())) {
+            User sender = userMapper.selectUserById(childComment.getUserId());
+            String senderName = sender != null ? sender.getUsername() : "Anonymous";
+            Item item = itemMapper.selectItemById(childComment.getItemId());
+            String itemName = item != null && item.getName() != null ? item.getName() : "Unknown Item";
+            String message = String.format("%s replied to your comment on '%s'.", senderName, itemName);
+            Notification notification = new Notification();
+            notification.setUserId(parentComment.getUserId());
+            notification.setSenderId(childComment.getUserId());
+            notification.setType("REPLY");
+            notification.setCommentId(childComment.getId());
+            notification.setItemId(childComment.getItemId());
+            notification.setMessage(message);
+            notificationService.createNotification(notification);
+        }
 
-        // 设置id返回给前端，以后要用
+        // 异步更新计数（新事务）
+        try {
+            updateCountsWithRetry(childComment.getItemId());
+        } catch (Exception e) {
+            System.err.println("Failed to update counts for itemId=" + childComment.getItemId() + ": " + e.getMessage());
+        }
+
         childComment.setId(childComment.getId());
-
         return Result.ok(childComment, ResultCodeEnum.SUCCESS);
     }
 
-
-    // 删除一个评论
     @Override
     public Result deleteComment(Integer commentId, Integer userId) {
-        // 查询评论是否存在
         Comment comment = commentMapper.selectById(commentId);
         if (comment == null) {
             return Result.fail(null, ResultCodeEnum.COMMENT_NOT_FOUND);
         }
 
-        // 查询评论归属权 (别的用户不能删除别的评论)
         if (!comment.getUserId().equals(userId)) {
             return Result.fail(null, ResultCodeEnum.PERMISSION_DENIED);
         }
 
-        // 删除所有子评论
         deleteChildComments(commentId);
-
-        // 删除当前评论
         commentMapper.deleteComment(commentId);
 
-        // 更新统计字段
-        updateItemCommentsCount(comment.getItemId());
-        updateTopicCommentsCount(comment.getItemId());
+        // 异步更新计数（新事务）
+        try {
+            updateCountsWithRetry(comment.getItemId());
+        } catch (Exception e) {
+            System.err.println("Failed to update counts for itemId=" + comment.getItemId() + ": " + e.getMessage());
+        }
 
         return Result.ok(null, ResultCodeEnum.SUCCESS);
     }
 
-    /*
-    * 同时处理点赞和倒赞
-    *    * 第一次点赞/倒赞: 添加记录到comment_like 并 增加评论的对应统计
-    *
-    *    * 第二次点赞/倒赞: 意味着是取消点赞, 删除comment_like中的记录 并 删除评论的对应统计
-    *
-    *    * 切换点赞/倒赞:   删除旧的comment_like，添加新的comment_like 并 删除再增加对应的评论统计
-    */
     @Override
     public Result handleVote(Integer commentId, Integer userId, String actionType) {
-        // 1. 查询历史操作
         CommentLike existing = commentLikeMapper.selectByUserAndComment(userId, commentId);
 
-        // 点赞或倒赞过了
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment == null) {
+            return Result.fail(null, ResultCodeEnum.COMMENT_NOT_FOUND);
+        }
+
         if (existing != null) {
-            // 情况1：重复点击相同操作 → 取消
             if (existing.getActionType().equals(actionType)) {
                 commentLikeMapper.deleteByUserAndCommentAndType(userId, commentId, actionType);
-                decrementCounter(commentId, actionType); // 减少计数
+                decrementCounter(commentId, actionType);
                 return Result.ok(existing, ResultCodeEnum.SUCCESS);
-            }
-
-            // 情况2：切换操作类型 → 删除旧记录，添加新记录
-            else {
+            } else {
                 commentLikeMapper.deleteByUserAndCommentAndType(userId, commentId, existing.getActionType());
                 decrementCounter(commentId, existing.getActionType());
 
@@ -173,13 +188,29 @@ public class CommentServiceImpl implements CommentService {
                 newAction.setActionType(actionType);
                 commentLikeMapper.upsert(newAction);
 
-                incrementCounter(commentId, actionType); // 增加新计数
+                incrementCounter(commentId, actionType);
+
+                // 生成通知（仅在新增点赞时）
+                if ("like".equalsIgnoreCase(actionType) && comment.getUserId() != null && !comment.getUserId().equals(userId)) {
+                    User sender = userMapper.selectUserById(userId);
+                    String senderName = sender != null ? sender.getUsername() : "Anonymous";
+                    Item item = itemMapper.selectItemById(comment.getItemId());
+                    String itemName = item != null && item.getName() != null ? item.getName() : "Unknown Item";
+                    String commentContent = comment.getContent() != null ? comment.getContent().length() > 50 ? comment.getContent().substring(0, 50) + "..." : comment.getContent() : "Unknown Comment";
+                    String message = String.format("%s liked the comment you left on '%s': \"%s\".", senderName, itemName, commentContent);
+                    Notification notification = new Notification();
+                    notification.setUserId(comment.getUserId());
+                    notification.setSenderId(userId);
+                    notification.setType("LIKE");
+                    notification.setCommentId(commentId);
+                    notification.setItemId(comment.getItemId());
+                    notification.setMessage(message);
+                    notificationService.createNotification(notification);
+                }
+
                 return Result.ok(existing, ResultCodeEnum.SUCCESS);
             }
-        }
-
-        // 情况3：首次操作 → 新增记录
-        else {
+        } else {
             CommentLike action = new CommentLike();
             action.setUserId(userId);
             action.setCommentId(commentId);
@@ -187,40 +218,69 @@ public class CommentServiceImpl implements CommentService {
             commentLikeMapper.upsert(action);
 
             incrementCounter(commentId, actionType);
+
+            // 生成通知（仅在新增点赞时）
+            if ("like".equalsIgnoreCase(actionType) && comment.getUserId() != null && !comment.getUserId().equals(userId)) {
+                User sender = userMapper.selectUserById(userId);
+                String senderName = sender != null ? sender.getUsername() : "Anonymous";
+                Item item = itemMapper.selectItemById(comment.getItemId());
+                String itemName = item != null && item.getName() != null ? item.getName() : "Unknown Item";
+                String commentContent = comment.getContent() != null ? comment.getContent().length() > 50 ? comment.getContent().substring(0, 50) + "..." : comment.getContent() : "Unknown Comment";
+                String message = String.format("%s liked the comment you left on '%s': \"%s\".", senderName, itemName, commentContent);
+                Notification notification = new Notification();
+                notification.setUserId(comment.getUserId());
+                notification.setSenderId(userId);
+                notification.setType("LIKE");
+                notification.setCommentId(commentId);
+                notification.setItemId(comment.getItemId());
+                notification.setMessage(message);
+                notificationService.createNotification(notification);
+            }
+
             return Result.ok(action, ResultCodeEnum.SUCCESS);
         }
     }
 
-    // 更新 Item 的 total_comments
-    private void updateItemCommentsCount(Integer itemId) {
-        // 获取当前评论数
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void updateItemCommentsCount(Integer itemId) {
         Integer totalComments = commentMapper.countByItem(itemId);
-
-        // 更新 Item 表
         itemMapper.updateCommentStats(itemId, totalComments);
     }
 
-
-    // 更新 Topic 的 total_comments
-    private void updateTopicCommentsCount(Integer itemId) {
-        // 获取 Item 对应的 Topic ID
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void updateTopicCommentsCount(Integer itemId) {
         Integer topicId = itemMapper.getTopicIdByItemId(itemId);
-
-        // 获取当前评论数
         Integer totalComments = commentMapper.countByTopic(topicId);
-
         topicMapper.updateTotalComments(topicId, totalComments);
     }
 
-    /*
-    * 删除所有子评论
-    *
-    * 如果它是一个子评论怎么办?
-    *        那这个parentCommentId不是它真正的parentId
-    *        而是它自己的id，那在查询它的子评论时，是查询不到的，因为子评论肯定没有子评论, 直接返回
-    * */
+    private void updateCountsWithRetry(Integer itemId) {
+        int attempts = 0;
+        while (attempts < MAX_RETRY_ATTEMPTS) {
+            try {
+                updateItemCommentsCount(itemId);
+                updateTopicCommentsCount(itemId);
+                return;
+            } catch (Exception e) {
+                attempts++;
+                if (attempts == MAX_RETRY_ATTEMPTS || !isDeadlockException(e)) {
+                    throw new RuntimeException("Failed to update counts after " + attempts + " attempts", e);
+                }
+                try {
+                    Thread.sleep(100 * attempts); // 指数退避
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted during retry", ie);
+                }
+            }
+        }
+    }
+
+    private boolean isDeadlockException(Throwable e) {
+        return e.getMessage() != null && e.getMessage().contains("Deadlock found when trying to get lock");
+    }
+
     private void deleteChildComments(Integer parentCommentId) {
-        // 查询子评论，如果它是子评论本身，这个children就是空的, 返回即可
         List<Comment> children = commentMapper.selectChildrenByParentId(parentCommentId);
         if (children == null) {
             return;
@@ -231,7 +291,6 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    // 增加该评论点赞或倒赞的对应计数
     private void incrementCounter(Integer commentId, String actionType) {
         if ("like".equals(actionType)) {
             commentMapper.incrementLikes(commentId);
@@ -240,7 +299,6 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    // 减少该评论点赞或倒赞的对应计数
     private void decrementCounter(Integer commentId, String actionType) {
         if ("like".equals(actionType)) {
             commentMapper.decrementLikes(commentId);

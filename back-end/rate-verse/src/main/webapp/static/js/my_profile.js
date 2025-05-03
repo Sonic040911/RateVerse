@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM 加载完成，开始初始化");
+    console.log("DOM loaded, starting initialization");
 
-    // 获取 DOM 元素
+    // Get DOM elements
     const editIcon = document.querySelector('.edit-icon');
     const renameModal = document.getElementById('renameModal');
     const closeBtn = renameModal?.querySelector('.close-btn');
@@ -17,24 +17,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveNotification = document.querySelector('.save-notification');
     const ratingsList = document.querySelector('.ratings-list');
 
-    // 检查必要元素是否存在
+    // Check for required elements
     if (!editIcon || !renameModal || !renameForm || !nameInput) {
-        console.error("未找到用户名编辑相关元素，请检查 my_profile.html");
+        console.error("Username edit elements not found, please check my_profile.html");
         return;
     }
     if (!avatarWrapper || !avatarInput) {
-        console.error("未找到头像上传相关元素，请检查 my_profile.html");
+        console.error("Avatar upload elements not found, please check my_profile.html");
         return;
     }
     if (!profileForm || !saveNotification) {
-        console.error("未找到资料表单或通知元素，请检查 my_profile.html");
+        console.error("Profile form or notification elements not found, please check my_profile.html");
         return;
     }
     if (!ratingsList) {
-        console.warn("未找到 ratings-list 元素，用户评分列表将不可用");
+        console.warn("Ratings list element not found, user ratings will be unavailable");
     }
 
-    // 创建错误消息元素
+    // Create error message elements
     const errorMessage = document.createElement('p');
     errorMessage.style.color = '#FF3B3B';
     errorMessage.style.fontSize = '0.8rem';
@@ -60,29 +60,29 @@ document.addEventListener('DOMContentLoaded', () => {
     addressError.style.color = '#FF3B3B';
     addressError.style.fontSize = '0.8rem';
     addressError.style.marginTop = '0.5rem';
-    errorMessage.style.display = 'none';
+    addressError.style.display = 'none';
     addressInput.parentElement.appendChild(addressError);
 
-    // 初始化数据
+    // Initialize data
     fetchUserProfile();
     fetchUserStats();
     fetchUserRatings();
 
-    // 验证函数
+    // Validation functions
     const validateName = (name) => {
         name = name.trim();
         if (name.length < 3) {
-            return { valid: false, message: '用户名至少需要3个字符' };
+            return { valid: false, message: 'Username must be at least 3 characters' };
         }
         if (name.length > 15) {
-            return { valid: false, message: '用户名不能超过15个字符' };
+            return { valid: false, message: 'Username cannot exceed 15 characters' };
         }
         return { valid: true, message: '' };
     };
 
     const validateEmail = (email) => {
         if (email.length > 35) {
-            return { valid: false, message: '邮箱不能超过35个字符' };
+            return { valid: false, message: 'Email cannot exceed 35 characters' };
         }
         return { valid: true, message: '' };
     };
@@ -90,11 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const validatePhone = (phone) => {
         const phoneRegex = /^[0-9+\s()-]+$/;
         if (!phoneRegex.test(phone)) {
-            return { valid: false, message: '电话号码只能包含数字、连字符、括号或加号' };
+            return { valid: false, message: 'Phone number can only contain digits, hyphens, parentheses, or plus sign' };
         }
         const digits = phone.replace(/[^0-9]/g, '');
         if (digits.length > 11) {
-            return { valid: false, message: '电话号码不能超过11位数字' };
+            return { valid: false, message: 'Phone number cannot exceed 11 digits' };
         }
         return { valid: true, message: '' };
     };
@@ -102,16 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const validateAddress = (address) => {
         const words = address.trim().split(/\s+/);
         if (words.length > 5) {
-            return { valid: false, message: '地址不能超过5个单词' };
+            return { valid: false, message: 'Address cannot exceed 5 words' };
         }
         if (address.length > 35) {
-            return { valid: false, message: '地址不能超过35个字符' };
+            return { valid: false, message: 'Address cannot exceed 35 characters' };
         }
         return { valid: true, message: '' };
     };
 
-    // 打开重命名模态框
+    // Open rename modal
     editIcon.addEventListener('click', () => {
+        const currentUsername = document.querySelector('.name-wrapper h2').textContent;
+        nameInput.value = currentUsername || 'Unknown User';
         renameModal.style.display = 'flex';
         setTimeout(() => {
             renameModal.querySelector('.modal-content').classList.add('show');
@@ -119,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.style.display = 'none';
     });
 
-    // 关闭重命名模态框
+    // Close rename modal
     const closeRenameModal = () => {
         renameModal.querySelector('.modal-content').classList.remove('show');
         setTimeout(() => {
@@ -131,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn?.addEventListener('click', closeRenameModal);
     cancelBtn?.addEventListener('click', closeRenameModal);
 
-    // 处理用户名表单提交
+    // Handle username form submission
     renameForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const newName = nameInput.value.trim();
@@ -155,29 +157,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             if (result.code === 200) {
                 document.querySelector('.name-wrapper h2').textContent = newName;
+                nameInput.value = newName;
                 closeRenameModal();
-                alert('用户名更新成功');
+                alert('Username updated successfully');
+            } else if (result.code === 502) {
+                errorMessage.textContent = 'Username already exists';
+                errorMessage.style.display = 'block';
             } else {
-                errorMessage.textContent = result.message || '更新用户名失败';
+                errorMessage.textContent = result.message || 'Failed to update username';
                 errorMessage.style.display = 'block';
             }
         } catch (error) {
-            console.error('更新用户名出错:', error);
-            errorMessage.textContent = '网络错误';
+            console.error('Error updating username:', error);
+            errorMessage.textContent = 'Network error';
             errorMessage.style.display = 'block';
         }
     });
 
-    // 处理头像上传
+    // Handle avatar upload
     avatarWrapper.addEventListener('click', () => {
-        console.log("点击头像，触发文件选择");
+        console.log("Avatar clicked, triggering file selection");
         avatarInput.click();
     });
 
     avatarInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) {
-            console.warn("未选择文件");
+            console.warn("No file selected");
             return;
         }
         const formData = new FormData();
@@ -202,20 +208,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const updateResult = await updateResponse.json();
                 if (updateResult.code === 200) {
                     document.querySelector('.avatar').src = avatarUrl;
-                    alert('头像更新成功');
+                    alert('Avatar updated successfully');
                 } else {
-                    alert('更新头像失败: ' + updateResult.message);
+                    alert('Failed to update avatar: ' + updateResult.message);
                 }
             } else {
-                alert('上传图片失败: ' + updateResult.message);
+                alert('Failed to upload image: ' + uploadResult.message);
             }
         } catch (error) {
-            console.error('上传图片出错:', error);
-            alert('网络错误');
+            console.error('Error uploading image:', error);
+            alert('Network error');
         }
     });
 
-    // 处理资料表单提交
+    // Handle profile form submission
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         emailError.style.display = 'none';
@@ -264,33 +270,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     saveNotification.style.display = 'none';
                 }, 2000);
-                alert('用户信息更新成功');
+                alert('Profile updated successfully');
+            } else if (result.code === 503) {
+                emailError.textContent = 'Email already exists';
+                emailError.style.display = 'block';
             } else {
-                alert('更新用户信息失败: ' + result.message);
+                emailError.textContent = result.message || 'Failed to update profile';
+                emailError.style.display = 'block';
             }
         } catch (error) {
-            console.error('更新用户信息出错:', error);
-            alert('网络错误');
+            console.error('Error updating profile:', error);
+            emailError.textContent = 'Network error';
+            emailError.style.display = 'block';
         }
     });
 });
 
-// 获取用户资料
+// Fetch user profile
 async function fetchUserProfile() {
-    console.log("开始获取用户资料");
+    console.log("Fetching user profile");
     try {
         const response = await fetch('/user/api/profile', {
             method: 'GET',
             credentials: 'include',
         });
         if (response.status === 401) {
-            console.log("未登录，跳转到 login.html");
-            alert('请先登录');
+            console.log("Not logged in, redirecting to login.html");
+            alert('Please log in');
             window.location.href = 'login.html';
             return;
         }
         if (!response.ok) {
-            throw new Error(`HTTP 错误: ${response.status}`);
+            throw new Error(`HTTP error: ${response.status}`);
         }
         const result = await response.json();
         if (result.code === 200) {
@@ -303,14 +314,16 @@ async function fetchUserProfile() {
             const emailInput = document.querySelector('#email');
             const phoneInput = document.querySelector('#phone');
             const addressInput = document.querySelector('#address');
+            const nameInput = document.getElementById('newName');
 
-            if (!usernameElement || !avatarElement || !emailElement || !phoneElement || !addressElement) {
-                console.error("未找到必要的 DOM 元素");
+            if (!usernameElement || !avatarElement || !emailElement || !phoneElement || !addressElement || !nameInput) {
+                console.error("Required DOM elements not found");
                 return;
             }
 
             usernameElement.textContent = profile.username || 'Unknown User';
-            avatarElement.src = profile.avatarUrl || '/assets/Block_with_X(2).svg';
+            nameInput.value = profile.username || 'Unknown User';
+            avatarElement.src = profile.avatarUrl || 'static/assets/User_img.png';
             emailElement.textContent = profile.email || 'N/A';
             phoneElement.textContent = profile.phone || 'N/A';
             addressElement.textContent = profile.address || 'N/A';
@@ -318,16 +331,16 @@ async function fetchUserProfile() {
             phoneInput.value = profile.phone || '';
             addressInput.value = profile.address || '';
         } else {
-            console.error('获取用户资料失败:', result.message);
-            alert('无法加载用户资料: ' + result.message);
+            console.error('Failed to fetch user profile:', result.message);
+            alert('Unable to load user profile: ' + result.message);
         }
     } catch (error) {
-        console.error('获取用户资料出错:', error);
-        alert('获取用户资料时发生网络错误');
+        console.error('Error fetching user profile:', error);
+        alert('Network error while fetching user profile');
     }
 }
 
-// 获取并显示用户统计数据
+// Fetch and display user stats
 async function fetchUserStats() {
     try {
         const [topicCountRes, likesCountRes, commentsCountRes, ratingsCountRes] = await Promise.all([
@@ -348,7 +361,7 @@ async function fetchUserStats() {
         const ratingsElement = document.querySelector('.stat-value[for="ratings"]');
 
         if (!topicsElement || !likesElement || !commentsElement || !ratingsElement) {
-            console.error("未找到统计数据元素，请检查 my_profile.html");
+            console.error("Stats elements not found, please check my_profile.html");
             return;
         }
 
@@ -357,12 +370,12 @@ async function fetchUserStats() {
         commentsElement.textContent = commentsCount.code === 200 ? commentsCount.data || 0 : '0';
         ratingsElement.textContent = ratingsCount.code === 200 ? ratingsCount.data || 0 : '0';
     } catch (error) {
-        console.error('获取统计数据出错:', error);
-        alert('获取统计数据时发生网络错误');
+        console.error('Error fetching stats:', error);
+        alert('Network error while fetching stats');
     }
 }
 
-// 截断字符串函数
+// Truncate text function
 function truncateText(text, maxLength) {
     if (text && text.length > maxLength) {
         return text.substring(0, maxLength - 3) + '...';
@@ -370,42 +383,42 @@ function truncateText(text, maxLength) {
     return text || '';
 }
 
-// 获取并显示用户评分数据
+// Fetch and display user ratings
 async function fetchUserRatings() {
-    console.log("开始获取用户评分数据");
+    console.log("Fetching all user ratings");
     try {
-        const response = await fetch('/api/topic/user-ratings?limit=3', {
+        const response = await fetch('/api/topic/user-ratings', {  // Removed ?limit=3 to fetch all Topics
             method: 'GET',
             credentials: 'include',
         });
-        console.log('用户评分 API 响应状态:', response.status);
+        console.log('User ratings API response status:', response.status);
         if (response.status === 401) {
-            console.log("未登录，跳转到 login.html");
-            alert('请先登录');
+            console.log("Not logged in, redirecting to login.html");
+            alert('Please log in');
             window.location.href = 'login.html';
             return;
         }
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('服务器错误响应:', errorData);
-            throw new Error(`HTTP 错误: ${response.status} - ${errorData.message || '未知错误'}`);
+            console.error('Server error response:', errorData);
+            throw new Error(`HTTP error: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
         const result = await response.json();
-        console.log('用户评分 API 返回数据:', result);
+        console.log('User ratings API response data:', result);
         if (result.code === 200) {
             const ratings = Array.isArray(result.data) ? result.data : [];
             const ratingsList = document.querySelector('.ratings-list');
             if (!ratingsList) {
-                console.error("未找到 ratings-list 元素");
+                console.error("Ratings list element not found");
                 return;
             }
             ratingsList.innerHTML = '';
-            ratings.slice(0, 3).forEach(rating => {
+            ratings.forEach(rating => {  // Removed slice(0, 3) to display all Topics
                 const ratingItem = document.createElement('div');
                 ratingItem.className = 'rating-item';
                 ratingItem.dataset.topicId = rating.id;
                 ratingItem.innerHTML = `
-                    <img src="${rating.topItem?.imageUrl || '/static/assets/user-solid.svg'}" alt="${rating.title}" class="rating-image">
+                    <img src="${rating.topItem?.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="${rating.title}" class="rating-image">
                     <div class="rating-info">
                         <h4>${truncateText(rating.title, 30)}</h4>
                         <p>${truncateText(rating.description, 100)}</p>
@@ -416,17 +429,17 @@ async function fetchUserRatings() {
                     </div>
                 `;
                 ratingItem.addEventListener('click', () => {
-                    console.log(`点击Topic ${rating.id}，跳转到Rating_board.html`);
+                    console.log(`Clicked Topic ${rating.id}, redirecting to Rating_board.html`);
                     window.location.href = `Rating_board.html?topicId=${rating.id}`;
                 });
                 ratingsList.appendChild(ratingItem);
             });
         } else {
-            console.error('获取用户评分失败:', result.message);
-            alert('无法加载用户评分: ' + result.message);
+            console.error('Failed to fetch user ratings:', result.message);
+            alert('Unable to load user ratings: ' + result.message);
         }
     } catch (error) {
-        console.error('获取用户评分出错:', error);
-        alert('获取用户评分时发生网络错误');
+        console.error('Error fetching user ratings:', error);
+        alert('Network error while fetching user ratings');
     }
 }

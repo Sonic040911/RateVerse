@@ -46,7 +46,7 @@ public interface TopicMapper {
     int countTopicsByUserId(Integer userId);
 
     // 搜索, 根据时间
-    List<Topic> selectByKeywordTime(String keyword);
+    List<Topic> selectByKeywordTime(@Param("keyword") String keyword, @Param("order") String order);
 
     // 搜索, 根据热度
     List<Topic> selectByKeywordHeat(String keyword);
@@ -56,5 +56,5 @@ public interface TopicMapper {
     int countTopicCommentsByUserId(Integer userId);
     int countTopicRatingsByUserId(Integer userId);
 
-    List<Topic> selectUserTopicsByHeat(Integer id);
+    List<Topic> selectUserTopicsByTime(Integer id);
 }
