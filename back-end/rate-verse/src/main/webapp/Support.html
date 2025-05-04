@@ -13,7 +13,13 @@
             <a class="rateverse" href="Rating.html">Rateverse</a>
         </div>
 
-        <nav>
+        <button class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="navMenu">
             <ul>
                 <li><a href="Rating.html">Ratings</a></li>
                 <li><a href="Search&Category.html">Search&Categories</a></li>
@@ -177,17 +183,6 @@
                 </div>
                 
                 <div class="form-group full-width">
-                    <label for="subject">Subject</label>
-                    <select id="subject">
-                        <option value="general">General Inquiry</option>
-                        <option value="account">Account Issue</option>
-                        <option value="bug">Report a Bug</option>
-                        <option value="feature">Feature Request</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
-                <div class="form-group full-width">
                     <label for="message">Message</label>
                     <textarea id="message" placeholder="Describe your issue or question in detail"></textarea>
                 </div>
@@ -242,12 +237,14 @@
     <!-- Notification Modal -->
     <div class="notification-modal" id="notificationModal">
         <div class="notification-modal-content">
+            <div class="notification-header">
+                <h3>Notifications</h3>
+            </div>
             <div class="notification-body">
                 <svg class="bell-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#7e8590" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
                 </svg>
-                <h3>Notifications</h3>
                 <ul class="notification-list" id="notificationList">
                     <!-- Notifications will be dynamically inserted here -->
                 </ul>
@@ -266,12 +263,6 @@
                     </svg>            
                     <p class="label">My profile</p>
                 </li>
-                <li class="element">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7e8590">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.945 11a9 9 0 1 1-3.284-5.997l-2.655 2.392A5.5 5.5 0 1 0 17.125 14H13v-3z"/>
-                    </svg>
-                    <p class="label">Google Account</p>
-                </li>
             </ul>
             <div class="separator"></div>
             <ul class="list">
@@ -281,13 +272,13 @@
                     </svg>            
                     <p class="label">Theme</p>
                 </li>
-                <li class="element">
+                <!--<li class="element">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7e8590" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pinned-icon lucide-map-pinned">
                         <path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/>
                     </svg>                 
                     <p class="label">Country</p>
                     <span class="menu-subtext">Kazakhstan</span>
-                </li>
+                </li>-->
                 <li class="element delete">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7e8590" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>

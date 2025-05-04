@@ -300,6 +300,20 @@ nav ul li a.active {
   background: var(--primary-light);
 }
 
+.notification-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+}
+
+.notification-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
 .notification-body {
   display: flex;
   flex-direction: column;
@@ -310,13 +324,6 @@ nav ul li a.active {
 
 .bell-icon {
   margin-bottom: 15px;
-}
-
-.notification-body h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-color);
 }
 
 .notification-body p {
@@ -334,24 +341,6 @@ nav ul li a.active {
 }
 
 .notification-list li {
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--separator-color);
-  font-size: 14px;
-  color: var(--text-color);
-  transition: background-color 0.2s ease;
-}
-
-.notification-list li:last-child {
-  border-bottom: none;
-}
-
-.notification-message:hover {
-  background-color: var(--primary-color);
-  color: #FFFFFF;
-  transform: translate(1px, -1px);
-}
-
-.notification-list li {
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
@@ -362,11 +351,25 @@ nav ul li a.active {
   border-radius: 10px;
 }
 
+.notification-list li:last-child {
+  border-bottom: none;
+}
+
 .notification-message {
   font-weight: 500;
   margin-bottom: 5px;
   border-radius: 10px;
   padding: 5px;
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+}
+
+.notification-message:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: translate(1px, -1px);
+  text-decoration: underline;
 }
 
 .notification-time {
@@ -374,7 +377,7 @@ nav ul li a.active {
   color: var(--third-text-color);
 }
 
-/* Profile dropdown styling */
+/* Profile modal styling */
 .profile-dropdown {
   position: fixed;
   top: 90px;
@@ -383,12 +386,19 @@ nav ul li a.active {
   display: none;
   background-color: var(--item-bg-color);
   border-radius: 10px;
+  border: 2px solid var(--primary-color);
 }
 
 .profile-dropdown.active {
   display: block;
+  animation: fadeIn 0.2s ease;
 }
-  
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .card-profile, .card-theme {
   background-color: var(--item-bg-color);
   border-radius: 10px;
@@ -397,30 +407,24 @@ nav ul li a.active {
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-  animation: fadeIn 0.2s ease;
 }
-  
+
 .card-profile {
   width: 250px;
 }
-  
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-  
+
 .separator {
   border-top: 1.5px solid var(--separator-color);
   margin: 0 15px;
 }
-  
+
 .card-profile .list {
   list-style-type: none;
   display: flex;
   flex-direction: column;
   padding: 0 10px;
 }
-  
+
 .card-profile .list .element {
   display: flex;
   align-items: center;
@@ -432,23 +436,19 @@ nav ul li a.active {
   cursor: pointer;
   position: relative;
 }
-  
+
 .card-profile .list .element:hover {
   background-color: var(--primary-color);
   color: #fff;
+  transform: translate(1px, -1px);
 }
 
 .card-profile .list .delete:hover {
   background-color: #E43109;
 }
-  
+
 .card-profile .element:hover svg {
   stroke: #fff;
-}
-
-.card-profile .label {
-  font-size: 0.95rem;
-  font-weight: 500;
 }
 
 .menu-subtext {
@@ -576,8 +576,8 @@ nav ul li a.active {
 .img-category {
     border-radius: 15px;
     margin-right: 2%;
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 160px;
     margin-top: -5%;
 }
 
@@ -762,7 +762,7 @@ nav ul li a.active {
     width: 10%;
     height: 5vh;
     border-radius: 50px;
-    background-color: var(--section-color);
+    background-color: var(--primary-color);
     border: none;
     font-family: "Montserrat", sans-serif;
     font-weight: 600;
@@ -911,79 +911,4 @@ nav ul li a.active {
     border-top: 1px solid rgba(255,255,255,0.1);
   }
 
-/* Media Queries (from Home page) */
-@media screen and (max-width: 1200px) {
-    .footer-container {
-        flex-direction: column;
-        gap: 30px;
-        padding: 40px 5%;
-    }
-    
-    .footer-column, .footer-nav {
-        width: 100%;
-    }
-    
-    .footer-nav {
-        gap: 30px;
-    }
-}
-
-@media screen and (max-width: 992px) {
-    header {
-        padding: 0 3%;
-    }
-    
-    nav ul {
-        gap: 20px;
-    }
-    
-    .search-bar {
-        width: 180px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    header {
-        height: auto;
-        flex-wrap: wrap;
-        padding: 15px 3%;
-    }
-    
-    .rateverse-logo {
-        width: auto;
-        margin-bottom: 10px;
-    }
-    
-    nav {
-        order: 3;
-        width: 100%;
-        margin-top: 15px;
-    }
-    
-    nav ul {
-        width: 100%;
-        justify-content: space-around;
-        gap: 5px;
-    }
-    
-    .search-bar {
-        width: 100%;
-        margin: 10px 0;
-        order: 2;
-    }
-    
-    .notification, .profile {
-        margin-left: 15px;
-    }
-
-    .notification-modal {
-      right: 20px; 
-    }
-}
-
-@media screen and (max-width: 576px) {
-    .footer-nav {
-        flex-direction: column;
-        gap: 20px;
-    }
-}
+  

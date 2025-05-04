@@ -41,3 +41,30 @@ faqQuestions.forEach(question => {
         }
     });
 });
+
+// Hamburger menu toggle
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+});
+
+// Search bar clear functionality
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+
+searchInput.addEventListener('input', () => {
+    if (searchInput.value.length > 0) {
+        searchClear.classList.add('active');
+    } else {
+        searchClear.classList.remove('active');
+    }
+});
+
+searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.classList.remove('active');
+    searchInput.focus();
+});

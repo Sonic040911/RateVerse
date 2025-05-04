@@ -739,6 +739,20 @@ input::placeholder {
   background: var(--primary-light);
 }
 
+.notification-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--separator-color);
+}
+
+.notification-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
 .notification-body {
   display: flex;
   flex-direction: column;
@@ -749,13 +763,6 @@ input::placeholder {
 
 .bell-icon {
   margin-bottom: 15px;
-}
-
-.notification-body h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-color);
 }
 
 .notification-body p {
@@ -773,24 +780,6 @@ input::placeholder {
 }
 
 .notification-list li {
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--separator-color);
-  font-size: 14px;
-  color: var(--text-color);
-  transition: background-color 0.2s ease;
-}
-
-.notification-list li:last-child {
-  border-bottom: none;
-}
-
-.notification-message:hover {
-  background-color: var(--primary-color);
-  color: #FFFFFF;
-  transform: translate(1px, -1px);
-}
-
-.notification-list li {
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
@@ -801,11 +790,25 @@ input::placeholder {
   border-radius: 10px;
 }
 
+.notification-list li:last-child {
+  border-bottom: none;
+}
+
 .notification-message {
   font-weight: 500;
   margin-bottom: 5px;
   border-radius: 10px;
   padding: 5px;
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+}
+
+.notification-message:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: translate(1px, -1px);
+  text-decoration: underline;
 }
 
 .notification-time {
@@ -822,6 +825,7 @@ input::placeholder {
   display: none;
   background-color: var(--item-bg-color);
   border-radius: 10px;
+  border: 2px solid var(--primary-color);
 }
 
 .profile-dropdown.active {

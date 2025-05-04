@@ -43,6 +43,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
 a {
@@ -56,6 +57,7 @@ img {
     height: auto;
 }
 
+/* Header styles */
 header {
     display: flex;
     align-items: center;
@@ -91,6 +93,12 @@ header {
     color: #fff;
 }
 
+/* Navigation */
+nav {
+    display: flex;
+    align-items: center;
+}
+
 nav ul {
     list-style: none;
     display: flex;
@@ -110,6 +118,17 @@ nav ul li a.active {
     opacity: 0.7;
 }
 
+/* Mobile menu */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Auth buttons */
 .auth-buttons {
     display: flex;
     gap: 15px;
@@ -145,6 +164,7 @@ nav ul li a.active {
     color: #3D3A74;
 }
 
+/* Hero section */
 .hero {
     background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644') no-repeat center/cover;
     color: #fff;
@@ -206,6 +226,7 @@ nav ul li a.active {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* Content sections */
 .about-us, .our-mission, .for-advertisers {
     padding: 80px 20px;
     background-color: var(--bg-color);
@@ -228,7 +249,7 @@ nav ul li a.active {
     font-weight: 700;
     margin-bottom: 20px;
     color: var(--primary-color);
-    sedi: relative;
+    position: relative;
 }
 
 .about-us-text h2::after, .our-mission-text h2::after, .for-advertisers-text h2::after {
@@ -265,92 +286,12 @@ nav ul li a.active {
     box-shadow: var(--shadow);
 }
 
-.what-makes-us-special {
-    padding: 80px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    background: linear-gradient(to bottom, #FFFFFF, #F9FAFB);
-    text-align: center;
-}
-
-.what-makes-us-special h2 {
-    font-size: 38px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    position: relative;
-}
-
-.what-makes-us-special h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: var(--secondary-color);
-    border-radius: 2px;
-}
-
-.what-makes-us-special p {
-    font-size: 18px;
-    max-width: 800px;
-    margin: 0 auto 30px;
-    color: var(--text-color);
-    opacity: 0.8;
-    line-height: 1.8;
-    animation: fadeIn 1s ease-in-out;
-}
-
-.what-makes-us-special h3 {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 20px 0 10px;
-    color: var(--text-color);
-}
-
-.what-makes-us-special .join-btn {
-    display: inline-block;
-    background: var(--primary-color);
-    color: #fff;
-    padding: 12px 30px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.3s;
-    margin-top: 20px;
-}
-
-.what-makes-us-special .join-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-3px);
-}
-
 @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 0.8; transform: translateY(0); }
 }
-/*
-.for-advertisers-text a {
-    display: inline-block;
-    background: var(--primary-color);
-    color: #fff;
-    padding: 12px 30px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.3s;
-}
 
-.for-advertisers-text a:hover {
-    background: var(--secondary-color);
-    transform: translateY(-3px);
-}*/
-
-/*start footer*/
+/* Footer styles */
 .footer-container {
     max-width: 100%;
     background: var(--section-color);
@@ -359,105 +300,105 @@ nav ul li a.active {
     flex-wrap: wrap;
     justify-content: space-between;
     padding: 25px 5%;
-  }
+}
   
-  .footer-column {
+.footer-column {
     display: flex;
     flex-direction: column;
     width: 28%;
-  }
+}
   
-  .footer-column h2 {
+.footer-column h2 {
     margin-bottom: 20px;
     color: #E8EAF6;
     font-size: 2em;
     font-weight: 800;
     position: relative;
-  }
+}
   
-  .footer-column h2::after {
+.footer-column h2::after {
     content: '';
     position: absolute;
     bottom: -8px;
     left: 0;
     width: 40px;
     height: 3px;
-    background-color: var(--accent-color);
-  }
+    background-color: var(--primary-color);
+}
   
-  .footer-column p {
+.footer-column p {
     color: #FFFFFF;
     font-family: "Saira Semi Condensed", sans-serif;
     font-size: 1em;
     font-weight: 300;
     margin-bottom: 25px;
     opacity: 0.9;
-  }
+}
   
-  .social-icons {
+.social-icons {
     display: flex;
     gap: 15px;
-  }
+}
   
-  .social-icons a {
+.social-icons a {
     width: 35px;
     height: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease;
-  }
+}
   
-  .social-icons a:hover {
+.social-icons a:hover {
     transform: translateY(-3px);
-  }
+}
   
-  .footer-nav {
+.footer-nav {
     display: flex;
     width: 65%;
     flex-wrap: wrap;
     justify-content: space-evenly;
-  }
+}
   
-  .footer-links, .footer-statistics, .footer-contact {
+.footer-links, .footer-statistics, .footer-contact {
     margin-bottom: 20px;
-  }
+}
   
-  .footer-links h3, .footer-statistics h3, .footer-contact h3 {
+.footer-links h3, .footer-statistics h3, .footer-contact h3 {
     margin-bottom: 20px;
     font-size: 1.3em;
     font-weight: 600;
     color: #E8EAF6;
-  }
+}
   
-  .footer-links a, .footer-statistics a {
+.footer-links a, .footer-statistics a {
     display: flex;
     align-items: center;
     color: #FFFFFF;
     margin-top: 12px;
     opacity: 0.8;
     transition: opacity 0.2s ease;
-  }
+}
   
-  .footer-links a:hover, .footer-statistics a:hover {
+.footer-links a:hover, .footer-statistics a:hover {
     opacity: 1;
     text-decoration: underline;
-  }
+}
   
-  .footer-links img, .footer-statistics img, .footer-contact img {
+.footer-links img, .footer-statistics img, .footer-contact img {
     margin-right: 10px;
     width: 18px;
     height: 18px;
-  }
+}
   
-  .footer-contact p {
+.footer-contact p {
     display: flex;
     align-items: center;
     margin-top: 12px;
     opacity: 0.8;
-  }
+}
   
-  .footer-bottom {
+.footer-bottom {
     text-align: center;
     padding: 20px 0;
     background: var(--section-color);
@@ -465,54 +406,223 @@ nav ul li a.active {
     font-weight: 400;
     font-size: 0.9em;
     border-top: 1px solid rgba(255,255,255,0.1);
-  }
+}
 
-@media (max-width: 768px) {
+/* Media Queries */
+/* Tablets (landscape) */
+@media (max-width: 1024px) {
     header {
-        flex-direction: column;
-        gap: 15px;
         padding: 15px 20px;
     }
+    
+    nav ul {
+        gap: 30px;
+    }
+    
+    .hero h1 {
+        font-size: 50px;
+    }
+    
+    .hero p {
+        font-size: 18px;
+    }
+    
+    .about-us-text h2, .our-mission-text h2, .for-advertisers-text h2 {
+        font-size: 32px;
+    }
+    
+    .about-us-text p, .our-mission-text p, .for-advertisers-text p {
+        font-size: 16px;
+    }
+    
+    .footer-column {
+        width: 25%;
+    }
+}
 
+/* Tablets (portrait) */
+@media (max-width: 768px) {
+    header {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+        order: 3;
+    }
+    
+    nav {
+        width: 100%;
+        order: 4;
+    }
+    
     nav ul {
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
+        width: 100%;
+        padding: 15px 0;
+        display: none;
     }
-
+    
+    nav.open ul {
+        display: flex;
+    }
+    
     .auth-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        margin-left: auto;
+        order: 2;
     }
-
+    
     .hero {
         padding: 100px 20px;
     }
-
+    
     .hero h1 {
         font-size: 40px;
     }
-
+    
     .hero p {
         font-size: 16px;
     }
-
+    
     .about-us-content, .our-mission-content, .for-advertisers-content {
         flex-direction: column;
-        gap: 20px;
+        gap: 30px;
     }
-
+    
+    .our-mission-content {
+        flex-direction: column-reverse;
+    }
+    
     .about-us-image img, .our-mission-image img, .for-advertisers-image img {
         height: 300px;
     }
-
-    .footer-container {
-        grid-template-columns: 1fr;
+    
+    .footer-column {
+        width: 100%;
+        margin-bottom: 30px;
+        align-items: center;
         text-align: center;
     }
-
+    
+    .footer-column h2::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
     .social-icons {
         justify-content: center;
+    }
+    
+    .footer-nav {
+        width: 100%;
+        justify-content: space-around;
+    }
+    
+    .footer-links, .footer-contact {
+        width: 45%;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+    .rateverse-logo .rateverse {
+        font-size: 22px;
+    }
+    
+    .rateverse-logo img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .auth-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+    
+    .hero {
+        padding: 80px 15px;
+    }
+    
+    .hero h1 {
+        font-size: 32px;
+    }
+    
+    .hero p {
+        font-size: 14px;
+    }
+    
+    .hero .cta-btn {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+    
+    .about-us, .our-mission, .for-advertisers {
+        padding: 50px 15px;
+    }
+    
+    .about-us-text h2, .our-mission-text h2, .for-advertisers-text h2 {
+        font-size: 28px;
+    }
+    
+    .about-us-text p, .our-mission-text p, .for-advertisers-text p {
+        font-size: 14px;
+    }
+    
+    .about-us-image img, .our-mission-image img, .for-advertisers-image img {
+        height: 200px;
+    }
+    
+    .footer-column h2 {
+        font-size: 1.5em;
+    }
+    
+    .footer-links, .footer-contact {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .footer-links a, .footer-contact p {
+        justify-content: center;
+    }
+}
+
+/* Small mobile phones */
+@media (max-width: 360px) {
+    header {
+        padding: 10px 15px;
+    }
+    
+    .rateverse-logo {
+        gap: 8px;
+    }
+    
+    .rateverse-logo .rateverse {
+        font-size: 18px;
+    }
+    
+    .rateverse-logo img {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .auth-buttons {
+        gap: 8px;
+    }
+    
+    .auth-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .hero h1 {
+        font-size: 28px;
+    }
+    
+    .hero .cta-btn {
+        padding: 10px 20px;
+        font-size: 14px;
     }
 }

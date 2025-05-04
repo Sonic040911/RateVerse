@@ -195,3 +195,69 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+
+
+// Add this to your Search&Category.js file, inside the DOMContentLoaded event listener
+
+// Mobile filter dropdown functionality
+const mobileFilterBtn = document.querySelector('.mobile-filter-btn');
+const mobileFilterDropdown = document.querySelector('.mobile-filter-dropdown');
+const mobileFilterOptions = document.querySelectorAll('.mobile-filter-dropdown a');
+const currentFilter = document.getElementById('current-filter');
+
+if (mobileFilterBtn && mobileFilterDropdown) {
+    // Toggle dropdown
+    mobileFilterBtn.addEventListener('click', () => {
+        mobileFilterBtn.classList.toggle('active');
+        mobileFilterDropdown.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!mobileFilterBtn.contains(e.target) && !mobileFilterDropdown.contains(e.target)) {
+            mobileFilterBtn.classList.remove('active');
+            mobileFilterDropdown.classList.remove('show');
+        }
+    });
+
+    // Handle filter selection
+    mobileFilterOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Update active state in dropdown
+            mobileFilterOptions.forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+            
+            // Update button text
+            currentFilter.textContent = option.textContent;
+            
+            // Close dropdown
+            mobileFilterBtn.classList.remove('active');
+            mobileFilterDropdown.classList.remove('show');
+            
+            // Update sortMode and fetch results
+            sortMode = option.getAttribute('data-filter');
+            currentPage = 1;
+            fetchResults();
+        });
+    });
+}
+
+// Update the initial state of the mobile filter based on the current sortMode
+function updateMobileFilterState() {
+    if (currentFilter) {
+        // Capitalize first letter of sortMode
+        currentFilter.textContent = sortMode.charAt(0).toUpperCase() + sortMode.slice(1);
+    }
+    
+    mobileFilterOptions.forEach(option => {
+        const filterValue = option.getAttribute('data-filter');
+        option.classList.toggle('active', filterValue === sortMode);
+    });
+}
+
+// Call this after setting initial sortMode
+updateMobileFilterState();

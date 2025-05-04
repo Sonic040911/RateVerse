@@ -42,7 +42,7 @@
 }
 
 .dark-mode {
-  /* Theme colors - Dark - Updated to match Rating.css */
+  /* Theme colors - Dark */
   --bg-color: #1a202c;
   --section-color: #2d3748;
   --container-color: #2d3748;
@@ -101,7 +101,6 @@ img {
 
 header {
     width: 100%;
-    height: 80px;
     background: var(--section-color);
     display: flex;
     align-items: center;
@@ -111,6 +110,7 @@ header {
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    min-height: 80px;
 }
 
 .rateverse-logo {
@@ -143,6 +143,7 @@ nav ul {
     gap: 40px;
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
 nav ul li {
@@ -167,6 +168,52 @@ nav ul li a.active {
     border-bottom: 3px solid #FFFFFF;
 }
 
+.hamburger {
+    display: none;
+    cursor: pointer;
+    width: 30px;
+    height: 20px;
+    position: relative;
+    background: none;
+    border: none;
+    z-index: 101;
+}
+
+.hamburger span {
+    background: #FFFFFF;
+    height: 3px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    transition: all 0.3s ease;
+}
+
+.hamburger span:nth-child(1) {
+    top: 0;
+}
+
+.hamburger span:nth-child(2) {
+    top: 8px;
+}
+
+.hamburger span:nth-child(3) {
+    top: 16px;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 8px;
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 8px;
+}
+
 .user-bar {
     display: flex;
     align-items: center;
@@ -178,12 +225,10 @@ nav ul li a.active {
     margin-left: 20px;
     transition: transform 0.2s ease;
 }
-  
+
 .notification {
     width: 20px;
     height: 20px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
 .notification:hover {
@@ -194,7 +239,7 @@ nav ul li a.active {
     width: 36px;
     height: 36px;
 }
-  
+
 .profile:hover {
     transform: scale(1.08);
 }
@@ -209,7 +254,7 @@ nav ul li a.active {
     flex-wrap: wrap;
 }
 
-/* Карточка профиля */
+/* Profile Card */
 .profile-card {
     background: var(--item-bg-color);
     border-radius: 10px;
@@ -224,7 +269,7 @@ nav ul li a.active {
 .avatar-wrapper {
     position: relative;
     display: inline-block;
-    width: 80px; /* Match avatar dimensions */
+    width: 80px;
     height: 80px;
     margin-bottom: 0.5rem;
 }
@@ -234,17 +279,17 @@ nav ul li a.active {
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    display: block; /* Ensure no extra space */
+    display: block;
 }
 
 .avatar-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 80px; /* Match avatar dimensions */
+    width: 80px;
     height: 80px;
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 50%; /* Ensure perfect circle */
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -396,7 +441,7 @@ nav ul li a.active {
     background: var(--primary-light);
 }
 
-/* section: statistics */
+/* Section: Statistics */
 .user-stats {
     margin-top: 2rem;
 }
@@ -447,8 +492,7 @@ nav ul li a.active {
     color: var(--third-text-color);
 }
 
-/* section: top ratings */
-
+/* Section: Top Ratings */
 .ratings-list {
     display: flex;
     flex-direction: column;
@@ -520,7 +564,7 @@ nav ul li a.active {
     margin-right: 0.3rem;
 }
 
-/* section: my ratings */
+/* Section: My Ratings */
 .my-ratings {
     margin-top: 2rem;
 }
@@ -530,7 +574,7 @@ nav ul li a.active {
     margin-bottom: 1.5rem;
 }
 
-/*start footer*/
+/* Footer */
 .footer-container {
     max-width: 100%;
     background: var(--section-color);
@@ -647,7 +691,7 @@ nav ul li a.active {
     border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-/* modal (rename) */
+/* Modal (Rename) */
 .modal {
     display: none;
     position: fixed;
@@ -769,7 +813,7 @@ nav ul li a.active {
     text-align: center;
 }
 
-/* modal (rename) */
+/* Modal (Rename) */
 .rename-modal {
     max-width: 400px;
 }
@@ -821,28 +865,7 @@ nav ul li a.active {
     background: #e0e0e0;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .profile-card,
-    .details-card {
-        max-width: 100%;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    }
-
-    .achievements-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-}
-
-/* Modal notification button */
+/* Modal Notification Button */
 .notification-modal {
     position: fixed;
     top: 90px;
@@ -851,7 +874,11 @@ nav ul li a.active {
     display: none;
     border-radius: 10px;
     border: 2px solid var(--primary-color);
-    cursor: default; /* Default cursor for modal */
+}
+
+.notification-modal.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
 }
 
 .notification-modal-content {
@@ -862,12 +889,6 @@ nav ul li a.active {
     width: 400px;
     max-height: 400px;
     overflow-y: auto;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%237e8590" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/></svg>'), auto; /* Custom cursor */
-}
-
-.notification-modal.active {
-    display: block;
-    animation: fadeIn 0.2s ease;
 }
 
 .notification-modal-content::-webkit-scrollbar {
@@ -890,24 +911,16 @@ nav ul li a.active {
 
 .notification-header {
     display: flex;
-    align-items: center;
     justify-content: flex-start;
     padding: 10px 20px;
     border-bottom: 1px solid var(--separator-color);
-    background: linear-gradient(to right, var(--primary-light, #e6f0fa), var(--item-bg-color, #ffffff));
 }
 
 .notification-header h3 {
     font-size: 16px;
     font-weight: 600;
     color: var(--text-color);
-    margin: 0 0 0 8px; /* Space after icon */
-}
-
-.header-icon {
-    width: 20px;
-    height: 20px;
-    stroke: var(--text-color);
+    margin: 0;
 }
 
 .notification-body {
@@ -959,7 +972,6 @@ nav ul li a.active {
     text-decoration: none;
     color: var(--text-color);
     display: block;
-    cursor: pointer; /* Pointer cursor for clickable messages */
 }
 
 .notification-message:hover {
@@ -974,40 +986,29 @@ nav ul li a.active {
     color: var(--third-text-color);
 }
 
-/* Fade-in animation */
+/* Fade-in Animation */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Media query for smaller screens */
-@media screen and (max-width: 768px) {
-    .notification-modal {
-        right: 20px; /* Adjust for smaller screens */
-    }
-}
-
-/* Profile modal styling */
+/* Profile Modal Styling */
 .profile-dropdown {
-    position: fixed; 
+    position: fixed;
     top: 90px;
     right: 20px;
     z-index: 1000;
     display: none;
     background-color: var(--item-bg-color);
     border-radius: 10px;
+    border: 2px solid var(--primary-color);
 }
-  
+
 .profile-dropdown.active {
     display: block;
     animation: fadeIn 0.2s ease;
 }
-  
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-  
+
 .card-profile, .card-theme {
     background-color: var(--item-bg-color);
     border-radius: 10px;
@@ -1017,23 +1018,23 @@ nav ul li a.active {
     gap: 10px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
-  
+
 .card-profile {
     width: 250px;
 }
-  
+
 .separator {
     border-top: 1.5px solid var(--separator-color);
     margin: 0 15px;
 }
-  
+
 .card-profile .list {
     list-style-type: none;
     display: flex;
     flex-direction: column;
     padding: 0 10px;
 }
-  
+
 .card-profile .list .element {
     display: flex;
     align-items: center;
@@ -1045,38 +1046,38 @@ nav ul li a.active {
     cursor: pointer;
     position: relative;
 }
-  
+
 .card-profile .list .element:hover {
     background-color: var(--primary-color);
     color: #fff;
     transform: translate(1px, -1px);
 }
-  
+
 .card-profile .list .delete:hover {
     background-color: #E43109;
 }
-  
+
 .card-profile .element:hover svg {
     stroke: #fff;
 }
-  
+
 .menu-subtext {
     font-size: 0.8rem;
     color: #7e8590;
     margin-left: auto;
 }
-  
-/* Theme modal */
+
+/* Theme Modal */
 .card-theme {
     width: 220px;
     animation: slideIn 0.2s ease;
 }
-  
+
 @keyframes slideIn {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
 }
-  
+
 .theme-header {
     display: flex;
     align-items: center;
@@ -1084,27 +1085,27 @@ nav ul li a.active {
     color: var(--modal-text-color);
     padding: 10px 15px;
 }
-  
+
 .theme-header svg {
     cursor: pointer;
     transition: transform 0.2s ease;
 }
-  
+
 .theme-header svg:hover {
     transform: translateX(-3px);
 }
-  
+
 .toggle-container {
     display: flex;
     align-items: center;
     padding: 10px 15px;
     justify-content: center;
 }
-  
+
 .theme-toggle {
     display: none;
 }
-  
+
 .toggle-label {
     position: relative;
     display: inline-block;
@@ -1116,7 +1117,7 @@ nav ul li a.active {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-  
+
 .slider {
     position: absolute;
     top: 4px;
@@ -1128,7 +1129,7 @@ nav ul li a.active {
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-  
+
 .icon {
     display: flex;
     position: absolute;
@@ -1137,30 +1138,637 @@ nav ul li a.active {
     font-size: 16px;
     pointer-events: none;
 }
-  
+
 .sun {
     left: 7px;
 }
-  
+
 .sun-color {
     stroke: var(--sun-color);
     fill: var(--sun-color);
 }
-  
+
 .moon {
     right: 7px;
 }
-  
+
 .moon-color {
     fill: var(--moon-color);
 }
-  
+
 .theme-toggle:checked + .toggle-label .slider {
     transform: translateX(34px);
 }
-  
-.mode-text {
-    font-size: 14px;
-    font-weight: bold;
-    transition: color 0.3s ease; 
+
+.theme-toggle:checked + .toggle-label {
+    background-color: var(--toggle-bg);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .profile-card,
+    .details-card {
+        max-width: 100%;
+    }
+
+    header {
+        padding: 0 4%;
+    }
+
+    nav ul {
+        gap: 30px;
+    }
+
+    nav ul li a {
+        font-size: 14px;
+    }
+
+    .footer-container {
+        padding: 20px 4%;
+    }
+
+    .footer-column {
+        width: 30%;
+    }
+
+    .footer-nav {
+        width: 60%;
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+        padding: 1.2rem;
+        gap: 1.2rem;
+    }
+
+    .profile-card {
+        max-width: 100%;
+        padding: 1.2rem;
+    }
+
+    .details-card {
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+
+    header {
+        padding: 0 3%;
+    }
+
+    nav ul {
+        gap: 20px;
+    }
+
+    .nav ul li a {
+        font-size: 13px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .footer-column,
+    .footer-nav {
+        width: 100%;
+    }
+
+    .footer-nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .footer-column h2 {
+        font-size: 1.8em;
+    }
+
+    .notification-modal-content {
+        width: 360px;
+    }
+
+    .card-profile {
+        width: 230px;
+    }
+
+    .card-theme {
+        width: 210px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        min-height: 60px;
+        padding: 1rem 3%;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .rateverse-logo {
+        flex: 1;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    nav {
+        display: none;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--section-color);
+        padding: 1rem 0;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    nav.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    nav ul {
+        flex-direction: row;
+        justify-content: center;
+        gap: 2rem;
+        padding: 1rem 0;
+    }
+
+    nav ul li {
+        width: auto;
+        text-align: center;
+    }
+
+    nav ul li a {
+        font-size: 14px;
+        padding: 10px 15px;
+        display: block;
+        border-bottom: none;
+        transition: background 0.2s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+        color: #FFFFFF;
+        background: var(--primary-dark);
+        border-radius: 5px;
+    }
+
+    .user-bar {
+        gap: 15px;
+    }
+
+    .notification {
+        width: 18px;
+        height: 18px;
+    }
+
+    .profile {
+        width: 34px;
+        height: 34px;
+    }
+
+    .avatar-wrapper {
+        width: 70px;
+        height: 70px;
+    }
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .avatar-overlay {
+        width: 70px;
+        height: 70px;
+    }
+
+    .profile-card h2 {
+        font-size: 1.1rem;
+    }
+
+    .edit-icon {
+        font-size: 0.8rem;
+    }
+
+    .info-item {
+        font-size: 0.85rem;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+    }
+
+    .form-group input {
+        font-size: 0.95rem;
+        padding: 0.45rem;
+    }
+
+    .save-btn {
+        padding: 0.6rem 1.8rem;
+        font-size: 0.95rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .stat-item {
+        padding: 0.8rem;
+    }
+
+    .stat-item i {
+        font-size: 1.4rem;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .rating-item {
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 0.8rem;
+    }
+
+    .rating-image {
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+
+    .rating-info h4 {
+        font-size: 0.95rem;
+    }
+
+    .rating-info p {
+        font-size: 0.75rem;
+    }
+
+    .rating-stats {
+        flex-direction: row;
+        gap: 1rem;
+        font-size: 0.75rem;
+    }
+
+    .user-stats h3,
+    .my-ratings h3 {
+        font-size: 1.15rem;
+    }
+
+    .notification-modal {
+        right: 15px;
+        top: 100px;
+    }
+
+    .notification-modal-content {
+        width: 90%;
+        max-width: 340px;
+    }
+
+    .notification-header h3 {
+        font-size: 15px;
+    }
+
+    .notification-list li {
+        font-size: 13px;
+        padding: 8px 15px;
+    }
+
+    .notification-time {
+        font-size: 11px;
+    }
+
+    .profile-dropdown {
+        right: 15px;
+        top: 100px;
+    }
+
+    .card-profile {
+        width: 220px;
+    }
+
+    .card-theme {
+        width: 200px;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+
+    .rename-modal {
+        max-width: 90%;
+    }
+
+    .modal-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .modal-btn {
+        padding: 0.45rem 1.4rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .rateverse {
+        font-size: 20px;
+    }
+
+    .logo {
+        width: 35px;
+        height: 35px;
+    }
+
+    header {
+        padding: 0.8rem 2%;
+        min-height: 50px;
+    }
+
+    .hamburger {
+        width: 25px;
+        height: 18px;
+    }
+
+    .hamburger span {
+        height: 2px;
+    }
+
+    .hamburger span:nth-child(1) {
+        top: 0;
+    }
+
+    .hamburger span:nth-child(2) {
+        top: 7px;
+    }
+
+    .hamburger span:nth-child(3) {
+        top: 14px;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        top: 7px;
+        transform: rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        top: 7px;
+        transform: rotate(-45deg);
+    }
+
+    nav {
+        top: 100%;
+        padding: 0.8rem 0;
+    }
+
+    nav ul {
+        gap: 1.5rem;
+    }
+
+    nav ul li a {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .user-bar {
+        gap: 10px;
+    }
+
+    .notification,
+    .profile {
+        margin-left: 10px;
+    }
+
+    .notification {
+        width: 16px;
+        height: 16px;
+    }
+
+    .profile {
+        width: 30px;
+        height: 30px;
+    }
+
+    .container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .profile-card {
+        padding: 1rem;
+    }
+
+    .details-card {
+        padding: 1.2rem;
+    }
+
+    .avatar-wrapper {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatar-overlay {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatar-overlay i {
+        font-size: 1rem;
+    }
+
+    .profile-card h2 {
+        font-size: 1rem;
+    }
+
+    .edit-icon {
+        font-size: 0.75rem;
+    }
+
+    .info-item {
+        font-size: 0.8rem;
+    }
+
+    .form-group label {
+        font-size: 0.8rem;
+    }
+
+    .form-group input {
+        font-size: 0.9rem;
+        padding: 0.4rem;
+    }
+
+    .save-btn {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .stat-item i {
+        font-size: 1.3rem;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .rating-item {
+        padding: 0.6rem;
+    }
+
+    .rating-image {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.8rem;
+    }
+
+    .rating-info h4 {
+        font-size: 0.9rem;
+    }
+
+    .rating-info p {
+        font-size: 0.7rem;
+    }
+
+    .rating-stats {
+        gap: 0.8rem;
+        font-size: 0.7rem;
+    }
+
+    .user-stats h3,
+    .my-ratings h3 {
+        font-size: 1.1rem;
+    }
+
+    .notification-modal {
+        right: 10px;
+        top: 110px;
+    }
+
+    .notification-modal-content {
+        width: 95%;
+        max-width: 300px;
+    }
+
+    .notification-header h3 {
+        font-size: 14px;
+    }
+
+    .notification-list li {
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+
+    .notification-time {
+        font-size: 10px;
+    }
+
+    .profile-dropdown {
+        right: 10px;
+        top: 110px;
+    }
+
+    .card-profile {
+        width: 200px;
+    }
+
+    .card-theme {
+        width: 180px;
+    }
+
+    .card-profile .list .element {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .toggle-label {
+        width: 55px;
+        height: 28px;
+    }
+
+    .slider {
+        width: 18px;
+        height: 18px;
+        top: 3px;
+        left: 3px;
+    }
+
+    .theme-toggle:checked + .toggle-label .slider {
+        transform: translateX(29px);
+    }
+
+    .sun,
+    .moon {
+        font-size: 14px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .modal-btn {
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .footer-column h2 {
+        font-size: 1.6em;
+    }
+
+    .footer-column p {
+        font-size: 0.9em;
+    }
+
+    .footer-links h3,
+    .footer-contact h3 {
+        font-size: 1.2em;
+    }
+
+    .footer-links a,
+    .footer-contact p {
+        font-size: 0.9em;
+    }
+
+    .social-icons a {
+        width: 30px;
+        height: 30px;
+    }
+
+    .footer-bottom {
+        font-size: 0.8em;
+        padding: 15px 0;
+    }
 }
