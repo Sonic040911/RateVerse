@@ -12,6 +12,10 @@ CREATE TABLE `user` (
     updated_at DATETIME DEFAULT NOW()       -- 最后更新时间
 );
 
+ALTER TABLE `user` ADD COLUMN google_id VARCHAR(255) NULL;
+
+ALTER TABLE rateverse_test.user MODIFY COLUMN password_hash VARCHAR(255) NULL;
+
 
 CREATE TABLE topic (
     id INT PRIMARY KEY AUTO_INCREMENT,

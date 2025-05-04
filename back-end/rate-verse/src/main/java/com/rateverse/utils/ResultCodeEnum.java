@@ -53,7 +53,11 @@ public enum ResultCodeEnum {
     UPLOAD_ERROR(1004, "upload error"),
     USERNAME_EMPTY(1005, "username is empty!"),
 
-    AVATAR_URL_EMPTY(1006, "avatar url is empty")
+    AVATAR_URL_EMPTY(1006, "avatar url is empty"),
+    GOOGLE_EMAIL_CHANGE_NOT_ALLOWED(1007, "google email change not allowed"),
+    SERVER_ERROR(1008, "server error"),
+    GOOGLE_ID_CONFLICT(1009, "google id conflict"),
+    INVALID_TOKEN(1010, "invalid token")
     ;
 
     private final Integer code;

@@ -22,6 +22,8 @@ public class User {
     private String phone;
     private String address;
 
+    private String googleId; // 新增字段，用于存储 Google 用户 ID
+
     // 前端不用发送这些
     private Date createdAt;
     private Date updatedAt;

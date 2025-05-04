@@ -1,5 +1,9 @@
 package com.rateverse.controller;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.rateverse.bean.User;
 import com.rateverse.service.UserService;
 import com.rateverse.utils.Result;
@@ -11,6 +15,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -30,6 +36,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    private static final String GOOGLE_CLIENT_ID = "343104139057-ve41fnjl41i90ckbvjfsfmh61guvqk05.apps.googleusercontent.com";
 
     /***
      * 注册用户
@@ -162,6 +170,7 @@ public class UserController {
         profile.put("email", user.getEmail());
         profile.put("phone", user.getPhone());
         profile.put("address", user.getAddress());
+        profile.put("isGoogleUser", user.getGoogleId() != null); // 添加 Google 用户标志
 
         System.out.println("===========log.info============");
         log.info("用户的个人信息为: {}", profile);
@@ -231,6 +240,12 @@ public class UserController {
         User user = (User) session.getAttribute("user");
 
         email = email.trim();
+
+        // 阻止 Google 用户修改邮箱
+        if (user.getGoogleId() != null && !email.equals(user.getEmail())) {
+            return Result.fail(null, ResultCodeEnum.GOOGLE_EMAIL_CHANGE_NOT_ALLOWED);
+        }
+
         // Check if email is already used
         if (!email.equals(user.getEmail())) { // Only check if email is changed
             Result checkResult = userService.checkUserEmail(email);
@@ -254,4 +269,75 @@ public class UserController {
 
         return result;
     }
+
+//    // 绑定 Google 账户
+//    @PostMapping("/api/link-google")
+//    public Result linkGoogle(@RequestBody Map<String, String> request, HttpSession session) {
+//        try {
+//            User user = (User) session.getAttribute("user");
+//            if (user == null) {
+//                log.warn("Link Google failed: No user in session");
+//                return Result.fail(null, ResultCodeEnum.USER_NOT_FOUND);
+//            }
+//
+//            String idToken = request.get("idToken");
+//            if (idToken == null || idToken.isEmpty()) {
+//                log.warn("Link Google failed: Missing idToken");
+//                return Result.fail(null, ResultCodeEnum.INVALID_TOKEN);
+//            }
+//
+//            // 验证 Google ID Token
+//            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
+//                    .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
+//                    .build();
+//
+//            GoogleIdToken googleIdToken = verifier.verify(idToken);
+//            if (googleIdToken == null) {
+//                log.warn("Invalid Google ID token");
+//                return Result.fail(null, ResultCodeEnum.INVALID_TOKEN);
+//            }
+//
+//            GoogleIdToken.Payload payload = googleIdToken.getPayload();
+//            String googleId = payload.getSubject();
+//            String googleEmail = payload.getEmail();
+//
+//            // 检查是否已绑定 Google 账户
+//            if (user.getGoogleId() != null) {
+//                log.info("User {} already linked to Google account {}", user.getId(), user.getGoogleId());
+//                return Result.fail(null, ResultCodeEnum.GOOGLE_ID_CONFLICT);
+//            }
+//
+//            // 检查 Google 邮箱是否被其他用户占用
+//            User existingUser = userService.findByEmail(googleEmail);
+//            if (existingUser != null && existingUser.getId() != user.getId()) {
+//                log.warn("Google email {} is already used by another user {}", googleEmail, existingUser.getId());
+//                return Result.fail(null, ResultCodeEnum.EMAIL_USED);
+//            }
+//
+//            // 检查 Google ID 是否被其他用户绑定
+//            User googleUser = userService.findByGoogleId(googleId);
+//            if (googleUser != null && googleUser.getId() != user.getId()) {
+//                log.warn("Google ID {} is already linked to another user {}", googleId, googleUser.getId());
+//                return Result.fail(null, ResultCodeEnum.GOOGLE_ID_CONFLICT);
+//            }
+//
+//            // 更新用户的 google_id 和 email
+//            user.setGoogleId(googleId);
+//            user.setEmail(googleEmail);
+//            Result updateResult = userService.updateUser(user);
+//            if (!updateResult.isFlag()) {
+//                log.error("Failed to update user {} with Google ID {} and email {}", user.getId(), googleId, googleEmail);
+//                return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
+//            }
+//
+//            // 更新 session
+//            session.setAttribute("user", user);
+//            log.info("User {} linked Google account {} with email {}", user.getId(), googleId, googleEmail);
+//
+//            return Result.ok(null, ResultCodeEnum.SUCCESS);
+//        } catch (Exception e) {
+//            log.error("Error linking Google account: {}", e.getMessage(), e);
+//            return Result.fail(null, ResultCodeEnum.SERVER_ERROR);
+//        }
+//    }
 }

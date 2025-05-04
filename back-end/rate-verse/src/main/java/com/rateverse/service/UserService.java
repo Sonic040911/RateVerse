@@ -31,4 +31,14 @@ public interface UserService {
 
     // 更改自己用户的内容
     Result updateUser(User user);
+
+    // 通过邮箱查找用户信息
+    User findByEmail(String email);
+
+    // 插入一个用户
+    int save(User user);
+
+    int updateGoogleId(User user);
+
+    User findByGoogleId(String googleId);
 }

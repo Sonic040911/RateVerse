@@ -38,12 +38,10 @@ public interface UserMapper {
     // 检查邮箱是否存在
     boolean existsByEmail(String email);
 
-    // 分页查询 (参考老师写的分页查询)
-    List<User> selectUsersByPage();
-
-    // 更新用户头像
-    int updateUserAvatar(int id, String avatarUrl);
-
     // 搜索用户
     List<User> searchUsers(String s);
+
+    int updateGoogleId(User user);
+
+    User selectUserByGoogleId(String googleId);
 }

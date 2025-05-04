@@ -144,4 +144,38 @@ public class UserServiceImpl implements UserService {
             return Result.fail(null, ResultCodeEnum.DATABASE_ERROR);
         }
     }
+
+    // 通过邮箱查找用户
+    @Override
+    public User findByEmail(String email) {
+        return userMapper.selectUserByEmail(email);
+    }
+
+    // 插入用户
+    @Override
+    public int save(User user) {
+        if (user == null) {
+            return 0;
+        }
+        if (user.getId() == null) {
+            // 新用户，执行插入
+            return userMapper.insertUser(user);
+        } else {
+            // 现有用户，执行更新
+            return userMapper.updateUser(user);
+        }
+    }
+
+    @Override
+    public int updateGoogleId(User user) {
+        if (user == null || user.getId() == null) {
+            return 0;
+        }
+        return userMapper.updateGoogleId(user);
+    }
+
+
+    public User findByGoogleId(String googleId) {
+        return userMapper.selectUserByGoogleId(googleId);
+    }
 }

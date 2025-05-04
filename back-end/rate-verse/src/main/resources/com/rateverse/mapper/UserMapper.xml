@@ -4,9 +4,9 @@
 
 
 <mapper namespace="com.rateverse.mapper.UserMapper">
-    <insert id="insertUser">
-        INSERT INTO user (username, email, password_hash, avatar_url, created_at, updated_at)
-        VALUES (#{username}, #{email}, #{passwordHash}, #{avatarUrl}, NOW(), NOW())
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (username, email, password_hash, avatar_url, phone, address, google_id, created_at, updated_at)
+        VALUES (#{username}, #{email}, #{passwordHash}, #{avatarUrl}, #{phone}, #{address}, #{googleId}, NOW(), NOW())
     </insert>
 
     <update id="updateUser">
@@ -18,13 +18,10 @@
             <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="address != null">address = #{address},</if>
+            <if test="googleId != null">google_id = #{googleId}</if>
             updated_at = NOW()
         </set>
         WHERE id = #{id}
-    </update>
-
-    <update id="updateUserAvatar">
-
     </update>
 
     <delete id="deleteUserById">
@@ -59,10 +56,6 @@
         )
     </select>
 
-    <select id="selectUsersByPage" resultType="com.rateverse.bean.User">
-
-    </select>
-
     <select id="searchUsers" resultType="com.rateverse.bean.User">
         SELECT
             id,
@@ -75,10 +68,24 @@
             OR email LIKE #{keyword}
         ORDER BY
             CASE
-            WHEN username = #{keyword} THEN 1  -- 完全匹配优先
+            WHEN username = #{keyword} THEN 1
             WHEN username LIKE #{keyword} THEN 2
             ELSE 3
             END,
             created_at DESC
     </select>
+
+    <select id="selectUserByGoogleId" resultType="com.rateverse.bean.User">
+        SELECT id, username, email, password_hash, avatar_url, phone, address, google_id, created_at, updated_at
+        FROM user
+        WHERE google_id = #{googleId}
+    </select>
+
+
+    <update id="updateGoogleId" parameterType="com.rateverse.bean.User">
+        UPDATE user
+        SET google_id = #{googleId},
+        updated_at = NOW()
+        WHERE id = #{id}
+    </update>
 </mapper>

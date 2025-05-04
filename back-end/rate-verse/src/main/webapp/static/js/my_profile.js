@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addressInput = document.getElementById('address');
     const saveNotification = document.querySelector('.save-notification');
     const ratingsList = document.querySelector('.ratings-list');
+    const googleEmailMessage = document.getElementById('googleEmailMessage');
 
     // Check for required elements
     if (!editIcon || !renameModal || !renameForm || !nameInput) {
@@ -26,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Avatar upload elements not found, please check my_profile.html");
         return;
     }
-    if (!profileForm || !saveNotification) {
-        console.error("Profile form or notification elements not found, please check my_profile.html");
+    if (!profileForm || !saveNotification || !googleEmailMessage) {
+        console.error("Profile form, notification, or Google message elements not found, please check my_profile.html");
         return;
     }
     if (!ratingsList) {
@@ -232,7 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const newPhone = phoneInput.value.trim();
         const newAddress = addressInput.value.trim();
 
-        const emailValidation = validateEmail(newEmail);
+        // Skip email validation for Google users (since input is disabled)
+        const emailValidation = emailInput.disabled ? { valid: true, message: '' } : validateEmail(newEmail);
         const phoneValidation = validatePhone(newPhone);
         const addressValidation = validateAddress(newAddress);
 
@@ -274,6 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (result.code === 503) {
                 emailError.textContent = 'Email already exists';
                 emailError.style.display = 'block';
+            } else if (result.code === 1007) {
+                emailError.textContent = 'Google 登录用户的邮箱不可更改';
+                emailError.style.display = 'block';
             } else {
                 emailError.textContent = result.message || 'Failed to update profile';
                 emailError.style.display = 'block';
@@ -284,162 +289,171 @@ document.addEventListener('DOMContentLoaded', () => {
             emailError.style.display = 'block';
         }
     });
-});
 
-// Fetch user profile
-async function fetchUserProfile() {
-    console.log("Fetching user profile");
-    try {
-        const response = await fetch('/user/api/profile', {
-            method: 'GET',
-            credentials: 'include',
-        });
-        if (response.status === 401) {
-            console.log("Not logged in, redirecting to login.html");
-            alert('Please log in');
-            window.location.href = 'login.html';
-            return;
-        }
-        if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
-        }
-        const result = await response.json();
-        if (result.code === 200) {
-            const profile = result.data;
-            const usernameElement = document.querySelector('.name-wrapper h2');
-            const avatarElement = document.querySelector('.avatar');
-            const emailElement = document.querySelector('.info-value[data-field="email"]');
-            const phoneElement = document.querySelector('.info-value[data-field="phone"]');
-            const addressElement = document.querySelector('.info-value[data-field="address"]');
-            const emailInput = document.querySelector('#email');
-            const phoneInput = document.querySelector('#phone');
-            const addressInput = document.querySelector('#address');
-            const nameInput = document.getElementById('newName');
-
-            if (!usernameElement || !avatarElement || !emailElement || !phoneElement || !addressElement || !nameInput) {
-                console.error("Required DOM elements not found");
-                return;
-            }
-
-            usernameElement.textContent = profile.username || 'Unknown User';
-            nameInput.value = profile.username || 'Unknown User';
-            avatarElement.src = profile.avatarUrl || 'static/assets/User_img.png';
-            emailElement.textContent = profile.email || 'N/A';
-            phoneElement.textContent = profile.phone || 'N/A';
-            addressElement.textContent = profile.address || 'N/A';
-            emailInput.value = profile.email || '';
-            phoneInput.value = profile.phone || '';
-            addressInput.value = profile.address || '';
-        } else {
-            console.error('Failed to fetch user profile:', result.message);
-            alert('Unable to load user profile: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Error fetching user profile:', error);
-        alert('Network error while fetching user profile');
-    }
-}
-
-// Fetch and display user stats
-async function fetchUserStats() {
-    try {
-        const [topicCountRes, likesCountRes, commentsCountRes, ratingsCountRes] = await Promise.all([
-            fetch('/api/topic/user-topic-count', { method: 'GET', credentials: 'include' }),
-            fetch('/api/topic/user-topic-likes-count', { method: 'GET', credentials: 'include' }),
-            fetch('/api/topic/user-topic-comments-count', { method: 'GET', credentials: 'include' }),
-            fetch('/api/topic/user-topic-ratings-count', { method: 'GET', credentials: 'include' }),
-        ]);
-
-        const topicCount = await topicCountRes.json();
-        const likesCount = await likesCountRes.json();
-        const commentsCount = await commentsCountRes.json();
-        const ratingsCount = await ratingsCountRes.json();
-
-        const topicsElement = document.querySelector('.stat-value[for="topics"]');
-        const likesElement = document.querySelector('.stat-value[for="likes"]');
-        const commentsElement = document.querySelector('.stat-value[for="comments"]');
-        const ratingsElement = document.querySelector('.stat-value[for="ratings"]');
-
-        if (!topicsElement || !likesElement || !commentsElement || !ratingsElement) {
-            console.error("Stats elements not found, please check my_profile.html");
-            return;
-        }
-
-        topicsElement.textContent = topicCount.code === 200 ? topicCount.data || 0 : '0';
-        likesElement.textContent = likesCount.code === 200 ? likesCount.data || 0 : '0';
-        commentsElement.textContent = commentsCount.code === 200 ? commentsCount.data || 0 : '0';
-        ratingsElement.textContent = ratingsCount.code === 200 ? ratingsCount.data || 0 : '0';
-    } catch (error) {
-        console.error('Error fetching stats:', error);
-        alert('Network error while fetching stats');
-    }
-}
-
-// Truncate text function
-function truncateText(text, maxLength) {
-    if (text && text.length > maxLength) {
-        return text.substring(0, maxLength - 3) + '...';
-    }
-    return text || '';
-}
-
-// Fetch and display user ratings
-async function fetchUserRatings() {
-    console.log("Fetching all user ratings");
-    try {
-        const response = await fetch('/api/topic/user-ratings', {  // Removed ?limit=3 to fetch all Topics
-            method: 'GET',
-            credentials: 'include',
-        });
-        console.log('User ratings API response status:', response.status);
-        if (response.status === 401) {
-            console.log("Not logged in, redirecting to login.html");
-            alert('Please log in');
-            window.location.href = 'login.html';
-            return;
-        }
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Server error response:', errorData);
-            throw new Error(`HTTP error: ${response.status} - ${errorData.message || 'Unknown error'}`);
-        }
-        const result = await response.json();
-        console.log('User ratings API response data:', result);
-        if (result.code === 200) {
-            const ratings = Array.isArray(result.data) ? result.data : [];
-            const ratingsList = document.querySelector('.ratings-list');
-            if (!ratingsList) {
-                console.error("Ratings list element not found");
-                return;
-            }
-            ratingsList.innerHTML = '';
-            ratings.forEach(rating => {  // Removed slice(0, 3) to display all Topics
-                const ratingItem = document.createElement('div');
-                ratingItem.className = 'rating-item';
-                ratingItem.dataset.topicId = rating.id;
-                ratingItem.innerHTML = `
-                    <img src="${rating.topItem?.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="${rating.title}" class="rating-image">
-                    <div class="rating-info">
-                        <h4>${truncateText(rating.title, 30)}</h4>
-                        <p>${truncateText(rating.description, 100)}</p>
-                        <div class="rating-stats">
-                            <span><i class="fas fa-heart"></i> ${rating.topItem?.totalRatings || 0} Likes</span>
-                            <span><i class="fas fa-comment"></i> ${rating.topItem?.totalComments || 0} Comments</span>
-                        </div>
-                    </div>
-                `;
-                ratingItem.addEventListener('click', () => {
-                    console.log(`Clicked Topic ${rating.id}, redirecting to Rating_board.html`);
-                    window.location.href = `Rating_board.html?topicId=${rating.id}`;
-                });
-                ratingsList.appendChild(ratingItem);
+    // Fetch user profile
+    async function fetchUserProfile() {
+        console.log("Fetching user profile");
+        try {
+            const response = await fetch('/user/api/profile', {
+                method: 'GET',
+                credentials: 'include',
             });
-        } else {
-            console.error('Failed to fetch user ratings:', result.message);
-            alert('Unable to load user ratings: ' + result.message);
+            if (response.status === 401) {
+                console.log("Not logged in, redirecting to login.html");
+                alert('Please log in');
+                window.location.href = 'login.html';
+                return;
+            }
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+            const result = await response.json();
+            if (result.code === 200) {
+                const profile = result.data;
+                const usernameElement = document.querySelector('.name-wrapper h2');
+                const avatarElement = document.querySelector('.avatar');
+                const emailElement = document.querySelector('.info-value[data-field="email"]');
+                const phoneElement = document.querySelector('.info-value[data-field="phone"]');
+                const addressElement = document.querySelector('.info-value[data-field="address"]');
+                const emailInput = document.querySelector('#email');
+                const phoneInput = document.querySelector('#phone');
+                const addressInput = document.querySelector('#address');
+                const nameInput = document.getElementById('newName');
+
+                if (!usernameElement || !avatarElement || !emailElement || !phoneElement || !addressElement || !nameInput) {
+                    console.error("Required DOM elements not found");
+                    return;
+                }
+
+                usernameElement.textContent = profile.username || 'Unknown User';
+                nameInput.value = profile.username || 'Unknown User';
+                avatarElement.src = profile.avatarUrl || 'static/assets/User_img.png';
+                emailElement.textContent = profile.email || 'N/A';
+                phoneElement.textContent = profile.phone || 'N/A';
+                addressElement.textContent = profile.address || 'N/A';
+                emailInput.value = profile.email || '';
+                phoneInput.value = profile.phone || '';
+                addressInput.value = profile.address || '';
+
+                // 禁用 Google 用户的邮箱输入框
+                if (profile.isGoogleUser) {
+                    emailInput.disabled = true;
+                    googleEmailMessage.style.display = 'block';
+                } else {
+                    emailInput.disabled = false;
+                    googleEmailMessage.style.display = 'none';
+                }
+            } else {
+                console.error('Failed to fetch user profile:', result.message);
+                alert('Unable to load user profile: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+            alert('Network error while fetching user profile');
         }
-    } catch (error) {
-        console.error('Error fetching user ratings:', error);
-        alert('Network error while fetching user ratings');
     }
-}
+
+    // Fetch and display user stats
+    async function fetchUserStats() {
+        try {
+            const [topicCountRes, likesCountRes, commentsCountRes, ratingsCountRes] = await Promise.all([
+                fetch('/api/topic/user-topic-count', { method: 'GET', credentials: 'include' }),
+                fetch('/api/topic/user-topic-likes-count', { method: 'GET', credentials: 'include' }),
+                fetch('/api/topic/user-topic-comments-count', { method: 'GET', credentials: 'include' }),
+                fetch('/api/topic/user-topic-ratings-count', { method: 'GET', credentials: 'include' }),
+            ]);
+
+            const topicCount = await topicCountRes.json();
+            const likesCount = await likesCountRes.json();
+            const commentsCount = await commentsCountRes.json();
+            const ratingsCount = await ratingsCountRes.json();
+
+            const topicsElement = document.querySelector('.stat-value[for="topics"]');
+            const likesElement = document.querySelector('.stat-value[for="likes"]');
+            const commentsElement = document.querySelector('.stat-value[for="comments"]');
+            const ratingsElement = document.querySelector('.stat-value[for="ratings"]');
+
+            if (!topicsElement || !likesElement || !commentsElement || !ratingsElement) {
+                console.error("Stats elements not found, please check my_profile.html");
+                return;
+            }
+
+            topicsElement.textContent = topicCount.code === 200 ? topicCount.data || 0 : '0';
+            likesElement.textContent = likesCount.code === 200 ? likesCount.data || 0 : '0';
+            commentsElement.textContent = commentsCount.code === 200 ? commentsCount.data || 0 : '0';
+            ratingsElement.textContent = ratingsCount.code === 200 ? ratingsCount.data || 0 : '0';
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            alert('Network error while fetching stats');
+        }
+    }
+
+    // Truncate text function
+    function truncateText(text, maxLength) {
+        if (text && text.length > maxLength) {
+            return text.substring(0, maxLength - 3) + '...';
+        }
+        return text || '';
+    }
+
+    // Fetch and display user ratings
+    async function fetchUserRatings() {
+        console.log("Fetching all user ratings");
+        try {
+            const response = await fetch('/api/topic/user-ratings', {
+                method: 'GET',
+                credentials: 'include',
+            });
+            console.log('User ratings API response status:', response.status);
+            if (response.status === 401) {
+                console.log("Not logged in, redirecting to login.html");
+                alert('Please log in');
+                window.location.href = 'login.html';
+                return;
+            }
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Server error response:', errorData);
+                throw new Error(`HTTP error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+            }
+            const result = await response.json();
+            console.log('User ratings API response data:', result);
+            if (result.code === 200) {
+                const ratings = Array.isArray(result.data) ? result.data : [];
+                const ratingsList = document.querySelector('.ratings-list');
+                if (!ratingsList) {
+                    console.error("Ratings list element not found");
+                    return;
+                }
+                ratingsList.innerHTML = '';
+                ratings.forEach(rating => {
+                    const ratingItem = document.createElement('div');
+                    ratingItem.className = 'rating-item';
+                    ratingItem.dataset.topicId = rating.id;
+                    ratingItem.innerHTML = `
+                        <img src="${rating.topItem?.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="${rating.title}" class="rating-image">
+                        <div class="rating-info">
+                            <h4>${truncateText(rating.title, 30)}</h4>
+                            <p>${truncateText(rating.description, 100)}</p>
+                            <div class="rating-stats">
+                                <span><i class="fas fa-heart"></i> ${rating.topItem?.totalRatings || 0} Likes</span>
+                                <span><i class="fas fa-comment"></i> ${rating.topItem?.totalComments || 0} Comments</span>
+                            </div>
+                        </div>
+                    `;
+                    ratingItem.addEventListener('click', () => {
+                        console.log(`Clicked Topic ${rating.id}, redirecting to Rating_board.html`);
+                        window.location.href = `Rating_board.html?topicId=${rating.id}`;
+                    });
+                    ratingsList.appendChild(ratingItem);
+                });
+            } else {
+                console.error('Failed to fetch user ratings:', result.message);
+                alert('Unable to load user ratings: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error fetching user ratings:', error);
+            alert('Network error while fetching user ratings');
+        }
+    }
+});

@@ -117,3 +117,7 @@ function clearErrors() {
         el.classList.remove('has-error');
     });
 }
+
+document.querySelector('.cancel').addEventListener('click', () => {
+    window.location.href = '/Login.html';
+});
