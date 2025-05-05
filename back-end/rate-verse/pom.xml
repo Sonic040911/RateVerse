@@ -20,7 +20,7 @@
         <druid.version>1.2.8</druid.version>
         <mybatis-spring.version>3.0.2</mybatis-spring.version>
         <jakarta.servlet.jsp.jstl-api.version>3.0.0</jakarta.servlet.jsp.jstl-api.version>
-        <logback.version>1.2.3</logback.version>
+        <logback.version>1.4.14</logback.version>
         <lombok.version>1.18.26</lombok.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -220,4 +220,13 @@
             <version>1.44.2</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

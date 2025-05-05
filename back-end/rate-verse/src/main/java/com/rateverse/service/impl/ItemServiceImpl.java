@@ -76,10 +76,14 @@ public class ItemServiceImpl implements ItemService {
         // 2. 获取评分分布数据
         List<ScoreDistribution> distributions = ratingMapper.selectScoreDistributionByItem(itemId);
 
+        // 获取topic的名字
+        Topic topic = topicMapper.selectTopicById(item.getTopicId());
+
         // 3. 组装数据
         Map<String, Object> data = new HashMap<>();
         data.put("item", item);
         data.put("scoreDistribution", distributions);
+        data.put("topic", topic);
 
         return Result.ok(data, ResultCodeEnum.SUCCESS);
     }

@@ -45,7 +45,6 @@ public class TopicController {
     }
 
     /***
-     * (后续前端需要连接)
      *
      * 按热度排序在主页中显示所有Topic
      *

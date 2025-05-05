@@ -18,7 +18,7 @@
             <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="address != null">address = #{address},</if>
-            <if test="googleId != null">google_id = #{googleId}</if>
+            <if test="googleId != null">google_id = #{googleId},</if>
             updated_at = NOW()
         </set>
         WHERE id = #{id}

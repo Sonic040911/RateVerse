@@ -31,9 +31,11 @@ async function fetchItem() {
       const data = result.data;
       const item = data.item;
       const distributions = data.scoreDistribution;
+      const topic = data.topic;
 
       // 设置 Item 信息
-      document.querySelector('.name-block').textContent = item.name;
+      document.querySelector('.name-block').textContent = topic.title;
+      document.querySelector('.name-block').href = 'Rating_board.html?topicId=' + topic.id
       document.querySelector('.some-name').textContent = item.name;
       document.querySelector('.description').textContent = item.description;
       renderRatingDistribution(distributions);
@@ -41,11 +43,11 @@ async function fetchItem() {
 
       // 设置图片
       const itemImage = document.querySelector('.some-image img');
-      itemImage.src = item.imageUrl || 'static/assets/Block_with_X(2).svg';
+      itemImage.src = item.imageUrl || 'static/assets/NoImageFound.jpg.png';
       console.log(`Loading image for item ${item.id}: ${itemImage.src}`);
       itemImage.onerror = () => {
         console.error(`Failed to load image for item ${item.id}: ${itemImage.src}`);
-        itemImage.src = 'static/assets/Block_with_X(2).svg';
+        itemImage.src = 'static/assets/NoImageFound.jpg.png';
       };
       itemImage.onload = () => {
         console.log(`Image loaded successfully for item ${item.id}: ${itemImage.src}`);

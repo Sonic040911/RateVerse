@@ -86,7 +86,7 @@ public class RatingServiceImpl implements RatingService {
         updateItemStats(rating.getItemId());
         updateTopicStats(rating.getItemId());
 
-        return Result.ok(null, ResultCodeEnum.SUCCESS);
+        return Result.ok(rating, ResultCodeEnum.SUCCESS);
     }
 
     @Override
