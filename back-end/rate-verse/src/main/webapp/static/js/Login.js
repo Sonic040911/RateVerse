@@ -71,7 +71,7 @@ function showSuccess(message) {
         // Hide after 5 seconds
         setTimeout(() => {
             successElement.style.display = 'none';
-        }, 5000);
+        }, 3000);
     } else {
         console.warn("Success message element not found, using alert");
         alert(message);

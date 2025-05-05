@@ -40,7 +40,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         if (registerResult.code === 200) {
             setTimeout(() => {
                 window.location.href = '/Login.html?registered=true';
-            }, 2000); // Delay redirect by 2 seconds
+            }, 500); // Delay redirect by 2 seconds
         } else {
             showError('Registration failed, please try again later');
         }

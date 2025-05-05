@@ -381,3 +381,12 @@ button.login:active {
         width: 90%;
     }
 }
+
+#success-message {
+    display: none; /* 保持原有隐藏状态 */
+    color: green;
+    margin-bottom: 1rem;
+    text-align: left; /* 避免完全居中 */
+    margin-left: 12%; /* 稍微向右移动，占父容器宽度的10% */
+    width: 80%; /* 限制宽度，防止太宽 */
+}
