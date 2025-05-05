@@ -9,22 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mobile menu toggle
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const nav = document.querySelector('nav');
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
     
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', () => {
-            nav.classList.toggle('open');
-            mobileMenuBtn.textContent = nav.classList.contains('open') ? '✕' : '☰';
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
         });
-        
+
         // Close menu when clicking a link
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', () => {
-                nav.classList.remove('open');
-                mobileMenuBtn.textContent = '☰';
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
             });
+        });
+    } else {
+        console.error('Hamburger or nav menu not found:', {
+            hamburger: !!hamburger,
+            navMenu: !!navMenu
         });
     }
 
@@ -39,15 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Successfully loaded image: ${img.src}`);
         });
     });
-    
+
     // Responsive handling
     function handleResize() {
-        if (window.innerWidth > 768 && nav) {
-            nav.classList.remove('open');
-            if (mobileMenuBtn) mobileMenuBtn.textContent = '☰';
+        if (window.innerWidth > 768 && navMenu) {
+            navMenu.classList.remove('active');
+            if (hamburger) hamburger.classList.remove('active');
         }
     }
-    
+
     // Initial call and event listener for window resize
     handleResize();
     window.addEventListener('resize', handleResize);

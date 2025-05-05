@@ -897,9 +897,6 @@ main {
   background-color: var(--toggle-bg);
 }
 
-```css
-/* Responsive CSS for Rating Page - to be added to Rating.css */
-
 /* Base responsive adjustments */
 @media (max-width: 1200px) {
   main {
@@ -1154,4 +1151,3 @@ main {
     width: 220px;
   }
 }
-```
