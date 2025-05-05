@@ -199,4 +199,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchTopic();
     fetchItems();
-});
+})
