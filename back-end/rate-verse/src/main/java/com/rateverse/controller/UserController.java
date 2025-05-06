@@ -37,8 +37,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private static final String GOOGLE_CLIENT_ID = "343104139057-ve41fnjl41i90ckbvjfsfmh61guvqk05.apps.googleusercontent.com";
-
     /***
      * 注册用户
      *

@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Project Name: rate-verse
@@ -47,16 +46,23 @@ public class TopicServiceImpl implements TopicService {
     // 在主页按照热度顺序 返回所有Topic (包含三个Items)
     @Override
     public Result getTopicsByHeatPage(int pageSize, int currentPage) {
-        PageHelper.startPage(currentPage, pageSize);
+        // 计算 OFFSET
+        int offset = (currentPage - 1) * pageSize;
 
-        List<Topic> topics = topicMapper.selectAllByHeat();
+        // 获取分页 Topics
+        List<Topic> topics = topicMapper.selectAllByHeat(pageSize, offset);
 
-        PageInfo<Topic> info = new PageInfo<>(topics);
+        // 获取总 Topic 数量
+        long total = topicMapper.countTopics();
 
-        PageBean<Topic> pageBean =new PageBean<>(currentPage, pageSize,
-                info.getTotal(), info.getList());
+        // 构建响应
+        Map<String, Object> data = new HashMap<>();
+        data.put("currentPage", currentPage);
+        data.put("pageSize", pageSize);
+        data.put("total", total);
+        data.put("data", topics);
 
-        return Result.ok(pageBean, ResultCodeEnum.SUCCESS);
+        return Result.ok(data, ResultCodeEnum.SUCCESS);
     }
 
     // 用户点开一个Topic时, 返回Topic的所有信息

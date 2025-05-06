@@ -1,6 +1,7 @@
-const pageSize = 5; // Number of Topics to fetch per page
+const pageSize = 7; // Number of Topics to fetch per page
 let currentTopicPage = 1; // Current page for Topics
 let totalTopicPages = 0; // Total number of Topic pages
+let topicsMap = new Map(); // Store Topics to merge duplicates
 
 // Fetch Topic list
 async function fetchTopics(append = false) {
@@ -13,13 +14,29 @@ async function fetchTopics(append = false) {
         const result = await response.json();
         console.log('API response:', result);
         if (result.code === 200) {
-            const pageBean = result.data;
-            if (!pageBean || !Array.isArray(pageBean.data)) {
-                console.error('Invalid pageBean data:', pageBean);
+            const pageData = result.data;
+            if (!pageData || !Array.isArray(pageData.data)) {
+                console.error('Invalid page data:', pageData);
                 throw new Error('Invalid data format from API');
             }
-            renderTopics(pageBean.data, append);
-            totalTopicPages = Math.ceil(pageBean.total / pageSize);
+            // Merge Topics
+            pageData.data.forEach(topic => {
+                if (!topicsMap.has(topic.id)) {
+                    topicsMap.set(topic.id, { ...topic, items: topic.items || [] });
+                } else {
+                    console.warn(`Duplicate topic ID ${topic.id} in page ${currentTopicPage}`);
+                    const existingTopic = topicsMap.get(topic.id);
+                    (topic.items || []).forEach(item => {
+                        if (!existingTopic.items.some(i => i.id === item.id)) {
+                            existingTopic.items.push(item);
+                        }
+                    });
+                }
+            });
+            // Render only new Topics
+            const topicsToRender = append ? pageData.data : [...topicsMap.values()];
+            renderTopics(topicsToRender, append);
+            totalTopicPages = Math.ceil(pageData.total / pageSize);
             console.log(`Total pages: ${totalTopicPages}`);
             updateShowMoreButton();
         } else {
@@ -68,9 +85,10 @@ function renderTopics(topics, append = false) {
 
     if (topics && topics.length > 0) {
         topics.forEach((topic, index) => {
-            console.log(`Processing topic: ${topic.title}, id: ${topic.id}`);
+            console.log(`Processing topic: ${topic.title}, id: ${topic.id}, items: ${topic.items.length}`);
             const topicContainer = document.createElement('div');
             topicContainer.className = 'recommended-content';
+            topicContainer.setAttribute('data-topic-id', topic.id); // 添加 ID 用于去重
 
             const newHeader = document.createElement('div');
             newHeader.className = 'recommended_header';
@@ -119,7 +137,10 @@ function renderTopics(topics, append = false) {
 
                 topicList.innerHTML = '';
             } else {
-                recommendedSection.insertBefore(topicContainer, recommendedSection.querySelector('.more-ratings'));
+                // 避免重复渲染
+                if (!recommendedSection.querySelector(`.recommended-content[data-topic-id="${topic.id}"]`)) {
+                    recommendedSection.insertBefore(topicContainer, recommendedSection.querySelector('.more-ratings'));
+                }
             }
 
             const targetList = (!append && index === 0) ? topicList : newList;
@@ -190,9 +211,19 @@ function updateShowMoreButton() {
     if (showMoreButton) {
         showMoreButton.style.display = currentTopicPage < totalTopicPages ? 'block' : 'none';
         console.log(`Show More button visibility: ${showMoreButton.style.display}`);
+        // 防止重复绑定
+        showMoreButton.removeEventListener('click', showMoreHandler);
+        showMoreButton.addEventListener('click', showMoreHandler);
     } else {
         console.error('Show More button not found');
     }
+}
+
+// Show More handler
+function showMoreHandler() {
+    console.log('Show More clicked');
+    currentTopicPage++;
+    fetchTopics(true);
 }
 
 // Navigate to Topic detail page
@@ -204,18 +235,6 @@ function goToTopicDetail(topicId) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing...');
     fetchTopics();
-
-    const showMoreButton = document.querySelector('.show-more');
-    if (showMoreButton) {
-        console.log('Show More button found, binding event');
-        showMoreButton.addEventListener('click', () => {
-            console.log('Show More clicked');
-            currentTopicPage++;
-            fetchTopics(true);
-        });
-    } else {
-        console.error('Show More button not found during initialization');
-    }
 
     const createBtn = document.getElementById('createBtn');
     if (createBtn) {

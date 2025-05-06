@@ -13,7 +13,7 @@ if (!topicId) {
 
 // Pagination configuration
 let currentPage = 1;
-const pageSize = 4;
+const pageSize = 10;
 let sortType = 'popular';
 
 // Fetch and display Topic information
@@ -75,9 +75,16 @@ async function fetchItems() {
                 });
                 return;
             }
-            ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
+
+            // Initialize ratingsSection on first page
+            if (currentPage === 1) {
+                ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
+            }
+
             if (items.length === 0) {
-                ratingsSection.innerHTML = '<p class="no-items">No items available for this topic.</p>';
+                if (currentPage === 1) {
+                    ratingsSection.innerHTML = '<p class="no-items">No items available for this topic.</p>';
+                }
                 imgCategory.src = 'static/assets/NoImageFound.jpg.png'; // 如果没有 Item，使用默认图片
                 return;
             }
@@ -92,22 +99,28 @@ async function fetchItems() {
                 selectedItem = items[0];
             }
 
-            // 更新 Topic 图片为选中 Item 的图片
-            imgCategory.src = selectedItem.imageUrl || 'static/assets/NoImageFound.jpg.png';
-            console.log(`Updated Topic image to: ${imgCategory.src}`);
+            // 更新 Topic 图片为选中 Item 的图片（仅在第一页）
+            if (currentPage === 1) {
+                imgCategory.src = selectedItem.imageUrl || 'static/assets/NoImageFound.jpg.png';
+                console.log(`Updated Topic image to: ${imgCategory.src}`);
+            }
 
             // 渲染 Item 卡片
             renderItems(items);
 
+            // 更新 Show More 按钮
             const showMoreButton = document.querySelector('.show-more');
-            if (showMoreButton) {
+            const moreRatings = document.querySelector('.more-ratings');
+            if (showMoreButton && moreRatings) {
                 showMoreButton.style.display = items.length === pageSize ? 'block' : 'none';
                 console.log(`Show More button visibility: ${showMoreButton.style.display}`);
+                // 确保 more-ratings 在末尾
+                ratingsSection.appendChild(moreRatings);
                 showMoreButton.addEventListener('click', () => {
                     console.log('Show More clicked');
                     currentPage++;
                     fetchItems();
-                });
+                }, { once: true }); // 防止重复绑定
             }
         } else {
             console.error('Failed to fetch Items:', result.message);
@@ -123,6 +136,7 @@ async function fetchItems() {
 function renderItems(items) {
     console.log(`Rendering items: count=${items.length}`);
     const ratingsSection = document.querySelector('.ratings');
+    const moreRatings = document.querySelector('.more-ratings') || document.createElement('div');
     if (!ratingsSection) {
         console.error('Ratings section not found during render');
         return;
@@ -161,7 +175,7 @@ function renderItems(items) {
         ratingCard.addEventListener('click', () => {
             window.location.href = `Feedback.html?itemId=${item.id}`;
         });
-        ratingsSection.insertBefore(ratingCard, document.querySelector('.more-ratings'));
+        ratingsSection.insertBefore(ratingCard, moreRatings);
     });
 }
 

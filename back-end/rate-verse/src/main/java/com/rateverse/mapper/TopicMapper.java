@@ -30,6 +30,8 @@ public interface TopicMapper {
 
 
     // ==================== 查询操作 ====================
+    Topic selectTopicById(Integer id);
+
     // 查询主题 (根据主题的id)
     Topic selectTopicByIdWithUser(Integer id);
 
@@ -37,7 +39,8 @@ public interface TopicMapper {
     List<Topic> selectAllByTime();
 
     // 查询所有主题 (按热度排序) (分页)
-    List<Topic> selectAllByHeat();
+    List<Topic> selectAllByHeat(@Param("pageSize") int pageSize, @Param("offset") int offset);
+    long countTopics();
 
     // 查询主题 (根据userId) (未来最好改成分页查询)
     List<Topic> selectTopicByUserId(Integer id);

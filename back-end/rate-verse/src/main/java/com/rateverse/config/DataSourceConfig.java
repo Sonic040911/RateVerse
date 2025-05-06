@@ -4,6 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 import javax.sql.DataSource;
 
 /**
@@ -18,15 +19,21 @@ public class DataSourceConfig {
     // 配置数据库连接池
     @Bean
     public DataSource dataSource() {
-        String url = "jdbc:mysql://localhost:3306/rateverse";
-        String testUrl = "jdbc:mysql://localhost:3306/rateverse_test";
+        String localUrl = "jdbc:mysql://localhost:3306/rateverse";
+        String localName = "root";
+        String localPassword = "1989";
+
+        String url = "jdbc:mysql://localhost:3306/rate_verse_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+        String name = "sonic";
+        String password = "maozedong1989";
 
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUsername("root");
-        dataSource.setPassword("1989");
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        dataSource.setUrl(testUrl);
+        dataSource.setUsername(name);
+        dataSource.setPassword(password);
+        dataSource.setUrl(url);
+
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         return dataSource;
     }

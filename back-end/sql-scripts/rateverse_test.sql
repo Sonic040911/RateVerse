@@ -87,20 +87,6 @@ CREATE TABLE comment_like (
 ALTER TABLE COMMENT 
 ADD COLUMN dislike INT DEFAULT 0 COMMENT '点踩数';
 
-CREATE TABLE tag (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    NAME VARCHAR(50) UNIQUE NOT NULL        -- 标签名称（如“鼠标”）
-);
-
--- 主题与标签的关联表（多对多）
-CREATE TABLE topic_tag (
-    topic_id INT NOT NULL,
-    tag_id INT NOT NULL,
-    PRIMARY KEY (topic_id, tag_id),
-    FOREIGN KEY (topic_id) REFERENCES topic(id),
-    FOREIGN KEY (tag_id) REFERENCES tag(id)
-);
-
 
 CREATE TABLE draft_topic (
     draft_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -140,22 +126,8 @@ CREATE TABLE notification (
 ) ENGINE=INNODB;
 
 
-
-
 CREATE INDEX idx_notification_user_id ON notification(user_id, created_at);
 
-SELECT * FROM `user`;
-SELECT * FROM draft_topic;
-SELECT * FROM draft_item;
-SELECT * FROM topic;
-SELECT * FROM item;
-SELECT draft_id FROM draft_topic WHERE user_id = 13
-
-
-DELETE FROM `draft_topic`;
-DELETE FROM `draft_item`;
-DELETE FROM `topic` WHERE id = 24;
-DELETE FROM `item`;
 
 
 

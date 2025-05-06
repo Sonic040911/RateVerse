@@ -26,9 +26,8 @@ import org.springframework.web.servlet.config.annotation.*;
 public class WebMvcJavaConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("/static/images/")
-                .setCachePeriod(0); // 可选：禁用缓存，便于开发时实时更新
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:/var/www/uploads/");
     }
 
     //开启静态资源

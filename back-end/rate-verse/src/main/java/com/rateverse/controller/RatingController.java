@@ -35,7 +35,7 @@ public class RatingController {
         Result result = ratingService.submitRating(rating);
 
         System.out.println("===========log.info============");
-        log.info("添加的评分项为: {}", result);
+        log.info("添加的评分为: {}", result);
 
         return result;
     }

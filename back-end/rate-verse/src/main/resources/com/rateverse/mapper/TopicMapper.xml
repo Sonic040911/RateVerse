@@ -135,7 +135,16 @@
         i.average_rating, i.total_ratings AS item_total_ratings,
         i.total_comments AS item_total_comments,
         i.created_at AS item_created_at, i.updated_at AS item_updated_at
-        FROM topic t
+        FROM (
+        SELECT id, title, description, user_id, created_at, updated_at, total_comments, total_ratings
+        FROM topic
+        ORDER BY (
+        SELECT COALESCE(SUM(i3.total_ratings) + SUM(i3.total_comments), 0)
+        FROM item i3
+        WHERE i3.topic_id = topic.id
+        ) DESC, created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+        ) t
         LEFT JOIN (
         SELECT i1.*
         FROM item i1
@@ -150,7 +159,11 @@
         SELECT COALESCE(SUM(i3.total_ratings) + SUM(i3.total_comments), 0)
         FROM item i3
         WHERE i3.topic_id = t.id
-        ) DESC, t.created_at DESC
+        ) DESC, t.created_at DESC, i.created_at ASC
+    </select>
+
+    <select id="countTopics" resultType="long">
+        SELECT COUNT(*) FROM topic
     </select>
 
 
@@ -273,6 +286,10 @@
         ) i ON t.id = i.topic_id
         WHERE t.user_id = #{userId}
         ORDER BY t.created_at DESC
+    </select>
+
+    <select id="selectTopicById" resultType="com.rateverse.bean.Topic">
+        select * from topic where id = #{id}
     </select>
 
 </mapper>
