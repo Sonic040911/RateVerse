@@ -571,6 +571,7 @@ nav ul li a.active {
     margin-top: 3%;
     display: flex;
     justify-self: center;
+    position: relative;
 }
 
 .img-category {
@@ -958,6 +959,19 @@ nav ul li a.active {
     .img-category {
         width: 100px;
         height: 120px;
+        position: relative;
+    }
+
+    .user-create {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+
+    .user-img {
+        width: 25px;
+        height: 25px;
     }
 
     .name-category {
@@ -970,11 +984,6 @@ nav ul li a.active {
 
     .user-create {
         font-size: 0.75em;
-    }
-
-    .user-img {
-        width: 25px;
-        height: 25px;
     }
 
     /* Filter section */
@@ -1030,7 +1039,14 @@ nav ul li a.active {
 
     /* Show more button */
     .show-more {
-        width: 15%;
+        width: 12%;
+        height: 4.5vh;
+        justify-content: center;
+    }
+
+    .show-img {
+        margin-left: 5px;
+        order: 2;
     }
 
     /* Footer adjustments */
@@ -1048,7 +1064,7 @@ nav ul li a.active {
     /* Header reorganization */
     header {
         height: auto;
-        padding: 15px 光芒%;
+        padding: 15px 3%;
         flex-wrap: wrap;
     }
 
@@ -1082,19 +1098,27 @@ nav ul li a.active {
 
     /* Category section */
     .category {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
     }
 
     .img-category {
-        margin: 0 0 15px 0;
+        margin: 0 15px 0 0;
         width: 120px;
         height: 140px;
+        position: relative;
+    }
+
+    .user-create {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        gap: 5px;
     }
 
     .info-category {
-        align-items: center;
+        align-items: flex-start;
     }
 
     .description-category {
@@ -1137,7 +1161,14 @@ nav ul li a.active {
 
     /* Show more button */
     .show-more {
-        width: 25%;
+        width: 20%;
+        height: 4vh;
+        justify-content: center;
+    }
+
+    .show-img {
+        margin-left: 5px;
+        order: 2;
     }
 
     /* Footer restructuring */
@@ -1171,6 +1202,10 @@ nav ul li a.active {
     .profile-dropdown {
         right: 10px;
     }
+
+    .card-profile {
+        width: 220px;
+    }
 }
 
 /* Extra small screens (portrait phones, less than 576px) */
@@ -1195,6 +1230,30 @@ nav ul li a.active {
     }
 
     /* Category section */
+    .category {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .img-category {
+        width: 80px;
+        height: 100px;
+        position: relative;
+    }
+
+    .user-create {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        gap: 3px;
+    }
+
+    .user-img {
+        width: 20px;
+        height: 20px;
+    }
+
     .name-category {
         font-size: 1em;
     }
@@ -1246,7 +1305,14 @@ nav ul li a.active {
 
     /* Show more button */
     .show-more {
-        width: 50%;
+        width: 30%;
+        height: 3.5vh;
+        justify-content: center;
+    }
+
+    .show-img {
+        margin-left: 5px;
+        order: 2;
     }
 
     /* Footer minimal */
@@ -1258,6 +1324,48 @@ nav ul li a.active {
     .notification-modal-content {
         width: calc(100vw - 20px);
         max-width: 350px;
+    }
+
+    .notification-header h3 {
+        font-size: 14px;
+    }
+
+    .notification-list li {
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+
+    .notification-time {
+        font-size: 10px;
+    }
+
+    .card-profile {
+        width: 220px;
+    }
+
+    .card-profile .list .element {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .toggle-label {
+        width: 55px;
+        height: 28px;
+    }
+
+    .slider {
+        width: 18px;
+        height: 18px;
+        top: 3px;
+        left: 3px;
+    }
+
+    .theme-toggle:checked + .toggle-label .slider {
+        transform: translateX(29px);
+    }
+
+    .sun, .moon {
+        font-size: 14px;
     }
 }
 
@@ -1277,17 +1385,23 @@ nav ul li a.active {
         transform: translateX(50%);
     }
 
-    .card-profile {
-        width: 220px;
-    }
-
     .category {
-        padding: 5%;
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
     }
 
     .img-category {
-        width: 100px;
-        height: 120px;
+        width: 80px;
+        height: 100px;
+        position: relative;
+    }
+
+    .user-create {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        gap: 3px;
     }
 
     .type-button {
@@ -1295,7 +1409,15 @@ nav ul li a.active {
         margin-bottom: 10px;
     }
 
+    /* Show more button */
     .show-more {
-        width: 70%;
+        width: 60%;
+        height: 3vh;
+        justify-content: center;
+    }
+
+    .show-img {
+        margin-left: 5px;
+        order: 2;
     }
 }

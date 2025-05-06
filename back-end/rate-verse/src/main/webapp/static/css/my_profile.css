@@ -1249,18 +1249,6 @@ nav ul li a.active {
     .footer-column h2 {
         font-size: 1.8em;
     }
-
-    .notification-modal-content {
-        width: 360px;
-    }
-
-    .card-profile {
-        width: 230px;
-    }
-
-    .card-theme {
-        width: 210px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -1434,31 +1422,15 @@ nav ul li a.active {
     }
 
     .notification-modal {
-        right: 15px;
-        top: 100px;
+        right: 10px;
     }
 
     .notification-modal-content {
-        width: 90%;
-        max-width: 340px;
-    }
-
-    .notification-header h3 {
-        font-size: 15px;
-    }
-
-    .notification-list li {
-        font-size: 13px;
-        padding: 8px 15px;
-    }
-
-    .notification-time {
-        font-size: 11px;
+        width: 350px;
     }
 
     .profile-dropdown {
-        right: 15px;
-        top: 100px;
+        right: 10px;
     }
 
     .card-profile {
@@ -1673,14 +1645,9 @@ nav ul li a.active {
         font-size: 1.1rem;
     }
 
-    .notification-modal {
-        right: 10px;
-        top: 110px;
-    }
-
     .notification-modal-content {
-        width: 95%;
-        max-width: 300px;
+        width: calc(100vw - 20px);
+        max-width: 350px;
     }
 
     .notification-header h3 {
@@ -1696,17 +1663,12 @@ nav ul li a.active {
         font-size: 10px;
     }
 
-    .profile-dropdown {
-        right: 10px;
-        top: 110px;
-    }
-
     .card-profile {
-        width: 200px;
+        width: 220px;
     }
 
     .card-theme {
-        width: 180px;
+        width: 200px;
     }
 
     .card-profile .list .element {
@@ -1770,5 +1732,17 @@ nav ul li a.active {
     .footer-bottom {
         font-size: 0.8em;
         padding: 15px 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .notification-modal {
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .profile-dropdown {
+        right: 50%;
+        transform: translateX(50%);
     }
 }
