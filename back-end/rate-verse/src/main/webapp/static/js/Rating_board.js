@@ -191,7 +191,7 @@ function renderItems(items) {
             </div>
             <div class="game-info">
                 <div class="star-rating">${starHtml}</div>
-                <div class="score">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</div>
+                <div class="score">${item.averageRating ? (item.averageRating * 2).toFixed(1) : '0.0'}</div>
                 <p class="number-rating">${item.totalRatings || 0} ratings</p>
             </div>
         `;
