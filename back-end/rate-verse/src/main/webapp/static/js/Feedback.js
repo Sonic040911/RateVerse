@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 设置分享链接
   const currentUrl = window.location.href;
-  document.querySelector('.share-url').value = currentUrl;
+  document.querySelector('#share-url').value = currentUrl;
 
   shareBtn.addEventListener("click", () => {
     modal.style.display = "flex";
