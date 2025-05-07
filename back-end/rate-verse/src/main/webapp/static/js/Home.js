@@ -9,30 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Hamburger menu toggle
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('navMenu');
-    
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when clicking a link
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-    } else {
-        console.error('Hamburger or nav menu not found:', {
-            hamburger: !!hamburger,
-            navMenu: !!navMenu
-        });
-    }
-
     // Check if images load, log errors if they fail
     document.querySelectorAll('.about-us-image img, .our-mission-image img, .for-advertisers-image img').forEach(img => {
         img.addEventListener('error', () => {

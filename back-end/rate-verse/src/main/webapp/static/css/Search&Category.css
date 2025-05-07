@@ -208,7 +208,6 @@ nav ul li a.active {
     transform: scale(1.08);
 }
 
-
 /* Modal notification button */
 .notification-modal {
     position: fixed;
@@ -414,42 +413,42 @@ nav ul li a.active {
 .card-theme {
     width: 220px;
     animation: slideIn 0.2s ease;
-  }
+}
   
-  @keyframes slideIn {
+@keyframes slideIn {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
-  }
+}
   
-  .theme-header {
+.theme-header {
     display: flex;
     align-items: center;
     gap: 15px;
     color: var(--modal-text-color);
     padding: 10px 15px;
-  }
+}
   
-  .theme-header svg {
+.theme-header svg {
     cursor: pointer;
     transition: transform 0.2s ease;
-  }
+}
   
-  .theme-header svg:hover {
+.theme-header svg:hover {
     transform: translateX(-3px);
-  }
+}
   
-  .toggle-container {
+.toggle-container {
     display: flex;
     align-items: center;
     padding: 10px 15px;
     justify-content: center;
-  }
+}
   
-  .theme-toggle {
+.theme-toggle {
     display: none;
-  }
+}
   
-  .toggle-label {
+.toggle-label {
     position: relative;
     display: inline-block;
     width: 65px;
@@ -459,9 +458,9 @@ nav ul li a.active {
     border: 2px solid var(--toggle-border);
     cursor: pointer;
     transition: all 0.3s ease;
-  }
+}
   
-  .slider {
+.slider {
     position: absolute;
     top: 4px;
     left: 4px;
@@ -471,41 +470,41 @@ nav ul li a.active {
     border-radius: 50%;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  }
+}
   
-  .icon {
+.icon {
     display: flex;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     font-size: 16px;
     pointer-events: none;
-  }
+}
   
-  .sun {
+.sun {
     left: 7px;
-  }
+}
   
-  .sun-color {
+.sun-color {
     stroke: var(--sun-color);
     fill: var(--sun-color);
-  }
+}
   
-  .moon {
+.moon {
     right: 7px;
-  }
+}
   
-  .moon-color {
+.moon-color {
     fill: var(--moon-color);
-  }
+}
   
-  .theme-toggle:checked + .toggle-label .slider {
+.theme-toggle:checked + .toggle-label .slider {
     transform: translateX(34px);
-  }
+}
   
-  .theme-toggle:checked + .toggle-label {
+.theme-toggle:checked + .toggle-label {
     background-color: var(--toggle-bg);
-  }
+}
 
 /* Main content */
 .main-container {
@@ -872,7 +871,7 @@ nav ul li a.active {
   
 .footer-links, .footer-statistics, .footer-contact {
     margin-bottom: 20px;
-  }
+}
   
 .footer-links h3, .footer-statistics h3, .footer-contact h3 {
     margin-bottom: 20px;
@@ -916,124 +915,6 @@ nav ul li a.active {
     font-weight: 400;
     font-size: 0.9em;
     border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-/* Media Queries */
-@media screen and (max-width: 1200px) {
-    .footer-container {
-        flex-direction: column;
-        gap: 30px;
-        padding: 40px 5%;
-    }
-    
-    .footer-column, .footer-nav {
-        width: 100%;
-    }
-    
-    .footer-nav {
-        gap: 30px;
-    }
-}
-
-@media screen and (max-width: 992px) {
-    header {
-        padding: 0 3%;
-    }
-    
-    .header-nav ul {
-        gap: 20px;
-    }
-    
-    .search-bar {
-        width: 180px;
-    }
-    
-    .category {
-        max-width: 100%;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    header {
-        height: auto;
-        flex-wrap: wrap;
-        padding: 15px 3%;
-    }
-    
-    .rateverse-logo {
-        width: auto;
-        margin-bottom: 10px;
-    }
-    
-    .header-nav {
-        order: 3;
-        width: 100%;
-        margin-top: 15px;
-    }
-    
-    .header-nav ul {
-        width: 100%;
-        justify-content: space-around;
-        gap: 5px;
-    }
-    
-    .search-bar {
-        width: 100%;
-        margin: 10px 0;
-        order: 2;
-    }
-    
-    .controls-bar {
-        flex-direction: column;
-        gap: 20px;
-        align-items: stretch;
-    }
-    
-    .main-nav {
-        overflow-x: auto;
-        padding-bottom: 10px;
-        justify-content: flex-start;
-    }
-    
-    .filter-icon {
-        align-self: center;
-    }
-
-    .notification-modal {
-        right: 20px;
-    }
-    
-    .notification-modal-content {
-        max-height: 300px;
-        max-width: 250px;
-    }
-}
-
-@media screen and (max-width: 576px) {
-    .category-title {
-        font-size: 1.2rem;
-    }
-    
-    .element-card {
-        width: 160px;
-    }
-    
-    .element-image {
-        height: 200px;
-    }
-    
-    .element-name {
-        font-size: 1rem;
-    }
-    
-    .footer-nav {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .filter-modal-content {
-        margin: 60px;
-    }
 }
 
 /* Mobile menu dropdown */
@@ -1118,8 +999,105 @@ nav ul li a.active {
     margin-top: 30px;
 }
 
-/* Media queries adjustments */
+/* Media Queries */
+@media screen and (max-width: 1200px) {
+    .footer-container {
+        flex-direction: column;
+        gap: 30px;
+        padding: 40px 5%;
+    }
+    
+    .footer-column, .footer-nav {
+        width: 100%;
+    }
+    
+    .footer-nav {
+        gap: 30px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    header {
+        padding: 0 3%;
+    }
+    
+    .header-nav ul {
+        gap: 20px;
+    }
+    
+    .search-bar {
+        width: 180px;
+    }
+    
+    .category {
+        max-width: 100%;
+    }
+}
+
 @media screen and (max-width: 768px) {
+    header {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 15px 3%;
+    }
+    
+    .rateverse-logo {
+        width: auto;
+        margin-bottom: 10px;
+    }
+    
+    .header-nav {
+        order: 3;
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .header-nav ul {
+        width: 100%;
+        justify-content: space-around;
+        gap: 5px;
+    }
+    
+    .search-bar {
+        width: 100%;
+        margin: 10px 0;
+        order: 2;
+    }
+    
+    .controls-bar {
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+    }
+    
+    .main-nav {
+        overflow-x: auto;
+        padding-bottom: 10px;
+        justify-content: flex-start;
+    }
+    
+    .filter-icon {
+        align-self: center;
+    }
+
+    /* Modal adjustments */
+    .notification-modal {
+        right: 10px;
+    }
+    
+    .notification-modal-content {
+        width: 350px;
+        max-height: 400px;
+    }
+
+    .profile-dropdown {
+        right: 10px;
+    }
+
+    .card-profile {
+        width: 220px;
+    }
+
     .main-nav {
         display: none; /* Hide desktop navigation */
     }
@@ -1146,5 +1124,92 @@ nav ul li a.active {
     .show-more {
         width: 100%;
         max-width: 250px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .category-title {
+        font-size: 1.2rem;
+    }
+    
+    .element-card {
+        width: 160px;
+    }
+    
+    .element-image {
+        height: 200px;
+    }
+    
+    .element-name {
+        font-size: 1rem;
+    }
+    
+    .footer-nav {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .filter-modal-content {
+        margin: 60px;
+    }
+
+    /* Modal full width on mobile */
+    .notification-modal-content {
+        width: calc(100vw - 20px);
+        max-width: 350px;
+    }
+
+    .notification-header h3 {
+        font-size: 14px;
+    }
+
+    .notification-list li {
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+
+    .notification-time {
+        font-size: 10px;
+    }
+
+    .card-profile {
+        width: 220px;
+    }
+
+    .card-profile .list .element {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .toggle-label {
+        width: 55px;
+        height: 28px;
+    }
+
+    .slider {
+        width: 18px;
+        height: 18px;
+        top: 3px;
+        left: 3px;
+    }
+
+    .theme-toggle:checked + .toggle-label .slider {
+        transform: translateX(29px);
+    }
+
+    .sun, .moon {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .notification-modal {
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .profile-dropdown {
+        right: 50%;
+        transform: translateX(50%);
     }
 }
