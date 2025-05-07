@@ -190,7 +190,7 @@ function renderTopics(topics, append = false) {
 
                 const rating = document.createElement('div');
                 rating.className = 'recommended_rating';
-                rating.textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
+                rating.textContent = item.averageRating ? (item.averageRating * 2).toFixed(1) : '0.0';
                 rankInfoDiv.appendChild(rating);
 
                 const count = document.createElement('div');

@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="${item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`}" alt="image category" class="element-image">
                     <p class="element-name">${item.name}</p>
                     <div class="element-date">${new Date(item.createdAt).getFullYear()}</div>
-                    <strong class="element-rating">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</strong>
+                    <strong class="element-rating">${item.averageRating ? (item.averageRating * 2).toFixed(1) : '0.0'}</strong>
                 `;
                 elementsDiv.appendChild(itemCard);
             });

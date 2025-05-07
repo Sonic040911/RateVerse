@@ -51,7 +51,7 @@ async function fetchItem() {
       document.querySelector('.some-name').textContent = item.name;
       document.querySelector('.description').textContent = item.description;
       renderRatingDistribution(distributions);
-      document.querySelector('.rating-score').textContent = item.averageRating ? item.averageRating.toFixed(1) : '0.0';
+      document.querySelector('.rating-score').textContent = item.averageRating ? (item.averageRating * 2).toFixed(1) : '0.0';
 
       // 设置图片
       const itemImage = document.querySelector('.some-image img');
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 设置分享链接
   const currentUrl = window.location.href;
-  document.querySelector('#share-url').value = currentUrl;
+  document.querySelector('.share-url').value = currentUrl;
 
   shareBtn.addEventListener("click", () => {
     modal.style.display = "flex";
