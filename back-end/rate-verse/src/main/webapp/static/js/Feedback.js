@@ -1,19 +1,20 @@
-// Comment.js
+// Base context path (root context)
+const contextPath = ''; // Change to '/rateverse' if needed
 
 // Get itemId from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const itemId = urlParams.get('itemId');
 if (!itemId) {
   alert('Item ID not found');
-  window.location.href = 'Rating_board.html'; // Redirect to Rating page if itemId is missing
+  window.location.href = `${contextPath}/Rating_board.html`;
 }
 
 // Pagination configuration
 let currentPage = 1;
-const pageSize = 5; // Display 5 comments per page
-let sortType = 'likes'; // Default sorting by time (Latest)
+const pageSize = 10;
+let sortType = 'likes';
 
-// Reset stars function (moved to global scope)
+// Reset stars function
 function resetStars() {
   const stars = document.querySelectorAll('.my-star');
   stars.forEach(star => star.classList.remove('active'));
@@ -22,10 +23,20 @@ function resetStars() {
 // Fetch and display Item information
 async function fetchItem() {
   try {
-    const response = await fetch(`/api/item/status/${itemId}`, {
+    const response = await fetch(`${contextPath}/api/item/status/${itemId}`, {
       method: 'GET',
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       const data = result.data;
@@ -33,9 +44,10 @@ async function fetchItem() {
       const distributions = data.scoreDistribution;
       const topic = data.topic;
 
+
       // 设置 Item 信息
       document.querySelector('.name-block').textContent = topic.title;
-      document.querySelector('.name-block').href = 'Rating_board.html?topicId=' + topic.id
+      document.querySelector('.name-block').href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
       document.querySelector('.some-name').textContent = item.name;
       document.querySelector('.description').textContent = item.description;
       renderRatingDistribution(distributions);
@@ -43,11 +55,11 @@ async function fetchItem() {
 
       // 设置图片
       const itemImage = document.querySelector('.some-image img');
-      itemImage.src = item.imageUrl || 'static/assets/NoImageFound.jpg.png';
+      itemImage.src = item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`;
       console.log(`Loading image for item ${item.id}: ${itemImage.src}`);
       itemImage.onerror = () => {
         console.error(`Failed to load image for item ${item.id}: ${itemImage.src}`);
-        itemImage.src = 'static/assets/NoImageFound.jpg.png';
+        itemImage.src = `${contextPath}/static/assets/NoImageFound.jpg.png`;
       };
       itemImage.onload = () => {
         console.log(`Image loaded successfully for item ${item.id}: ${itemImage.src}`);
@@ -65,10 +77,20 @@ async function fetchItem() {
 // Fetch user rating
 async function fetchUserRating() {
   try {
-    const response = await fetch(`/api/rating/${itemId}/user`, {
+    const response = await fetch(`${contextPath}/api/rating/${itemId}/user`, {
       method: 'GET',
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       const rating = result.data;
@@ -76,13 +98,13 @@ async function fetchUserRating() {
       const stars = document.querySelectorAll('.my-star');
       if (rating && rating.score) {
         ratingInput.value = rating.score;
-        resetStars(); // 清空当前星级
+        resetStars();
         for (let i = 0; i < rating.score; i++) {
           stars[i].classList.add('active');
         }
       } else {
         ratingInput.value = 0;
-        resetStars(); // 清空星级
+        resetStars();
       }
     } else {
       console.error('Failed to fetch user rating:', result.message);
@@ -122,11 +144,21 @@ function renderRatingDistribution(distributions) {
 // Fetch and display paginated comments
 async function fetchComments() {
   try {
-    const apiUrl = `/api/comment/getCommentsByItemId/${itemId}/${pageSize}/${currentPage}?sortType=${sortType}`;
+    const apiUrl = `${contextPath}/api/comment/getCommentsByItemId/${itemId}/${pageSize}/${currentPage}?sortType=${sortType}`;
     const response = await fetch(apiUrl, {
       method: 'GET',
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       const comments = result.data.data;
@@ -151,7 +183,7 @@ function renderComments(comments) {
     commentDiv.className = 'comment';
     commentDiv.setAttribute('data-comment-id', comment.id);
 
-    const avatarSrc = comment.user.avatarUrl || 'static/assets/User.svg';
+    const avatarSrc = comment.user.avatarUrl || `${contextPath}/static/assets/User.svg`;
     commentDiv.innerHTML = `
             <img src="${avatarSrc}" alt="user img" class="user-avatar">
             <div class="comment-content">
@@ -167,11 +199,11 @@ function renderComments(comments) {
                     <button class="reply-btn" data-comment-id="${comment.id}">Reply</button>
                     <div class="like-dislike">
                         <span class="like-count">${comment.likes}</span>
-                        <button class="like-btn" data-comment-id="${comment.id}"><img src="static/assets/like.svg" alt="like"></button>
+                        <button class="like-btn" data-comment-id="${comment.id}"><img src="${contextPath}/static/assets/like.svg" alt="like"></button>
                     </div>
                     <div class="like-dislike">
                         <span class="dislike-count">${comment.dislikes}</span>
-                        <button class="dislike-btn" data-comment-id="${comment.id}"><img src="static/assets/dislike.svg" alt="dislike"></button>
+                        <button class="dislike-btn" data-comment-id="${comment.id}"><img src="${contextPath}/static/assets/dislike.svg" alt="dislike"></button>
                     </div>
                 </div>
                 <div class="replies"></div>
@@ -188,10 +220,20 @@ function renderComments(comments) {
 // Load replies
 async function loadReplies(parentCommentId, repliesContainer) {
   try {
-    const response = await fetch(`/api/comment/replies/${parentCommentId}`, {
+    const response = await fetch(`${contextPath}/api/comment/replies/${parentCommentId}`, {
       method: 'GET',
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       const replies = result.data;
@@ -308,7 +350,7 @@ function addCommentInteractions() {
 // Submit rating
 async function submitRating(score) {
   try {
-    const response = await fetch('/api/rating', {
+    const response = await fetch(`${contextPath}/api/rating`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -319,11 +361,21 @@ async function submitRating(score) {
       }),
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       console.log('Rating submitted successfully');
-      fetchItem(); // 更新 Item 信息
-      fetchUserRating(); // 更新用户评分
+      fetchItem();
+      fetchUserRating();
     } else {
       alert('Failed to submit rating: ' + result.message);
     }
@@ -336,7 +388,7 @@ async function submitRating(score) {
 // Add comment
 async function addComment(content) {
   try {
-    const response = await fetch(`/api/comment/${itemId}`, {
+    const response = await fetch(`${contextPath}/api/comment/${itemId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -344,6 +396,16 @@ async function addComment(content) {
       body: JSON.stringify({ content: content }),
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       currentPage = 1;
@@ -386,7 +448,7 @@ function showReplyInput(replyBtn, parentCommentId) {
 
 async function replyComment(parentCommentId, content) {
   try {
-    const response = await fetch('/api/comment/reply', {
+    const response = await fetch(`${contextPath}/api/comment/reply`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -394,6 +456,16 @@ async function replyComment(parentCommentId, content) {
       body: JSON.stringify({ parentCommentId: parseInt(parentCommentId), content: content, itemId: parseInt(itemId) }),
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       const commentDiv = document.querySelector(`.comment[data-comment-id="${parentCommentId}"]`);
@@ -416,11 +488,21 @@ async function replyComment(parentCommentId, content) {
 // Like/Dislike
 async function handleVote(commentId, action) {
   try {
-    const apiUrl = `/api/comment/${action}/${commentId}`;
+    const apiUrl = `${contextPath}/api/comment/${action}/${commentId}`;
     const response = await fetch(apiUrl, {
       method: 'POST',
       credentials: 'include'
     });
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('Received 401 Unauthorized');
+        const result = await response.json();
+        alert(result.message || 'Please login first');
+        window.location.href = `${contextPath}/Login.html`;
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.code === 200) {
       fetchComments();
@@ -437,7 +519,7 @@ async function handleVote(commentId, action) {
 document.addEventListener('DOMContentLoaded', () => {
   fetchItem();
   fetchComments();
-  fetchUserRating(); // 加载用户评分
+  fetchUserRating();
 
   document.querySelector('.filter-btn[data-sort="time"]').classList.add('active');
 
@@ -445,7 +527,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const shareBtn = document.querySelector(".share-btn");
   const closeBtn = document.querySelector(".close");
   const copyBtn = document.getElementById("copy-btn");
-  const shareUrl = document.getElementById("share-url");
+
+  // 设置分享链接
+  const currentUrl = window.location.href;
+  document.querySelector('.share-url').value = currentUrl;
 
   shareBtn.addEventListener("click", () => {
     modal.style.display = "flex";

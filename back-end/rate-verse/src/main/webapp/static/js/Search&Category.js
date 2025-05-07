@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Base context path (root context)
+    const contextPath = ''; // Change to '/rateverse' if needed
+
     // Get keyword from URL
     const urlParams = new URLSearchParams(window.location.search);
     let keyword = urlParams.get('keyword') || '';
@@ -63,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sortMode = 'latest'; // Reset to latest on search
                 fetchResults();
                 // Update URL without reloading
-                window.history.pushState({}, '', `Search&Category.html?keyword=${encodeURIComponent(keyword)}`);
+                window.history.pushState({}, '', `${contextPath}/Search&Category.html?keyword=${encodeURIComponent(keyword)}`);
             } else {
                 showNotification('Please enter a search keyword', true);
             }
@@ -78,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     sortMode = 'latest'; // Reset to latest on search
                     fetchResults();
                     // Update URL without reloading
-                    window.history.pushState({}, '', `Search&Category.html?keyword=${encodeURIComponent(keyword)}`);
+                    window.history.pushState({}, '', `${contextPath}/Search&Category.html?keyword=${encodeURIComponent(keyword)}`);
                 } else {
                     showNotification('Please enter a search keyword', true);
                 }
@@ -95,18 +98,76 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Mobile filter dropdown functionality
+    const mobileFilterBtn = document.querySelector('.mobile-filter-btn');
+    const mobileFilterDropdown = document.querySelector('.mobile-filter-dropdown');
+    const mobileFilterOptions = document.querySelectorAll('.mobile-filter-dropdown a');
+    const currentFilter = document.getElementById('current-filter');
+
+    if (mobileFilterBtn && mobileFilterDropdown) {
+        // Toggle dropdown
+        mobileFilterBtn.addEventListener('click', () => {
+            mobileFilterBtn.classList.toggle('active');
+            mobileFilterDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileFilterBtn.contains(e.target) && !mobileFilterDropdown.contains(e.target)) {
+                mobileFilterBtn.classList.remove('active');
+                mobileFilterDropdown.classList.remove('show');
+            }
+        });
+
+        // Handle filter selection
+        mobileFilterOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Update active state in dropdown
+                mobileFilterOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                // Update button text
+                currentFilter.textContent = option.textContent;
+
+                // Close dropdown
+                mobileFilterBtn.classList.remove('active');
+                mobileFilterDropdown.classList.remove('show');
+
+                // Update sortMode and fetch results
+                sortMode = option.getAttribute('data-filter');
+                currentPage = 1;
+                fetchResults();
+            });
+        });
+    }
+
+    // Update the initial state of the mobile filter based on the current sortMode
+    function updateMobileFilterState() {
+        if (currentFilter) {
+            // Capitalize first letter of sortMode
+            currentFilter.textContent = sortMode.charAt(0).toUpperCase() + sortMode.slice(1);
+        }
+
+        mobileFilterOptions.forEach(option => {
+            const filterValue = option.getAttribute('data-filter');
+            option.classList.toggle('active', filterValue === sortMode);
+        });
+    }
+
     // Fetch search results from backend
     async function fetchResults(append = false) {
         let apiUrl;
         if (sortMode === 'popular') {
             apiUrl = keyword
-                ? `/api/topic/searchByHeat/${pageSize}/${currentPage}?keyword=${encodeURIComponent(keyword)}`
-                : `/api/topic/getAllByHeat/${pageSize}/${currentPage}`;
+                ? `${contextPath}/api/topic/searchByHeat/${pageSize}/${currentPage}?keyword=${encodeURIComponent(keyword)}`
+                : `${contextPath}/api/topic/getAllByHeat/${pageSize}/${currentPage}`;
         } else {
             const order = sortMode === 'earliest' ? 'ASC' : 'DESC';
             apiUrl = keyword
-                ? `/api/topic/searchByTime/${pageSize}/${currentPage}?keyword=${encodeURIComponent(keyword)}&order=${order}`
-                : `/api/topic/getAllByTime/${pageSize}/${currentPage}`;
+                ? `${contextPath}/api/topic/searchByTime/${pageSize}/${currentPage}?keyword=${encodeURIComponent(keyword)}&order=${order}`
+                : `${contextPath}/api/topic/getAllByTime/${pageSize}/${currentPage}`;
         }
 
         try {
@@ -114,6 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'GET',
                 credentials: 'include', // Include cookies for session
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await response.json();
+                    showNotification(result.message || 'Please login first', true);
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const result = await response.json();
 
             if (result.code === 200) {
@@ -157,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             categorySection.className = 'category';
             categorySection.innerHTML = `
                 <div class="category-nav">
-                    <h3><a href="Rating_board.html?topicId=${topic.id}" class="category-title">${topic.title}</a></h3>
+                    <h3><a href="${contextPath}/Rating_board.html?topicId=${topic.id}" class="category-title">${topic.title}</a></h3>
                     <button class="more-element-btn">Show More ></button>
                 </div>
                 <div class="elements"></div>
@@ -167,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
             (topic.items || []).slice(0, 5).forEach(item => {
                 const itemCard = document.createElement('a');
                 itemCard.className = 'element-card';
-                itemCard.href = `Rating_board.html?topicId=${topic.id}`;
+                itemCard.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
                 itemCard.innerHTML = `
-                    <img src="${item.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="image category" class="element-image">
+                    <img src="${item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`}" alt="image category" class="element-image">
                     <p class="element-name">${item.name}</p>
                     <div class="element-date">${new Date(item.createdAt).getFullYear()}</div>
                     <strong class="element-rating">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</strong>
@@ -181,7 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial fetch
+    // Initial fetch and mobile filter state
+    updateMobileFilterState();
     fetchResults();
 
     // Handle "Show More" buttons for each category
@@ -195,69 +267,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-
-
-
-// Add this to your Search&Category.js file, inside the DOMContentLoaded event listener
-
-// Mobile filter dropdown functionality
-const mobileFilterBtn = document.querySelector('.mobile-filter-btn');
-const mobileFilterDropdown = document.querySelector('.mobile-filter-dropdown');
-const mobileFilterOptions = document.querySelectorAll('.mobile-filter-dropdown a');
-const currentFilter = document.getElementById('current-filter');
-
-if (mobileFilterBtn && mobileFilterDropdown) {
-    // Toggle dropdown
-    mobileFilterBtn.addEventListener('click', () => {
-        mobileFilterBtn.classList.toggle('active');
-        mobileFilterDropdown.classList.toggle('show');
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!mobileFilterBtn.contains(e.target) && !mobileFilterDropdown.contains(e.target)) {
-            mobileFilterBtn.classList.remove('active');
-            mobileFilterDropdown.classList.remove('show');
-        }
-    });
-
-    // Handle filter selection
-    mobileFilterOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Update active state in dropdown
-            mobileFilterOptions.forEach(opt => opt.classList.remove('active'));
-            option.classList.add('active');
-            
-            // Update button text
-            currentFilter.textContent = option.textContent;
-            
-            // Close dropdown
-            mobileFilterBtn.classList.remove('active');
-            mobileFilterDropdown.classList.remove('show');
-            
-            // Update sortMode and fetch results
-            sortMode = option.getAttribute('data-filter');
-            currentPage = 1;
-            fetchResults();
-        });
-    });
-}
-
-// Update the initial state of the mobile filter based on the current sortMode
-function updateMobileFilterState() {
-    if (currentFilter) {
-        // Capitalize first letter of sortMode
-        currentFilter.textContent = sortMode.charAt(0).toUpperCase() + sortMode.slice(1);
-    }
-    
-    mobileFilterOptions.forEach(option => {
-        const filterValue = option.getAttribute('data-filter');
-        option.classList.toggle('active', filterValue === sortMode);
-    });
-}
-
-// Call this after setting initial sortMode
-updateMobileFilterState();

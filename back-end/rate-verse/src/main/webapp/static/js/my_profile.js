@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded, starting initialization");
 
+    // Base context path (root context)
+    const contextPath = ''; // Change to '/rateverse' if needed
+
     // Get DOM elements
     const editIcon = document.querySelector('.edit-icon');
     const renameModal = document.getElementById('renameModal');
@@ -147,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/user/api/update-username', {
+            const response = await fetch(`${contextPath}/user/api/update-username`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -155,6 +158,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: `newUsername=${encodeURIComponent(newName)}`,
                 credentials: 'include',
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await response.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const result = await response.json();
             if (result.code === 200) {
                 document.querySelector('.name-wrapper h2').textContent = newName;
@@ -190,15 +203,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('image', file);
         try {
-            const uploadResponse = await fetch('/api/upload/image', {
+            const uploadResponse = await fetch(`${contextPath}/api/upload/image`, {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
             });
+            if (!uploadResponse.ok) {
+                if (uploadResponse.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await uploadResponse.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${uploadResponse.status}`);
+            }
             const uploadResult = await uploadResponse.json();
             if (uploadResult.code === 200) {
                 const avatarUrl = uploadResult.data;
-                const updateResponse = await fetch('/user/api/update-avatar', {
+                const updateResponse = await fetch(`${contextPath}/user/api/update-avatar`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -206,6 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: `avatarUrl=${encodeURIComponent(avatarUrl)}`,
                     credentials: 'include',
                 });
+                if (!updateResponse.ok) {
+                    if (updateResponse.status === 401) {
+                        console.log('Received 401 Unauthorized');
+                        const result = await updateResponse.json();
+                        alert(result.message || 'Please login first');
+                        window.location.href = `${contextPath}/Login.html`;
+                        return;
+                    }
+                    throw new Error(`HTTP error! status: ${updateResponse.status}`);
+                }
                 const updateResult = await updateResponse.json();
                 if (updateResult.code === 200) {
                     document.querySelector('.avatar').src = avatarUrl;
@@ -255,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/user/api/update-profile', {
+            const response = await fetch(`${contextPath}/user/api/update-profile`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -263,6 +296,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: `email=${encodeURIComponent(newEmail)}&phone=${encodeURIComponent(newPhone)}&address=${encodeURIComponent(newAddress)}`,
                 credentials: 'include',
             });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await response.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const result = await response.json();
             if (result.code === 200) {
                 document.querySelector('.info-value[data-field="email"]').textContent = newEmail || 'N/A';
@@ -294,18 +337,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUserProfile() {
         console.log("Fetching user profile");
         try {
-            const response = await fetch('/user/api/profile', {
+            const response = await fetch(`${contextPath}/user/api/profile`, {
                 method: 'GET',
                 credentials: 'include',
             });
-            if (response.status === 401) {
-                console.log("Not logged in, redirecting to login.html");
-                alert('Please log in');
-                window.location.href = 'login.html';
-                return;
-            }
             if (!response.ok) {
-                throw new Error(`HTTP error: ${response.status}`);
+                if (response.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await response.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const result = await response.json();
             if (result.code === 200) {
@@ -327,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 usernameElement.textContent = profile.username || 'Unknown User';
                 nameInput.value = profile.username || 'Unknown User';
-                avatarElement.src = profile.avatarUrl || 'static/assets/User_img.png';
+                avatarElement.src = profile.avatarUrl || `${contextPath}/static/assets/User_img.png`;
                 emailElement.textContent = profile.email || 'N/A';
                 phoneElement.textContent = profile.phone || 'N/A';
                 addressElement.textContent = profile.address || 'N/A';
@@ -357,16 +401,30 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUserStats() {
         try {
             const [topicCountRes, likesCountRes, commentsCountRes, ratingsCountRes] = await Promise.all([
-                fetch('/api/topic/user-topic-count', { method: 'GET', credentials: 'include' }),
-                fetch('/api/topic/user-topic-likes-count', { method: 'GET', credentials: 'include' }),
-                fetch('/api/topic/user-topic-comments-count', { method: 'GET', credentials: 'include' }),
-                fetch('/api/topic/user-topic-ratings-count', { method: 'GET', credentials: 'include' }),
+                fetch(`${contextPath}/api/topic/user-topic-count`, { method: 'GET', credentials: 'include' }),
+                fetch(`${contextPath}/api/topic/user-topic-likes-count`, { method: 'GET', credentials: 'include' }),
+                fetch(`${contextPath}/api/topic/user-topic-comments-count`, { method: 'GET', credentials: 'include' }),
+                fetch(`${contextPath}/api/topic/user-topic-ratings-count`, { method: 'GET', credentials: 'include' }),
             ]);
 
-            const topicCount = await topicCountRes.json();
-            const likesCount = await likesCountRes.json();
-            const commentsCount = await commentsCountRes.json();
-            const ratingsCount = await ratingsCountRes.json();
+            const checkResponse = async (response, type) => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.log(`Received 401 Unauthorized for ${type}`);
+                        const result = await response.json();
+                        alert(result.message || 'Please login first');
+                        window.location.href = `${contextPath}/Login.html`;
+                        throw new Error('Unauthorized');
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            };
+
+            const topicCount = await checkResponse(topicCountRes, 'topic count');
+            const likesCount = await checkResponse(likesCountRes, 'likes count');
+            const commentsCount = await checkResponse(commentsCountRes, 'comments count');
+            const ratingsCount = await checkResponse(ratingsCountRes, 'ratings count');
 
             const topicsElement = document.querySelector('.stat-value[for="topics"]');
             const likesElement = document.querySelector('.stat-value[for="likes"]');
@@ -383,8 +441,10 @@ document.addEventListener('DOMContentLoaded', () => {
             commentsElement.textContent = commentsCount.code === 200 ? commentsCount.data || 0 : '0';
             ratingsElement.textContent = ratingsCount.code === 200 ? ratingsCount.data || 0 : '0';
         } catch (error) {
-            console.error('Error fetching stats:', error);
-            alert('Network error while fetching stats');
+            if (error.message !== 'Unauthorized') {
+                console.error('Error fetching stats:', error);
+                alert('Network error while fetching stats');
+            }
         }
     }
 
@@ -400,18 +460,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUserRatings() {
         console.log("Fetching all user ratings");
         try {
-            const response = await fetch('/api/topic/user-ratings', {
+            const response = await fetch(`${contextPath}/api/topic/user-ratings`, {
                 method: 'GET',
                 credentials: 'include',
             });
             console.log('User ratings API response status:', response.status);
-            if (response.status === 401) {
-                console.log("Not logged in, redirecting to login.html");
-                alert('Please log in');
-                window.location.href = 'login.html';
-                return;
-            }
             if (!response.ok) {
+                if (response.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await response.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
                 const errorData = await response.json();
                 console.error('Server error response:', errorData);
                 throw new Error(`HTTP error: ${response.status} - ${errorData.message || 'Unknown error'}`);
@@ -431,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ratingItem.className = 'rating-item';
                     ratingItem.dataset.topicId = rating.id;
                     ratingItem.innerHTML = `
-                        <img src="${rating.topItem?.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="${rating.title}" class="rating-image">
+                        <img src="${rating.topItem?.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`}" alt="${rating.title}" class="rating-image">
                         <div class="rating-info">
                             <h4>${truncateText(rating.title, 30)}</h4>
                             <p>${truncateText(rating.description, 100)}</p>
@@ -443,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     ratingItem.addEventListener('click', () => {
                         console.log(`Clicked Topic ${rating.id}, redirecting to Rating_board.html`);
-                        window.location.href = `Rating_board.html?topicId=${rating.id}`;
+                        window.location.href = `${contextPath}/Rating_board.html?topicId=${rating.id}`;
                     });
                     ratingsList.appendChild(ratingItem);
                 });
@@ -457,7 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger');

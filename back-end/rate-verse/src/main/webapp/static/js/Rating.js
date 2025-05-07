@@ -3,11 +3,14 @@ let currentTopicPage = 1; // Current page for Topics
 let totalTopicPages = 0; // Total number of Topic pages
 let topicsMap = new Map(); // Store Topics to merge duplicates
 
+// Base context path
+const contextPath = '';
+
 // Fetch Topic list
 async function fetchTopics(append = false) {
     try {
         console.log(`Fetching topics: page=${currentTopicPage}, pageSize=${pageSize}`);
-        const response = await fetch(`/api/topic/getAllByHeat/${pageSize}/${currentTopicPage}`, {
+        const response = await fetch(`${contextPath}/api/topic/getAllByHeat/${pageSize}/${currentTopicPage}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -39,6 +42,9 @@ async function fetchTopics(append = false) {
             totalTopicPages = Math.ceil(pageData.total / pageSize);
             console.log(`Total pages: ${totalTopicPages}`);
             updateShowMoreButton();
+        } else if (result.code === 401) {
+            alert(result.message || 'Please login first');
+            window.location.href = `${contextPath}/Login.html`;
         } else {
             console.error('Failed to fetch Topics:', result.message);
             alert('Failed to load data, please try again later');
@@ -95,10 +101,10 @@ function renderTopics(topics, append = false) {
             const newSpan = document.createElement('span');
             const newLink = document.createElement('a');
             newLink.className = 'recommended_header-link';
-            newLink.href = `Rating_board.html?topicId=${topic.id}`;
+            newLink.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
             newLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.href = `Rating_board.html?topicId=${topic.id}`;
+                window.location.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
             });
             const newTitle = document.createElement('h3');
             newTitle.className = 'topic-title';
@@ -129,10 +135,10 @@ function renderTopics(topics, append = false) {
                 allComments.textContent = `${topic.totalComments || 0} comments`;
 
                 const topicLink = topicHeader.querySelector('.recommended_header-link');
-                topicLink.href = `Rating_board.html?topicId=${topic.id}`;
+                topicLink.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
                 topicLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = `Rating_board.html?topicId=${topic.id}`;
+                    window.location.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
                 });
 
                 topicList.innerHTML = '';
@@ -148,10 +154,10 @@ function renderTopics(topics, append = false) {
                 console.log('Item data:', item);
                 const itemLink = document.createElement('a');
                 itemLink.className = 'recommended_item-link';
-                itemLink.href = `Rating_board.html?topicId=${topic.id}`;
+                itemLink.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
                 itemLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = `Rating_board.html?topicId=${topic.id}`;
+                    window.location.href = `${contextPath}/Rating_board.html?topicId=${topic.id}`;
                 });
 
                 const itemDiv = document.createElement('div');
@@ -162,12 +168,12 @@ function renderTopics(topics, append = false) {
 
                 const img = document.createElement('img');
                 img.className = 'recommended_img';
-                img.src = item.imageUrl || 'static/assets/NoImageFound.jpg.png';
+                img.src = item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`;
                 console.log(`Loading image for item ${item.id}: ${img.src}`);
                 img.alt = 'card_img';
                 img.onerror = () => {
                     console.error(`Failed to load image for item ${item.id}: ${img.src}`);
-                    img.src = 'static/assets/NoImageFound.jpg.png';
+                    img.src = `${contextPath}/static/assets/NoImageFound.jpg.png`;
                 };
                 img.onload = () => {
                     console.log(`Image loaded successfully for item ${item.id}: ${img.src}`);
@@ -228,7 +234,7 @@ function showMoreHandler() {
 
 // Navigate to Topic detail page
 function goToTopicDetail(topicId) {
-    window.location.href = `Rating_board.html?topicId=${topicId}`;
+    window.location.href = `${contextPath}/Rating_board.html?topicId=${topicId}`;
 }
 
 // Initialize
@@ -240,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (createBtn) {
         createBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch('/api/drafts', {
+                const response = await fetch(`${contextPath}/api/drafts`, {
                     method: 'POST',
                     credentials: 'include'
                 });
@@ -249,21 +255,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.code === 602) {
                     const draftId = result.data.draftId;
                     if (confirm("You have an unfinished draft. Do you want to continue editing?\nClick [OK] to continue editing, or [Cancel] to discard the draft and create a new one.")) {
-                        window.location.href = `Create.html?draftId=${draftId}`;
+                        window.location.href = `${contextPath}/Create.html?draftId=${draftId}`;
                     } else {
-                        const deleteResponse = await fetch(`/api/drafts/${draftId}`, {
+                        const deleteResponse = await fetch(`${contextPath}/api/drafts/${draftId}`, {
                             method: 'DELETE',
                             credentials: 'include'
                         });
                         const deleteResult = await deleteResponse.json();
                         if (deleteResult.flag) {
-                            const newResponse = await fetch('/api/drafts', {
+                            const newResponse = await fetch(`${contextPath}/api/drafts`, {
                                 method: 'POST',
                                 credentials: 'include'
                             });
                             const newResult = await newResponse.json();
                             if (newResult.flag) {
-                                window.location.href = `Create.html?draftId=${newResult.data.draftId}`;
+                                window.location.href = `${contextPath}/Create.html?draftId=${newResult.data.draftId}`;
                             } else {
                                 alert(`Failed to create a new draft: ${newResult.message}`);
                             }
@@ -272,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 } else {
-                    window.location.href = `Create.html?draftId=${result.data.draftId}`;
+                    window.location.href = `${contextPath}/Create.html?draftId=${result.data.draftId}`;
                 }
             } catch (error) {
                 alert('Network request exception');

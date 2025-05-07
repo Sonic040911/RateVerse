@@ -1,5 +1,8 @@
 console.log('Rating_board.js loaded');
 
+// Base context path (root context)
+const contextPath = ''; // Change to '/rateverse' if needed
+
 // Get topicId from URL parameters
 const urlParams = new URLSearchParams(window.location.search);
 const topicId = urlParams.get('topicId');
@@ -8,7 +11,7 @@ console.log('Topic ID:', topicId);
 if (!topicId) {
     console.error('Topic ID not found in URL');
     alert('Topic ID not found');
-    window.location.href = 'Rating.html'; // 恢复跳转到 Rating.html
+    window.location.href = `${contextPath}/index.html`;
 }
 
 // Pagination configuration
@@ -19,11 +22,21 @@ let sortType = 'popular';
 // Fetch and display Topic information
 async function fetchTopic() {
     try {
-        console.log(`Fetching topic: /api/topic/${topicId}`);
-        const response = await fetch(`/api/topic/${topicId}`, {
+        console.log(`Fetching topic: ${contextPath}/api/topic/${topicId}`);
+        const response = await fetch(`${contextPath}/api/topic/${topicId}`, {
             method: 'GET',
             credentials: 'include'
         });
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await response.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const result = await response.json();
         console.log('Topic API response:', result);
         if (result.code === 200) {
@@ -42,7 +55,7 @@ async function fetchTopic() {
             nameCategory.textContent = topic.title || 'Untitled Topic';
             descriptionCategory.textContent = topic.description || 'No description';
             userCreate.innerHTML = `
-                <img class="user-img" src="${topic.user?.avatarUrl || 'static/assets/User.svg'}" alt="User Avatar">${topic.user?.username || 'Unknown User'}
+                <img class="user-img" src="${topic.user?.avatarUrl || `${contextPath}/static/assets/User.svg`}" alt="User Avatar">${topic.user?.username || 'Unknown User'}
             `;
         } else {
             console.error('Failed to fetch Topic:', result.message);
@@ -57,17 +70,27 @@ async function fetchTopic() {
 // Fetch and display paginated Item data with sorting
 async function fetchItems() {
     try {
-        console.log(`Fetching items: /api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`);
-        const response = await fetch(`/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`, {
+        console.log(`Fetching items: ${contextPath}/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`);
+        const response = await fetch(`${contextPath}/api/item/getItemsByTopicId/${topicId}/${pageSize}/${currentPage}?sortType=${sortType}`, {
             method: 'GET',
             credentials: 'include'
         });
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await response.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const result = await response.json();
         console.log('Items API response:', result);
         if (result.code === 200) {
             const items = result.data.data;
             const ratingsSection = document.querySelector('.ratings');
-            const imgCategory = document.querySelector('.img-category'); // 获取 Topic 图片元素
+            const imgCategory = document.querySelector('.img-category');
             if (!ratingsSection || !imgCategory) {
                 console.error('Required DOM elements not found:', {
                     ratingsSection: !!ratingsSection,
@@ -78,14 +101,14 @@ async function fetchItems() {
 
             // Initialize ratingsSection on first page
             if (currentPage === 1) {
-                ratingsSection.innerHTML = '<div class="more-ratings"><button class="show-more"><img class="show-img" src="static/assets/Vector.svg" alt="Vector img">Show More</button></div>';
+                ratingsSection.innerHTML = `<div class="more-ratings"><button class="show-more"><img class="show-img" src="${contextPath}/static/assets/Vector.svg" alt="Vector img">Show More</button></div>`;
             }
 
             if (items.length === 0) {
                 if (currentPage === 1) {
                     ratingsSection.innerHTML = '<p class="no-items">No items available for this topic.</p>';
                 }
-                imgCategory.src = 'static/assets/NoImageFound.jpg.png'; // 如果没有 Item，使用默认图片
+                imgCategory.src = `${contextPath}/static/assets/NoImageFound.jpg.png`;
                 return;
             }
 
@@ -101,7 +124,7 @@ async function fetchItems() {
 
             // 更新 Topic 图片为选中 Item 的图片（仅在第一页）
             if (currentPage === 1) {
-                imgCategory.src = selectedItem.imageUrl || 'static/assets/NoImageFound.jpg.png';
+                imgCategory.src = selectedItem.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`;
                 console.log(`Updated Topic image to: ${imgCategory.src}`);
             }
 
@@ -120,7 +143,7 @@ async function fetchItems() {
                     console.log('Show More clicked');
                     currentPage++;
                     fetchItems();
-                }, { once: true }); // 防止重复绑定
+                }, { once: true });
             }
         } else {
             console.error('Failed to fetch Items:', result.message);
@@ -160,7 +183,7 @@ function renderItems(items) {
         }
         ratingCard.innerHTML = `
             <div class="rating-info">
-                <img class="img-rating" src="${item.imageUrl || 'static/assets/NoImageFound.jpg.png'}" alt="Rating Item Image">
+                <img class="img-rating" src="${item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`}" alt="Rating Item Image">
                 <div class="name-desc">
                     <h3 class="name-rating">${item.name || 'Unnamed Item'}</h3>
                     <p class="description-rating">${item.description || 'No description'}</p>
@@ -173,7 +196,7 @@ function renderItems(items) {
             </div>
         `;
         ratingCard.addEventListener('click', () => {
-            window.location.href = `Feedback.html?itemId=${item.id}`;
+            window.location.href = `${contextPath}/Feedback.html?itemId=${item.id}`;
         });
         ratingsSection.insertBefore(ratingCard, moreRatings);
     });
@@ -199,4 +222,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchTopic();
     fetchItems();
-})
+});

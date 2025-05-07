@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Parse login response
                 const loginResult = await loginResponse.json();
                 if (loginResult.code === 200) {
-                    window.location.href = '/Rating.html'; // Redirect on successful login
+                    window.location.href = '/index.html'; // Redirect on successful login
                 } else if (loginResult.code === 506) {
                     showError("User does not exist");
                 } else if (loginResult.code === 504) {
@@ -91,7 +91,7 @@ window.handleCredentialResponse = async (response) => {
         const googleResult = await googleResponse.json();
         if (googleResult.code === 200) {
             showSuccess('Google login successful');
-            window.location.href = '/Rating.html';
+            window.location.href = '/index.html';
         } else if (googleResult.code === 1010) {
             showError('Invalid Google token. Please try again.');
         } else if (googleResult.code === 1009) {

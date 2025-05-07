@@ -39,6 +39,7 @@ public class WebMvcJavaConfig implements WebMvcConfigurer {
     // 拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new ApiInterceptor()).addPathPatterns("/api/**");
+        registry.addInterceptor(new ApiInterceptor()).addPathPatterns("/api/**", "/Create.html", "/Feedback.html", "/index.html", "/my_profile.html", "/Rating_board.html").
+        excludePathPatterns("/Login.html", "/Registration.html", "/Home.html");
     }
 }

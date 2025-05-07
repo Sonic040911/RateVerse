@@ -14,8 +14,11 @@ const descInput = document.getElementById("list-description");
 const sidebar = document.querySelector(".ratings");
 const objectNameInput = document.getElementById("object-name");
 const objectDescInput = document.getElementById("object-description");
-const coverPreview = document.querySelector(".cover-preview"); // 图片预览容器
+const coverPreview = document.querySelector(".cover-preview");
 const imageUrlInput = document.getElementById("image-url");
+
+// ==================== Context Path ====================
+const contextPath = ''; // Root context, change to '/rateverse' if needed
 
 // ==================== Word Count Limits ====================
 const LIMITS = {
@@ -87,7 +90,7 @@ openModalBtn.addEventListener("click", () => {
     objectDescInput.value = "";
     imageUrlInput.value = "";
     imageUploadInput.value = "";
-    updateCoverPreview(); // 清空预览
+    updateCoverPreview();
     objectNameInput.focus();
 });
 
@@ -110,7 +113,7 @@ const urlParams = new URLSearchParams(window.location.search);
 currentDraftId = urlParams.get('draftId');
 if (!currentDraftId) {
     alert("Invalid draft ID, redirecting to homepage...");
-    window.location.href = "Rating.html";
+    window.location.href = `${contextPath}/index.html`;
 }
 
 // ==================== Status Notifications ====================
@@ -138,10 +141,19 @@ function showSaveStatus(message, isError = false) {
 // ==================== Core Functionality ====================
 async function loadDraftContent() {
     try {
-        const draftRes = await fetch(`/api/drafts/${currentDraftId}`, {
+        const draftRes = await fetch(`${contextPath}/api/drafts/${currentDraftId}`, {
             credentials: "include"
         });
-        if (!draftRes.ok) throw new Error("Failed to load draft");
+        if (!draftRes.ok) {
+            if (draftRes.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await draftRes.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error("Failed to load draft");
+        }
 
         const draftData = await draftRes.json();
         if (draftData.flag) {
@@ -151,10 +163,19 @@ async function loadDraftContent() {
             updateWordCount(descInput, descInput.parentElement.querySelector(".word-count"), LIMITS.topicDesc);
         }
 
-        const itemsRes = await fetch(`/api/drafts/item/${currentDraftId}/100/1`, {
+        const itemsRes = await fetch(`${contextPath}/api/drafts/item/${currentDraftId}/100/1`, {
             credentials: "include"
         });
-        if (!itemsRes.ok) throw new Error("Failed to load rating items");
+        if (!itemsRes.ok) {
+            if (itemsRes.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await itemsRes.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error("Failed to load rating items");
+        }
 
         const itemsData = await itemsRes.json();
         console.log(itemsData);
@@ -188,7 +209,7 @@ function renderItems() {
                         <button class="delete-item">🗑️ Delete</button>
                     </div>
                 </div>
-                <img src="${item.imageUrl || 'static/assets/NoImageFound.jpg.png'}" class="rating-image">
+                <img src="${item.imageUrl || `${contextPath}/static/assets/NoImageFound.jpg.png`}" class="rating-image">
             </div>
         `;
         sidebar.insertAdjacentHTML("beforeend", itemHTML);
@@ -199,7 +220,7 @@ function renderItems() {
 async function autoSaveDraft() {
     if (!validateInputs()) return false;
     try {
-        const res = await fetch(`/api/drafts/${currentDraftId}`, {
+        const res = await fetch(`${contextPath}/api/drafts/${currentDraftId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -208,6 +229,16 @@ async function autoSaveDraft() {
             }),
             credentials: "include"
         });
+        if (!res.ok) {
+            if (res.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await res.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return false;
+            }
+            throw new Error("Failed to save draft");
+        }
         const result = await res.json();
         if (result.flag) {
             updateWordCount(titleInput, titleInput.parentElement.querySelector(".word-count"), LIMITS.topicTitle);
@@ -215,6 +246,7 @@ async function autoSaveDraft() {
         }
         return result.flag;
     } catch (error) {
+        showSaveStatus(`Save failed: ${error.message}`, true);
         return false;
     }
 }
@@ -250,10 +282,20 @@ document.querySelector(".ratings").addEventListener("click", async (e) => {
 
         try {
             showSaveStatus("Deleting...");
-            const res = await fetch(`/api/drafts/item/${itemId}`, {
+            const res = await fetch(`${contextPath}/api/drafts/item/${itemId}`, {
                 method: "DELETE",
                 credentials: "include"
             });
+            if (!res.ok) {
+                if (res.status === 401) {
+                    console.log('Received 401 Unauthorized');
+                    const result = await res.json();
+                    alert(result.message || 'Please login first');
+                    window.location.href = `${contextPath}/Login.html`;
+                    return;
+                }
+                throw new Error("Failed to delete item");
+            }
             const result = await res.json();
 
             if (result.flag) {
@@ -264,7 +306,7 @@ document.querySelector(".ratings").addEventListener("click", async (e) => {
                 showSaveStatus(`Deletion failed: ${result.message}`, true);
             }
         } catch (error) {
-            showSaveStatus("Deletion request failed", true);
+            showSaveStatus(`Deletion failed: ${error.message}`, true);
         }
     } else if (editBtn) {
         const itemCard = editBtn.closest('[data-item-id]');
@@ -278,7 +320,7 @@ document.querySelector(".ratings").addEventListener("click", async (e) => {
         objectNameInput.value = item.name;
         objectDescInput.value = item.description || "";
         imageUrlInput.value = item.imageUrl || "";
-        updateCoverPreview(); // 显示现有图片
+        updateCoverPreview();
         document.querySelector(".modal-title").textContent = "Edit Object";
         objectNameInput.focus();
     }
@@ -302,21 +344,31 @@ imageUploadInput.addEventListener('change', async (event) => {
     formData.append('image', file);
 
     try {
-        const res = await fetch('/api/upload/image', {
+        const res = await fetch(`${contextPath}/api/upload/image`, {
             method: 'POST',
             body: formData,
             credentials: "include"
         });
+        if (!res.ok) {
+            if (res.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await res.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error("Failed to upload image");
+        }
         const result = await res.json();
         if (result.flag) {
             imageUrlInput.value = result.data;
-            updateCoverPreview(); // 更新预览
+            updateCoverPreview();
             showSaveStatus('Image uploaded successfully');
         } else {
             showSaveStatus(`Image upload failed: ${result.message}`, true);
         }
     } catch (error) {
-        showSaveStatus('Image upload request failed', true);
+        showSaveStatus(`Image upload failed: ${error.message}`, true);
     }
 });
 
@@ -342,8 +394,8 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
     try {
         showSaveStatus(currentEditItemId ? "Updating..." : "Adding...");
         const url = currentEditItemId
-            ? `/api/drafts/item/${currentEditItemId}`
-            : `/api/drafts/item/${currentDraftId}`;
+            ? `${contextPath}/api/drafts/item/${currentEditItemId}`
+            : `${contextPath}/api/drafts/item/${currentDraftId}`;
         const method = currentEditItemId ? "PUT" : "POST";
 
         const res = await fetch(url, {
@@ -352,6 +404,16 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
             body: JSON.stringify({ name, description: desc, imageUrl }),
             credentials: "include"
         });
+        if (!res.ok) {
+            if (res.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await res.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error(currentEditItemId ? "Failed to update item" : "Failed to add item");
+        }
         const result = await res.json();
 
         if (result.flag) {
@@ -379,7 +441,7 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
             objectDescInput.value = "";
             imageUrlInput.value = "";
             imageUploadInput.value = "";
-            updateCoverPreview(); // 清空预览
+            updateCoverPreview();
             document.querySelector(".modal-title").textContent = "Add Object";
             currentEditItemId = null;
             showSaveStatus(currentEditItemId ? "Updated successfully" : "Added successfully");
@@ -387,7 +449,7 @@ document.querySelector(".modal-content .save").addEventListener("click", async (
             showSaveStatus(`${currentEditItemId ? "Update" : "Addition"} failed: ${result.message}`, true);
         }
     } catch (error) {
-        showSaveStatus(`${currentEditItemId ? "Update" : "Addition"} failed`, true);
+        showSaveStatus(`${currentEditItemId ? "Update" : "Addition"} failed: ${error.message}`, true);
     }
 });
 
@@ -425,20 +487,30 @@ submitBtn.addEventListener("click", async (e) => {
 
     try {
         showSaveStatus("Publishing...");
-        const res = await fetch(`/api/drafts/publish/${currentDraftId}`, {
+        const res = await fetch(`${contextPath}/api/drafts/publish/${currentDraftId}`, {
             method: "POST",
             credentials: "include"
         });
+        if (!res.ok) {
+            if (res.status === 401) {
+                console.log('Received 401 Unauthorized');
+                const result = await res.json();
+                alert(result.message || 'Please login first');
+                window.location.href = `${contextPath}/Login.html`;
+                return;
+            }
+            throw new Error("Failed to publish draft");
+        }
         const result = await res.json();
 
         if (result.flag) {
-            window.location.href = `Rating.html`;
+            window.location.href = `${contextPath}/index.html`;
         } else {
             showSaveStatus(`Publish failed: ${result.message}`, true);
             isSubmitting = false;
         }
     } catch (error) {
-        showSaveStatus("Publish request failed", true);
+        showSaveStatus(`Publish failed: ${error.message}`, true);
         isSubmitting = false;
     }
 });
