@@ -1004,7 +1004,48 @@ footer {
 
     .hamburger {
         display: block;
-        margin-right: 10px;
+        cursor: pointer;
+        width: 30px;
+        height: 20px;
+        position: relative;
+        background: none;
+        border: none;
+        z-index: 101;
+    }
+    
+    .hamburger span {
+        background: #FFFFFF;
+        height: 3px;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .hamburger span:nth-child(1) {
+        top: 0;
+    }
+    
+    .hamburger span:nth-child(2) {
+        top: 8px;
+    }
+    
+    .hamburger span:nth-child(3) {
+        top: 16px;
+    }
+    
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg);
+        top: 8px;
+    }
+    
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg);
+        top: 8px;
     }
 
     nav {

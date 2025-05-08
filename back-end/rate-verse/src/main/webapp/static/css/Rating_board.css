@@ -1247,6 +1247,7 @@ nav ul li a.active {
         bottom: 5px;
         right: 5px;
         gap: 3px;
+        margin-right: 70%;
     }
 
     .user-img {
@@ -1402,6 +1403,7 @@ nav ul li a.active {
         bottom: 5px;
         right: 5px;
         gap: 3px;
+        margin-right: 65%;
     }
 
     .type-button {
